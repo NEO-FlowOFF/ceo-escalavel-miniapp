@@ -10,6 +10,12 @@
 }
 
 @layer base {
+  #root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background-color: var(--bg-dark);
@@ -60,13 +66,35 @@
 
 /* Custom animations */
 @keyframes glitch-jitter {
-  0% { transform: translate(0); }
-  2% { transform: translate(-2px, 2px); filter: hue-rotate(90deg); }
-  4% { transform: translate(-2px, -2px); }
-  6% { transform: translate(2px, 2px); filter: hue-rotate(-90deg); }
-  8% { transform: translate(2px, -2px); }
-  10% { transform: translate(0); }
-  100% { transform: translate(0); }
+  0% {
+    transform: translate(0);
+  }
+
+  2% {
+    transform: translate(-2px, 2px);
+    filter: hue-rotate(90deg);
+  }
+
+  4% {
+    transform: translate(-2px, -2px);
+  }
+
+  6% {
+    transform: translate(2px, 2px);
+    filter: hue-rotate(-90deg);
+  }
+
+  8% {
+    transform: translate(2px, -2px);
+  }
+
+  10% {
+    transform: translate(0);
+  }
+
+  100% {
+    transform: translate(0);
+  }
 }
 
 .burnout-glitch {
@@ -85,8 +113,17 @@
 }
 
 @keyframes pulse-warning {
-  0%, 100% { opacity: 0.3; filter: brightness(1); }
-  50% { opacity: 0.8; filter: brightness(1.5); }
+
+  0%,
+  100% {
+    opacity: 0.3;
+    filter: brightness(1);
+  }
+
+  50% {
+    opacity: 0.8;
+    filter: brightness(1.5);
+  }
 }
 
 .pulse-critical {
@@ -94,8 +131,13 @@
 }
 
 @keyframes progress-load {
-  0% { width: 0%; }
-  100% { width: 100%; }
+  0% {
+    width: 0%;
+  }
+
+  100% {
+    width: 100%;
+  }
 }
 
 .animate-progress {
@@ -103,9 +145,19 @@
 }
 
 @keyframes float-up-fade {
-  0% { opacity: 0; transform: translateY(0); }
-  20% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(-80px); }
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-80px);
+  }
 }
 
 .animate-float-up {
@@ -113,9 +165,26 @@
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
-  20%, 40%, 60%, 80% { transform: translateX(4px); }
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-4px);
+  }
+
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(4px);
+  }
 }
 
 .animate-shake {
