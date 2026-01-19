@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo, useRef } from 'react';
 import { ManualAction, GameState } from '../types';
-import { isActionAutomated, formatHours, calculateManualGain } from '../engine/gameLogic';
+import { isActionAutomated, formatHours, calculateManualGain, calculateValuation } from '../engine/gameLogic';
 import { CheckCircle2, Clock, RefreshCcw, TrendingUp, ShieldCheck, Share2, Sparkles } from 'lucide-react';
 import NeoTerminal from './NeoTerminal';
 import { STATUS_MILESTONES, TOKEN_TICKER, POLYGON_PURPLE } from '../constants';
@@ -29,19 +29,19 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
   const [particles, setParticles] = useState<Particle[]>([]);
   const lastParticleTime = useRef(0);
 
-  const tokenEarned = (meta.capital_total_gerado / 1000).toFixed(2);
+  const tokenEarned = calculateValuation(gameState).toFixed(2);
 
   const { progress } = useMemo(() => {
-    const totalCap = meta.capital_total_gerado;
-    const currentIdx = [...STATUS_MILESTONES].reverse().find(m => totalCap >= m.pu);
+    const valuation = calculateValuation(gameState);
+    const currentIdx = [...STATUS_MILESTONES].reverse().find(m => valuation >= m.pu);
     const actualIdx = STATUS_MILESTONES.findIndex(m => m.pu === currentIdx?.pu) || 0;
     const currentMilestone = STATUS_MILESTONES[actualIdx];
     const nextMilestone = STATUS_MILESTONES[actualIdx + 1];
     if (!nextMilestone) return { progress: 100 };
     const range = nextMilestone.pu - currentMilestone.pu;
-    const currentProgress = totalCap - currentMilestone.pu;
+    const currentProgress = valuation - currentMilestone.pu;
     return { progress: Math.min(100, (currentProgress / range) * 100) };
-  }, [meta.capital_total_gerado]);
+  }, [gameState]);
 
   const handleInteraction = (e: React.MouseEvent | React.TouchEvent, action: ManualAction) => {
     if (meta.is_crashed) return;

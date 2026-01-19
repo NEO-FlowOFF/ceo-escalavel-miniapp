@@ -18,11 +18,11 @@ O Cursor lê automaticamente o `.cursorrules` na raiz do projeto. Este arquivo r
 
 ### Padrões de Código
 
--  **Indentação**: 2 espaços (não tabs)
--  **Encoding**: UTF-8
--  **Line endings**: LF (Unix)
--  **Trailing whitespace**: Remover
--  **Final newline**: Sempre adicionar
+- **Indentação**: 2 espaços (não tabs)
+- **Encoding**: UTF-8
+- **Line endings**: LF (Unix)
+- **Trailing whitespace**: Remover
+- **Final newline**: Sempre adicionar
 
 ### Padrões de Markdown
 
@@ -42,6 +42,7 @@ Conteúdo aqui.
 **Para projetos e READMEs** (use `standards/readme.signature.md`):
 
 ```markdown
+<div align="center">
 ## Contact
 [neo@neoprotocol.space](mailto:neo@neoprotocol.space)
 

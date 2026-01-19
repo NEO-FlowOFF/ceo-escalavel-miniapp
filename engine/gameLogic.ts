@@ -30,8 +30,8 @@ export const calculateManualGain = (action: ManualAction, totalCapitalGenerated:
   return Math.floor(action.capital_gain * multiplier);
 };
 
-export const updateStatus = (puTotal: number): string => {
-  const milestone = [...STATUS_MILESTONES].reverse().find(m => puTotal >= m.pu);
+export const updateStatus = (valuation: number): string => {
+  const milestone = [...STATUS_MILESTONES].reverse().find(m => valuation >= m.pu);
   return milestone ? milestone.label : "Iniciante";
 };
 
@@ -56,4 +56,20 @@ export const checkSingularity = (gameState: GameState): boolean => {
   const pps = calculateTotalPPS(gameState.agents, gameState.inventory);
   const allAutomated = areAllActionsAutomated(gameState.manualActions, gameState.inventory, gameState.agents);
   return allAutomated && pps >= 150; // Aumentado para exigir mais escala
+};
+
+/**
+ * Calcula o Valuation da empresa (em tokens $NEOFLW)
+ * Baseado no Múltiplo de MKT: (PPS * 15x) + (Aceleração por Eficiência de Horas) + (Equity de Capital Acumulado)
+ */
+export const calculateValuation = (gameState: GameState): number => {
+  const pps = calculateTotalPPS(gameState.agents, gameState.inventory);
+  const totalCap = gameState.meta.capital_total_gerado;
+  const hoursSaved = gameState.resources.horas_manuais_eliminadas;
+
+  const ppsMktMultiple = pps * 15; // PPS é o motor principal
+  const efficiencyBonus = hoursSaved * 12; // Valorização por tempo recuperado
+  const equityBase = totalCap / 1000; // 10% do faturamento histórico vira valuation base
+
+  return (ppsMktMultiple + efficiencyBonus + equityBase);
 };

@@ -9,7 +9,8 @@ import {
   isActionAutomated,
   formatHours,
   checkSingularity,
-  calculateManualGain
+  calculateManualGain,
+  calculateValuation
 } from './engine/gameLogic';
 import TopBar from './components/TopBar';
 import Navigation from './components/Navigation';
@@ -20,6 +21,7 @@ import SolutionsTerminal from './components/SolutionsTerminal';
 import OfflineEarningsModal from './components/OfflineEarningsModal';
 import SingularityCertificate from './components/SingularityCertificate';
 import IntroOverlay from './components/IntroOverlay';
+import AgentDetailsModal from './components/AgentDetailsModal';
 import { playAlert, playNotification } from './engine/soundEffects';
 import { useAuth } from './hooks/useAuth';
 
@@ -46,6 +48,24 @@ const App: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
   const [currentView, setCurrentView] = useState<View>('operacao');
   const [toast, setToast] = useState<string | null>(null);
+  const toastTimerRef = useRef<number | null>(null);
+
+  const showToast = useCallback((message: string, duration = 3000) => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    setToast(message);
+    toastTimerRef.current = window.setTimeout(() => {
+      setToast(null);
+      toastTimerRef.current = null;
+    }, duration);
+  }, []);
+
+  const [visualAlert, setVisualAlert] = useState(false);
+
+  const triggerVisualAlert = useCallback(() => {
+    setVisualAlert(true);
+    setTimeout(() => setVisualAlert(false), 800);
+  }, []);
+
   const [soundEnabled, setSoundEnabled] = useState(() => {
     const saved = localStorage.getItem('sound_enabled');
     return saved === null ? true : saved === 'true';
@@ -99,17 +119,81 @@ const App: React.FC = () => {
     const interval = setInterval(() => {
       setGameState(prev => {
         const now = Date.now();
-        let { is_crashed, crash_end_time, singularity_reached, event_social_media_triggered } = prev.meta;
+        let {
+          is_crashed,
+          crash_end_time,
+          singularity_reached,
+          event_social_media_triggered,
+          event_traffic_loss_triggered,
+          event_support_backlog_triggered,
+          event_sdr_fatigue_triggered,
+          event_infra_downtime_triggered
+        } = prev.meta;
+
         let stress = prev.resources.stress;
         let capital = prev.resources.capital;
 
-        if (!event_social_media_triggered && capital >= 150) {
+        const pps = calculateTotalPPS(prev.agents, prev.inventory);
+        const newCapital = capital + pps;
+        const newTotalCapital = prev.meta.capital_total_gerado + pps;
+
+        // 1. Social Media Event
+        if (!event_social_media_triggered && newTotalCapital >= 150) {
           event_social_media_triggered = true;
           capital = Math.max(0, capital - 50);
           stress = Math.min(100, stress + 25);
           triggerHaptic('error');
-          setToast("VULNERABILIDADE: Social Media em hiato. -$50.");
-          setTimeout(() => setToast(null), 4000);
+          triggerVisualAlert();
+          showToast("VULNERABILIDADE: Social Media em hiato. -$50.", 4000);
+        }
+
+        // 2. Support Backlog Event
+        if (!event_support_backlog_triggered && newTotalCapital >= 800) {
+          const hasSupport = prev.inventory.some(i => i.id === 'agent_support_v1');
+          if (!hasSupport) {
+            event_support_backlog_triggered = true;
+            capital = Math.max(0, capital - 150);
+            stress = Math.min(100, stress + 30);
+            triggerHaptic('error');
+            triggerVisualAlert();
+            showToast("BACKLOG: Suporte manual colapsou. -$150.", 4000);
+          }
+        }
+
+        // 3. SDR Fatigue Event
+        if (!event_sdr_fatigue_triggered && newTotalCapital >= 1500) {
+          const hasSDR = prev.inventory.some(i => i.id === 'agent_sdr_v1');
+          if (!hasSDR) {
+            event_sdr_fatigue_triggered = true;
+            capital = Math.max(0, capital - 400);
+            triggerHaptic('error');
+            triggerVisualAlert();
+            showToast("FATIGA: Prospecção manual parou. -$400.", 4000);
+          }
+        }
+
+        // 4. Traffic Loss Event
+        if (!event_traffic_loss_triggered && newTotalCapital >= 3000) {
+          const hasTraffic = prev.inventory.some(i => i.id === 'agent_traffic_v1');
+          if (!hasTraffic) {
+            event_traffic_loss_triggered = true;
+            capital = Math.max(0, capital - 1000);
+            triggerHaptic('error');
+            triggerVisualAlert();
+            showToast("PREJUÍZO: Ads sem gestão. Verba drenada. -$1000.", 4000);
+          }
+        }
+
+        // 5. Infra Downtime Event
+        if (!event_infra_downtime_triggered && newTotalCapital >= 5000) {
+          const hasInfra = prev.inventory.some(i => i.id === 'agent_engineer_v1');
+          if (!hasInfra) {
+            event_infra_downtime_triggered = true;
+            capital = Math.max(0, capital - 2500);
+            triggerHaptic('error');
+            triggerVisualAlert();
+            showToast("DOWNTIME: Bug crítico na infra manual. -$2500.", 5000);
+          }
         }
 
         if (is_crashed && now >= crash_end_time) {
@@ -126,12 +210,16 @@ const App: React.FC = () => {
           is_crashed = true;
           crash_end_time = now + CRASH_DURATION_MS;
           triggerHaptic('error');
+          triggerVisualAlert();
           if (soundEnabled) playAlert();
         }
 
-        const pps = calculateTotalPPS(prev.agents, prev.inventory);
-        const newCapital = capital + pps;
-        const newTotalCapital = prev.meta.capital_total_gerado + pps;
+        // Novo: Cálculo de Valuation no Loop
+        const currentValuation = calculateValuation({
+          ...prev,
+          resources: { ...prev.resources, capital: newCapital, receita_passiva: pps },
+          meta: { ...prev.meta, capital_total_gerado: newTotalCapital }
+        });
 
         if (!singularity_reached && checkSingularity(prev)) {
           singularity_reached = true;
@@ -142,19 +230,23 @@ const App: React.FC = () => {
           ...prev,
           resources: {
             ...prev.resources,
-            capital: newCapital,
+            capital: capital + pps, // capital já inclui deduções de multas, somamos pps do tick
             receita_passiva: pps,
             stress: Math.min(100, stress)
           },
           meta: {
             ...prev.meta,
             capital_total_gerado: newTotalCapital,
-            status: updateStatus(newTotalCapital),
-            snapshot_unlocked: newTotalCapital >= 150000,
+            status: updateStatus(currentValuation),
+            snapshot_unlocked: currentValuation >= 250,
             is_crashed,
             crash_end_time,
             singularity_reached,
-            event_social_media_triggered
+            event_social_media_triggered,
+            event_traffic_loss_triggered,
+            event_support_backlog_triggered,
+            event_sdr_fatigue_triggered,
+            event_infra_downtime_triggered
           },
           lastTick: now
         };
@@ -189,7 +281,7 @@ const App: React.FC = () => {
         };
       });
       triggerHaptic('success');
-      setToast(`ROI: +${agent.economia_diaria_minutos}min/dia recuperados.`);
+      showToast(`ROI: +${agent.economia_diaria_minutos}min/dia recuperados.`);
       return true;
     }
     return false;
@@ -261,7 +353,10 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-full w-full max-w-lg mx-auto bg-[#0a050f] relative overflow-hidden">
+    <div className={`flex flex-col h-full w-full max-w-lg mx-auto bg-[#0a050f] relative overflow-hidden transition-transform duration-100 ${visualAlert || gameState.meta.is_crashed ? 'animate-shake' : ''}`}>
+      {/* Visual Alert Overlay (Flash Vermelho) */}
+      <div className={`fixed inset-0 z-[2000] pointer-events-none transition-opacity duration-300 bg-red-600/20 ${visualAlert ? 'opacity-100' : 'opacity-0'}`} />
+
       {showIntro && (
         <IntroOverlay onComplete={() => {
           setShowIntro(false);
@@ -272,8 +367,23 @@ const App: React.FC = () => {
       {offlineData && <OfflineEarningsModal pu={offlineData.capital} seconds={offlineData.seconds} onClose={() => setOfflineData(null)} />}
       {showSingularity && <SingularityCertificate userName={gameState.meta.user?.name || 'CEO'} onClose={() => setShowSingularity(false)} />}
 
-      <div className={`fixed top-24 left-1/2 -translate-x-1/2 z-[100] transition-all duration-500 transform ${toast ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'}`}>
-        <div className="bg-magenta/90 ios-blur text-white px-6 py-2 rounded-full font-bold text-[10px] uppercase shadow-2xl tracking-widest border border-white/20">
+      {selectedAgentId && currentView === 'agentes' && (
+        (() => {
+          const agent = gameState.agents.find(a => a.id === selectedAgentId);
+          return agent ? (
+            <AgentDetailsModal
+              agent={agent}
+              inventory={gameState.inventory}
+              capital={gameState.resources.capital}
+              onBuy={buyAgent}
+              onClose={() => setSelectedAgentId(null)}
+            />
+          ) : null;
+        })()
+      )}
+      <div className={`fixed bottom-28 left-1/2 -translate-x-1/2 z-[1000] transition-all duration-500 transform ${toast ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
+        <div className="bg-[#130b1a]/90 ios-blur text-white px-5 py-2.5 rounded-full font-bold text-[9px] uppercase shadow-[0_10px_30px_rgba(0,0,0,0.5)] tracking-widest border border-white/10 flex items-center gap-3">
+          <div className="w-1.5 h-1.5 rounded-full bg-magenta animate-pulse" />
           {toast}
         </div>
       </div>
@@ -300,7 +410,7 @@ const App: React.FC = () => {
           />
         )}
         {currentView === 'protocols' && <SolutionsTerminal />}
-        {currentView === 'raiox' && <XRay gameState={gameState} onCopySuccess={setToast} />}
+        {currentView === 'raiox' && <XRay gameState={gameState} onCopySuccess={showToast} />}
       </main>
 
       <Navigation active={currentView} onChange={setCurrentView} />

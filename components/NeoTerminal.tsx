@@ -2,7 +2,9 @@
 import React, { useState, useEffect, useRef, memo } from 'react';
 import { GameState } from '../types';
 import { playTyping, playNotification, playAlert } from '../engine/soundEffects';
-import { calculateAgentCost } from '../engine/gameLogic';
+import { calculateAgentCost, calculateValuation } from '../engine/gameLogic';
+import { AUDITOR_MESSAGES } from '../constants/auditorMessages';
+import { openExternalLink } from '../utils/navigation';
 
 interface NeoTerminalProps {
   gameState: GameState;
@@ -13,81 +15,166 @@ const NEO_AVATAR = "/agent_neo.png";
 
 const NeoTerminal: React.FC<NeoTerminalProps> = ({ gameState, soundEnabled }) => {
   const [displayedText, setDisplayedText] = useState("");
-  const [fullText, setFullText] = useState("Iniciando auditoria de processos... Analisando gargalos.");
+  const [fullText, setFullText] = useState(AUDITOR_MESSAGES.SYSTEM.IDLE_INITIAL);
+  const [activeCta, setActiveCta] = useState<{ label: string, link: string } | null>(null);
   const [isTyping, setIsTyping] = useState(false);
 
-  // Usar refs para comparar estado e evitar triggers desnecessários de mensagens
+  // Refs para controle de memória do Auditor
+  const lastMessageRef = useRef<string>("");
+  const lastIdleSwitchRef = useRef<number>(0);
+  const lastAdviceTimeRef = useRef<number>(0);
+  const socialEventTriggeredRef = useRef(false);
+  const trafficEventTriggeredRef = useRef(false);
+  const supportEventTriggeredRef = useRef(false);
+  const sdrEventTriggeredRef = useRef(false);
+  const infraEventTriggeredRef = useRef(false);
+  const fastGrowthRef = useRef(false);
+  const whaleValuationRef = useRef(false);
+  const burnoutProRef = useRef(0);
   const prevInventoryCount = useRef(gameState.inventory.reduce((acc, i) => acc + i.quantity, 0));
   const prevStatus = useRef(gameState.meta.status);
-  const socialEventTriggeredRef = useRef(false);
 
   const userName = gameState.meta.user?.name || "Operador";
 
   useEffect(() => {
-    let message = "";
     const { resources, inventory, meta, agents } = gameState;
     const totalCap = meta.capital_total_gerado;
-    const capital = resources.capital;
     const stress = resources.stress;
-    const pps = resources.receita_passiva;
     const currentInventoryCount = inventory.reduce((acc, i) => acc + i.quantity, 0);
+    const now = Date.now();
 
-    const nextAgent = agents.find(a => totalCap >= a.desbloqueia_em_capital_total);
-    const nextAgentCost = nextAgent ? calculateAgentCost(nextAgent.custo_base, inventory.find(i => i.id === nextAgent.id)?.quantity || 0) : 0;
+    const currentValuation = calculateValuation(gameState);
+    const playMinutes = (now - meta.start_time) / 1000 / 60;
 
-    // --- Lógica de Gatilhos de Mensagem ---
+    let priorityMessage = "";
+    let isHighPriority = false;
+    let currentCta = null;
+
+    // 1. Mensagens Críticas (Sempre Verificadas)
     if (meta.is_crashed) {
-      message = `SISTEMA OFFLINE. Burnout nível 10. ${userName}, sua infraestrutura biológica falhou. Reinicie ou peça ajuda à rede.`;
-    }
-    else if (meta.event_social_media_triggered && !socialEventTriggeredRef.current) {
-      message = "VULNERABILIDADE: Inconsistência Humana nas redes sociais. Agentes não têm dias ruins.";
+      if (burnoutProRef.current < 2) {
+        priorityMessage = AUDITOR_MESSAGES.CRITICAL.CRASH(userName);
+        burnoutProRef.current += 1;
+      } else {
+        priorityMessage = AUDITOR_MESSAGES.EASTER_EGG.BURNOUT_PRO.text;
+        currentCta = AUDITOR_MESSAGES.EASTER_EGG.BURNOUT_PRO.cta;
+      }
+      isHighPriority = true;
+    } else if (currentValuation > 500 && playMinutes < 3 && !fastGrowthRef.current) {
+      priorityMessage = AUDITOR_MESSAGES.EASTER_EGG.FAST_GROWTH.text;
+      currentCta = AUDITOR_MESSAGES.EASTER_EGG.FAST_GROWTH.cta;
+      fastGrowthRef.current = true;
+      isHighPriority = true;
+    } else if (currentValuation > 10000 && !whaleValuationRef.current) {
+      priorityMessage = AUDITOR_MESSAGES.EASTER_EGG.WHALE_VALUATION.text;
+      currentCta = AUDITOR_MESSAGES.EASTER_EGG.WHALE_VALUATION.cta;
+      whaleValuationRef.current = true;
+      isHighPriority = true;
+    } else if (meta.event_social_media_triggered && !socialEventTriggeredRef.current) {
+      priorityMessage = AUDITOR_MESSAGES.CRITICAL.SOCIAL_VULNERABILITY;
       socialEventTriggeredRef.current = true;
-    }
-    else if (stress > 95) {
-      message = "ALERTA: Seus níveis de cortisol estão fritando o Nexus. Automatize ou colapse.";
-    }
-    else if (currentInventoryCount > prevInventoryCount.current) {
-      message = "REDE EXPANDIDA: A dependência humana diminuiu drasticamente. Agente injetado.";
-      prevInventoryCount.current = currentInventoryCount;
-    }
-    else if (prevStatus.current !== meta.status) {
-      message = `EVOLUÇÃO: Você agora é '${meta.status}'. O mercado teme sua escala.`;
-      prevStatus.current = meta.status;
-    }
-    else if (totalCap === 0) {
-      message = `Cockpit pronto, ${userName}. Diagnóstico: Gargalo Humano Severo.`;
-    }
-    else if (nextAgentCost > 0 && capital > nextAgentCost * 1.5) {
-      message = "Capital ocioso é pecado. Reinvista esse caixa agora.";
-    }
-    else {
-      // Idle messages periodicamente (usando o tempo como seed)
-      const timeSeed = Math.floor(Date.now() / 20000);
-      const idleMessages = [
-        "Processos batem talento todas as vezes.",
-        "Se você ainda clica, você não é o dono, é o gargalo.",
-        "O ROI da automação é infinito.",
-        "Escalabilidade é a arte de remover o humano do caminho.",
-        "Agentes não fazem pausa para café. Isso é FlowOff."
-      ];
-      message = idleMessages[timeSeed % idleMessages.length];
+      isHighPriority = true;
+    } else if (meta.event_traffic_loss_triggered && !trafficEventTriggeredRef.current) {
+      priorityMessage = AUDITOR_MESSAGES.CRITICAL.TRAFFIC_LOSS;
+      trafficEventTriggeredRef.current = true;
+      isHighPriority = true;
+    } else if (meta.event_support_backlog_triggered && !supportEventTriggeredRef.current) {
+      priorityMessage = AUDITOR_MESSAGES.CRITICAL.SUPPORT_BACKLOG;
+      supportEventTriggeredRef.current = true;
+      isHighPriority = true;
+    } else if (meta.event_sdr_fatigue_triggered && !sdrEventTriggeredRef.current) {
+      priorityMessage = AUDITOR_MESSAGES.CRITICAL.SDR_FATIGUE;
+      sdrEventTriggeredRef.current = true;
+      isHighPriority = true;
+    } else if (meta.event_infra_downtime_triggered && !infraEventTriggeredRef.current) {
+      priorityMessage = AUDITOR_MESSAGES.CRITICAL.INFRA_DOWNTIME;
+      infraEventTriggeredRef.current = true;
+      isHighPriority = true;
+    } else if (stress > 95) {
+      priorityMessage = AUDITOR_MESSAGES.CRITICAL.BURNOUT_WARNING;
+      isHighPriority = true;
     }
 
-    if (message && message !== fullText) {
-      setFullText(message);
+    // 2. Mudanças de Estado (Gatilhos Únicos)
+    else if (currentInventoryCount > prevInventoryCount.current) {
+      priorityMessage = AUDITOR_MESSAGES.PROGRESS.AGENT_INJECTED;
+      prevInventoryCount.current = currentInventoryCount;
+    } else if (prevStatus.current !== meta.status) {
+      priorityMessage = AUDITOR_MESSAGES.PROGRESS.STATUS_EVOLUTION(meta.status);
+      prevStatus.current = meta.status;
+    } else if (totalCap === 0 && lastMessageRef.current === "") {
+      priorityMessage = AUDITOR_MESSAGES.SYSTEM.INITIAL(userName);
+    }
+
+    // 3. Conselhos Contextuais (Com Cooldown de 60s)
+    else {
+      const nextAgent = agents.find(a => totalCap >= a.desbloqueia_em_capital_total);
+      const nextAgentCost = nextAgent ? calculateAgentCost(nextAgent.custo_base, inventory.find(i => i.id === nextAgent.id)?.quantity || 0) : 0;
+
+      const isAdviceCooldownOver = now - lastAdviceTimeRef.current > 60000;
+
+      if (nextAgentCost > 0 && resources.capital > nextAgentCost * 2 && isAdviceCooldownOver) {
+        priorityMessage = AUDITOR_MESSAGES.ADVICE.IDLE_CAPITAL;
+        lastAdviceTimeRef.current = now;
+      }
+    }
+
+    // 4. Lógica de Troca de Mensagem
+    const shouldUpdateIdle = now - lastIdleSwitchRef.current > 25000;
+
+    if (priorityMessage && priorityMessage !== lastMessageRef.current) {
+      // Se houver uma mensagem de prioridade NOVA, exibe imediatamente
+      setFullText(priorityMessage);
       setDisplayedText("");
+
+      if (currentCta) {
+        const isTelegram = gameState.meta.user?.type === 'telegram';
+        const finalLink = isTelegram
+          ? currentCta.tg
+          : currentCta.wa.replace('{{NAME}}', encodeURIComponent(userName));
+
+        setActiveCta({
+          label: currentCta.label,
+          link: finalLink
+        });
+      } else {
+        setActiveCta(null);
+      }
+
+      lastMessageRef.current = priorityMessage;
       if (soundEnabled) {
-        if (stress > 85 || meta.is_crashed) playAlert();
+        if (isHighPriority) playAlert();
         else playNotification();
       }
+    } else if (shouldUpdateIdle) {
+      // Se não houver prioridade NOVA, mas for hora de atualizar, roda pensamentos IDLE
+      const idlePool = AUDITOR_MESSAGES.IDLE_THOUGHTS;
+      let nextIdle = lastMessageRef.current;
+
+      while (nextIdle === lastMessageRef.current) {
+        nextIdle = idlePool[Math.floor(Math.random() * idlePool.length)];
+      }
+
+      setFullText(nextIdle);
+      setDisplayedText("");
+      setActiveCta(null);
+      lastMessageRef.current = nextIdle;
+      lastIdleSwitchRef.current = now;
+      if (soundEnabled) playNotification();
     }
   }, [
     gameState.meta.status,
     gameState.meta.is_crashed,
     gameState.meta.event_social_media_triggered,
+    gameState.meta.event_traffic_loss_triggered,
+    gameState.meta.event_support_backlog_triggered,
+    gameState.meta.event_sdr_fatigue_triggered,
+    gameState.meta.event_infra_downtime_triggered,
     gameState.inventory.length,
     gameState.resources.capital,
-    userName
+    userName,
+    soundEnabled,
+    gameState // Adicionado para garantir re-execução em mudanças de capital total para easter eggs
   ]);
 
   useEffect(() => {
@@ -128,6 +215,18 @@ const NeoTerminal: React.FC<NeoTerminalProps> = ({ gameState, soundEnabled }) =>
             {displayedText}
             <span className={`inline-block w-1.5 h-3 bg-magenta ml-1 align-middle ${isTyping ? 'opacity-100' : 'opacity-0'}`}></span>
           </p>
+
+          {activeCta && !isTyping && (
+            <div className="mt-3 animate-float-up">
+              <button
+                onClick={() => openExternalLink(activeCta.link)}
+                className="inline-flex items-center gap-2 px-3 py-1.5 bg-magenta/20 border border-magenta/40 rounded-full text-[9px] font-black text-magenta uppercase tracking-widest hover:bg-magenta hover:text-white transition-all animate-pulse"
+              >
+                {activeCta.label}
+                <div className="w-1 h-1 rounded-full bg-magenta animate-ping" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

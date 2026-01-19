@@ -6,6 +6,11 @@ export const TOKEN_CONTRACT = "0x59aa4EaE743d608FBDd4205ebA59b38DCA755Dd2";
 export const SCAN_LINK = "https://polygonscan.com/token/0x59aa4EaE743d608FBDd4205ebA59b38DCA755Dd2";
 export const POLYGON_PURPLE = "#8247E5";
 
+export const updateStatus = (valuation: number): string => {
+  const milestone = [...STATUS_MILESTONES].reverse().find(m => valuation >= m.pu);
+  return milestone ? milestone.label : "Iniciante";
+};
+
 export const INITIAL_MANUAL_ACTIONS: ManualAction[] = [
   {
     id: "acao_responder_cliente",
@@ -84,6 +89,16 @@ export const INITIAL_AGENTS: Agent[] = [
     desbloqueia_em_capital_total: 2500
   },
   {
+    id: "agent_traffic_v1",
+    nome: "Gestor de Tráfego IA",
+    custo_base: 2200,
+    receita_passiva_segundo: 12.0,
+    reduz_cliques: [],
+    economia_diaria_minutos: 90,
+    descricao_curta: "Monitoramento de ROAS 24/7. Zero desperdício em Ads.",
+    desbloqueia_em_capital_total: 1200
+  },
+  {
     id: "agent_blockchain_node",
     nome: "Auditor On-Chain",
     custo_base: 15000,
@@ -115,16 +130,21 @@ export const INITIAL_GAME_STATE: GameState = {
     is_crashed: false,
     crash_end_time: 0,
     singularity_reached: false,
-    event_social_media_triggered: false
+    event_social_media_triggered: false,
+    event_traffic_loss_triggered: false,
+    event_support_backlog_triggered: false,
+    event_sdr_fatigue_triggered: false,
+    event_infra_downtime_triggered: false,
+    start_time: Date.now()
   },
   lastTick: Date.now()
 };
 
 export const STATUS_MILESTONES = [
   { pu: 0, label: "GARGALO HUMANO" },
-  { pu: 1000, label: "Operador Solitário" },
-  { pu: 10000, label: "Gestor de Agentes" },
-  { pu: 50000, label: "CEO Escalável" },
-  { pu: 250000, label: "Arquiteto de Sistemas" },
-  { pu: 1000000, label: "Empresa Autônoma" }
+  { pu: 100, label: "Operador Solitário" },
+  { pu: 500, label: "Gestor de Agentes" },
+  { pu: 2500, label: "CEO Escalável" },
+  { pu: 10000, label: "Arquiteto de Sistemas" },
+  { pu: 50000, label: "Empresa Autônoma" }
 ];

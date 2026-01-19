@@ -48,6 +48,11 @@ export interface GameMeta {
   crash_end_time: number;
   singularity_reached: boolean;
   event_social_media_triggered: boolean;
+  event_traffic_loss_triggered: boolean;
+  event_support_backlog_triggered: boolean;
+  event_sdr_fatigue_triggered: boolean;
+  event_infra_downtime_triggered: boolean;
+  start_time: number;
   user?: UserProfile;
 }
 
