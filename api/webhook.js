@@ -42,7 +42,7 @@ export default async function handler(req, res) {
     } else if (text === '/help') {
         responseText = `**PROTOCOLO DE SUPORTE**\n\n` +
             `Se você encontrou um bug no console ou precisa de diagnóstico real para sua infraestrutura:\n\n` +
-            `🌐 [Site Oficial](https://neoflw.com)\n` +
+            `🌐 [Site Oficial](https://flowoff.xyz)\n` +
             `💬 [Suporte NEØ](https://t.me/neomello)\n\n` +
             `Use o botão abaixo para retornar à operação.`;
         replyMarkup = {
