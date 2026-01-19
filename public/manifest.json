@@ -1,0 +1,20 @@
+{
+    "name": "Agente Flow",
+    "short_name": "AgenteFlow",
+    "icons": [
+        {
+            "src": "/android-icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/icon-512.webp",
+            "sizes": "512x512",
+            "type": "image/webp"
+        }
+    ],
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#0a050f",
+    "background_color": "#0a050f"
+}
