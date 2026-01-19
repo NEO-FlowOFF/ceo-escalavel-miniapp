@@ -41,9 +41,9 @@ export default async function handler(req, res) {
         };
     } else if (text === '/help') {
         responseText = `**PROTOCOLO DE SUPORTE**\n\n` +
-            `Se você encontrou um bug no console ou precisa de diagnóstico real para sua infraestrutura:\n\n` +
-            `🌐 [Site Oficial](https://flowoff.xyz)\n` +
-            `💬 [Suporte NEØ](https://t.me/neomello)\n\n` +
+            `Se você precisa de diagnósticos reais para escalar sua operação fora da simulação:\n\n` +
+            `🚀 [Agência FlowOff](https://flowoff.xyz)\n` +
+            `💬 [Suporte Direto](https://t.me/neomello)\n\n` +
             `Use o botão abaixo para retornar à operação.`;
         replyMarkup = {
             inline_keyboard: [
