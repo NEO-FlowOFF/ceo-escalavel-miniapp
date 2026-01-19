@@ -37,7 +37,7 @@ O Telegram não hospeda seu código. Ele apenas abre sua URL dentro de uma Webvi
 ### Tipos de Abertura
 1.  **Menu Button:** O usuário abre o bot e clica no botão fixo.
 2.  **Inline Mode:** Você pode configurar para que o app seja compartilhado em qualquer chat (ex: `@seubot` em um grupo).
-3.  **Direct Link:** Você pode enviar um link tipo `t.me/seubot/appname` que abre o app direto.
+3.  **Direct Link:** Você pode enviar um link tipo `https://t.me/AgenteFlow_Bot` que abre o app direto.
 
 ### Obrigações do Telegram
 *   **Privacy Policy:** É obrigatório ter um link de política de privacidade acessível no bot se você for coletar dados do usuário ou usar o `initDataUnsafe`.

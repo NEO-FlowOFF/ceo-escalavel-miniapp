@@ -60,6 +60,23 @@
     -webkit-overflow-scrolling: touch;
     padding-bottom: calc(80px + env(safe-area-inset-bottom));
   }
+
+  /* Classes de cor customizadas */
+  .bg-magenta {
+    background-color: var(--magenta);
+  }
+
+  .text-magenta {
+    color: var(--magenta);
+  }
+
+  .border-magenta {
+    border-color: var(--magenta);
+  }
+
+  .bg-dark {
+    background-color: var(--bg-dark);
+  }
 }
 
 /* Custom animations */
