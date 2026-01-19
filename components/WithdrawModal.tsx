@@ -11,7 +11,18 @@ interface WithdrawModalProps {
 
 const WithdrawModal: React.FC<WithdrawModalProps> = ({ valuation, userName, onClose }) => {
     const handleWithdraw = () => {
-        const text = encodeURIComponent(`Olá Mellø, sou o ${userName}. Cheguei ao topo do game e quero protocolar o Saque Real do meu Equity de ${valuation} $NEOFLW.`);
+        const valueNum = parseFloat(valuation) || 0;
+        let dynamicMsg = "";
+
+        if (valueNum === 0) {
+            dynamicMsg = `Olá Mellø, sou o ${userName}. Ainda estou no Zero-To-One, mas já entendi o jogo. Como transformo esse potencial em lucro real com a FlowOff?`;
+        } else if (valueNum < 1000) {
+            dynamicMsg = `Olá Mellø, sou o ${userName}. Já gerei $${valuation} de Equity Digital no Agent Flow. Quero validar minha frota de agentes e descobrir como sacar lucro real!`;
+        } else {
+            dynamicMsg = `ALERTA DE BALEIA: Olá Mellø, aqui é o ${userName}. Bati o topo do game com $${valuation}M de valuation. Estou pronto para protocolar meu Saque Real e escalar meu ecossistema.`;
+        }
+
+        const text = encodeURIComponent(dynamicMsg);
         openExternalLink(`https://t.me/neomello?text=${text}`);
     };
     return (
