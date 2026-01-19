@@ -4,21 +4,21 @@ Este guia cobre o processo técnico e burocrático para transformar seu código 
 
 ## 1. Configuração no BotFather [ ]
 
-O coração do seu Mini App é um bot. Se você já tem o bot, pule para o passo "Configuring Web App".
+O coração do seu Mini App é um bot. Siga estes passos no [@BotFather](https://t.me/botfather):
 
-1.  **Criar o Bot:** Vá ao [@BotFather](https://t.me/botfather) e use `/newbot`.
+1.  **Criar o Bot:** Use `/newbot` e escolha o nome: **Agente Flow**.
 2.  **Configurar o Web App:**
     *   Use o comando `/setwebapp`.
     *   Selecione seu bot.
     *   O BotFather pedirá a **URL de Produção**: `https://agenteflow.vercel.app/`
-    *   *Nota: O Telegram exige HTTPS para Mini Apps.*
+    *   *Nota: O Telegram exige HTTPS.*
 3.  **Botão de Menu:**
     *   Use `/setmenubutton`.
-    *   Isso fará com que um botão apareça ao lado do campo de digitação do chat, abrindo seu app instantaneamente.
-4.  **Configurações de Design:**
-    *   `/setuserpic`: Foto de perfil do bot.
-    *   `/setdescription`: Texto que aparece antes do usuário clicar no botão Start.
-    *   `/setabouttext`: Texto que aparece no perfil do bot.
+    *   Configure o texto do botão como: **Jogar Agora ⦿**
+4.  **Configurações de Design (Essencial):**
+    *   `/setuserpic`: Suba o ícone oficial (ex: `apple-icon-180x180.png`).
+    *   `/setdescription`: Sugestão: *"Pare de ser o gargalo. Torne-se o Arquiteto. Simule sua frota de agentes autônomos e gere valuation em $NEOFLW."*
+    *   `/setabouttext`: Sugestão: *"Agente Flow: O console de comando oficial da NEØFLW para CEOs escaláveis."*
 
 ## 2. Requisitos de Hospedagem [ ]
 
