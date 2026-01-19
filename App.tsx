@@ -86,7 +86,7 @@ const App: React.FC = () => {
     return () => telegram.settingsButton.offClick(handleSettings);
   }, []);
 
-  const showToast = useCallback((message: string, duration = 3000) => {
+  const showToast = useCallback((message: string, duration = 5000) => {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     setToast(message);
     toastTimerRef.current = window.setTimeout(() => {
@@ -171,7 +171,7 @@ const App: React.FC = () => {
           stress = Math.min(100, stress + 25);
           triggerHaptic('error');
           triggerVisualAlert();
-          showToast("VULNERABILIDADE: Social Media em hiato. -$50.", 4000);
+          showToast("VULNERABILIDADE: Social Media em hiato. -$50.", 8000);
         }
 
         // 2. Support Backlog Event
@@ -183,7 +183,7 @@ const App: React.FC = () => {
             stress = Math.min(100, stress + 30);
             triggerHaptic('error');
             triggerVisualAlert();
-            showToast("BACKLOG: Suporte manual colapsou. -$150.", 4000);
+            showToast("BACKLOG: Suporte manual colapsou. -$150.", 8000);
           }
         }
 
@@ -195,7 +195,7 @@ const App: React.FC = () => {
             capital = Math.max(0, capital - 400);
             triggerHaptic('error');
             triggerVisualAlert();
-            showToast("FATIGA: Prospecção manual parou. -$400.", 4000);
+            showToast("FATIGA: Prospecção manual parou. -$400.", 8000);
           }
         }
 
@@ -207,7 +207,7 @@ const App: React.FC = () => {
             capital = Math.max(0, capital - 1000);
             triggerHaptic('error');
             triggerVisualAlert();
-            showToast("PREJUÍZO: Ads sem gestão. Verba drenada. -$1000.", 4000);
+            showToast("PREJUÍZO: Ads sem gestão. Verba drenada. -$1000.", 9000);
           }
         }
 
@@ -219,7 +219,7 @@ const App: React.FC = () => {
             capital = Math.max(0, capital - 2500);
             triggerHaptic('error');
             triggerVisualAlert();
-            showToast("DOWNTIME: Bug crítico na infra manual. -$2500.", 5000);
+            showToast("DOWNTIME: Bug crítico na infra manual. -$2500.", 10000);
           }
         }
 
