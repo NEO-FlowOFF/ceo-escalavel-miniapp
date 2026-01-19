@@ -91,7 +91,7 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
           </div>
           <div>
             <h2 className="text-[9px] font-bold text-magenta uppercase tracking-[0.2em] opacity-80 leading-none mb-1">Nexus v2.5</h2>
-            <h1 className="text-xl font-black text-white uppercase italic tracking-tighter">NEØ FlowOFF CONSOLE</h1>
+            <h1 className="text-xl font-black text-white uppercase italic tracking-tighter">AGENTE FLOW CONSOLE</h1>
           </div>
         </div>
       </header>

@@ -8,7 +8,7 @@ interface IntroOverlayProps {
 }
 
 const INTRO_SCRIPT = [
-  { text: "> INICIANDO PROTOCOLO NEØ FlowOFF v2.5...", type: 'system' },
+  { text: "> INICIANDO PROTOCOLO Agente Flow v2.5...", type: 'system' },
   { text: "> ESCANEANDO SISTEMA ATUAL... ERRO: DEPENDÊNCIA HUMANA DETECTADA.", type: 'error' },
   { text: "> INSTRUÇÃO 1: Na Dashboard, clique nos BOTÕES DE AÇÃO para gerar capital.", type: 'instruction' },
   { text: "> INSTRUÇÃO 2: Use a aba AGENTES para automatizar e evitar o Colapso (Burnout).", type: 'instruction' }
@@ -93,11 +93,11 @@ const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
 
       {/* Noise Visual nos Cantos */}
       <div className="absolute top-4 left-4 font-mono text-[8px] text-magenta/20 select-none">
-        ADDR: 0x59aa4EaE743d6...<br/>
+        ADDR: 0x59aa4EaE743d6...<br />
         MEM_LOAD: 88.4%
       </div>
       <div className="absolute top-4 right-4 font-mono text-[8px] text-magenta/20 text-right select-none">
-        LATENCY: 12ms<br/>
+        LATENCY: 12ms<br />
         ENCRYPTION: AES-256
       </div>
 
@@ -123,11 +123,10 @@ const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
             return (
               <div key={idx} className="flex gap-3 items-start">
                 <span className="text-magenta/40 mt-1 shrink-0">{'>'}</span>
-                <p className={`text-sm md:text-base leading-relaxed tracking-tight font-medium ${
-                  config.type === 'error' ? 'text-magenta font-black text-glow' :
-                  config.type === 'instruction' ? 'text-cyan-400/90' :
-                  'text-gray-300'
-                }`}>
+                <p className={`text-sm md:text-base leading-relaxed tracking-tight font-medium ${config.type === 'error' ? 'text-magenta font-black text-glow' :
+                    config.type === 'instruction' ? 'text-cyan-400/90' :
+                      'text-gray-300'
+                  }`}>
                   {line}
                   {config.type === 'instruction' && idx < currentLineIdx && (
                     <CheckCircle2 size={12} className="inline ml-2 text-cyan-400 animate-pulse" />
@@ -179,7 +178,8 @@ const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
         </div>
       </div>
 
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @keyframes scan {
           0% { transform: translateX(-100%); }
           50% { transform: translateX(400%); }

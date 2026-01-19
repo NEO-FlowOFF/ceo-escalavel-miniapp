@@ -78,7 +78,7 @@ const SolutionsTerminal: React.FC<SolutionsTerminalProps> = ({ userName = 'CEO' 
       <header className="px-1 space-y-2">
         <div className="flex items-center gap-2 text-magenta opacity-80">
           <ShieldCheck size={14} />
-          <h2 className="text-[10px] font-black uppercase tracking-[0.2em]">NEØ FlowOFF Technical Manifest</h2>
+          <h2 className="text-[10px] font-black uppercase tracking-[0.2em]">Agente Flow Technical Manifesto</h2>
         </div>
         <h1 className="text-3xl font-black tracking-tight text-white uppercase italic text-glow">Protocols</h1>
         <p className="text-xs text-gray-400 font-medium leading-relaxed max-w-[95%]">
