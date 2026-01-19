@@ -1,4 +1,4 @@
-@import "tailwindcss";
+/* Estilos customizados - Tailwind via CDN no index.html */
 
 :root {
   --magenta: #ff00ff;
