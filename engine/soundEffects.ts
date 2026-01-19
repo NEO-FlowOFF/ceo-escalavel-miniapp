@@ -1,18 +1,10 @@
 
 let audioCtx: AudioContext | null = null;
-let audioUnlocked = false;
 
+// Get AudioContext only if already initialized
 const getCtx = (): AudioContext | null => {
-  if (!audioCtx) {
-    try {
-      audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    } catch (e) {
-      console.warn('AudioContext not supported');
-      return null;
-    }
-  }
+  if (!audioCtx) return null;
 
-  // Resume if suspended (required after user gesture)
   if (audioCtx.state === 'suspended') {
     audioCtx.resume().catch(() => { });
   }
@@ -20,26 +12,30 @@ const getCtx = (): AudioContext | null => {
   return audioCtx;
 };
 
-// Unlock audio on first user interaction
-const unlockAudio = () => {
-  if (audioUnlocked) return;
+// Create and unlock AudioContext on first user gesture
+const initAudioContext = () => {
+  if (audioCtx) return; // Already initialized
 
-  const ctx = getCtx();
-  if (ctx && ctx.state === 'suspended') {
-    ctx.resume().then(() => {
-      audioUnlocked = true;
-    }).catch(() => { });
-  } else {
-    audioUnlocked = true;
+  try {
+    audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume().catch(() => { });
+    }
+  } catch (e) {
+    // AudioContext not supported
   }
 };
 
-// Listen for first user gesture to unlock audio
+// Listen for first user gesture to create AudioContext
 if (typeof document !== 'undefined') {
-  ['click', 'touchstart', 'keydown'].forEach(event => {
-    document.addEventListener(event, unlockAudio, { once: true, passive: true });
-  });
+  const events = ['click', 'touchstart', 'keydown'];
+  const handler = () => {
+    initAudioContext();
+    events.forEach(e => document.removeEventListener(e, handler));
+  };
+  events.forEach(e => document.addEventListener(e, handler, { passive: true }));
 }
+
 
 
 /**
