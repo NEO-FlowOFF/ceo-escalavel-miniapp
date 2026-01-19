@@ -1,12 +1,46 @@
 
 let audioCtx: AudioContext | null = null;
+let audioUnlocked = false;
 
-const getCtx = () => {
+const getCtx = (): AudioContext | null => {
   if (!audioCtx) {
-    audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    try {
+      audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    } catch (e) {
+      console.warn('AudioContext not supported');
+      return null;
+    }
   }
+
+  // Resume if suspended (required after user gesture)
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume().catch(() => { });
+  }
+
   return audioCtx;
 };
+
+// Unlock audio on first user interaction
+const unlockAudio = () => {
+  if (audioUnlocked) return;
+
+  const ctx = getCtx();
+  if (ctx && ctx.state === 'suspended') {
+    ctx.resume().then(() => {
+      audioUnlocked = true;
+    }).catch(() => { });
+  } else {
+    audioUnlocked = true;
+  }
+};
+
+// Listen for first user gesture to unlock audio
+if (typeof document !== 'undefined') {
+  ['click', 'touchstart', 'keydown'].forEach(event => {
+    document.addEventListener(event, unlockAudio, { once: true, passive: true });
+  });
+}
+
 
 /**
  * Som de digitação: Um "click" tátil e seco, inspirado em teclados mecânicos premium.
@@ -14,6 +48,7 @@ const getCtx = () => {
  */
 export const playTyping = () => {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
 
   const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.02, ctx.sampleRate);
@@ -46,6 +81,7 @@ export const playTyping = () => {
  */
 export const playNotification = () => {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
 
   const playTone = (freq: number, delay: number, vol: number) => {
@@ -81,6 +117,7 @@ export const playNotification = () => {
  */
 export const playAlert = () => {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
 
   const osc = ctx.createOscillator();
@@ -110,6 +147,7 @@ export const playAlert = () => {
  */
 export const playDeploy = () => {
   const ctx = getCtx();
+  if (!ctx) return;
   const now = ctx.currentTime;
 
   // Camada 1: Sub Bass (Impacto)
