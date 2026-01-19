@@ -116,7 +116,7 @@ const TopBar: React.FC<TopBarProps> = ({ pu, pps, stress, soundEnabled, onToggle
         {/* Console Header */}
         <div className="flex items-center gap-3 mb-3">
           <div className="w-10 h-10 rounded-xl overflow-hidden border border-magenta/20 shadow-lg shadow-magenta/5">
-            <img src="https://res.cloudinary.com/dqhheouq9/image/upload/v1768785508/agent_neo_rfismf.png" alt="Agent Flow Logo" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = '/agent_neo.png'; }} />
+            <img src="https://res.cloudinary.com/dqhheouq9/image/upload/v1767168000/flowoff/public/icon-512.webp" alt="Agent Flow Logo" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = '/icon-512.webp'; }} />
           </div>
           <div>
             <h2 className="text-[8px] font-bold text-magenta uppercase tracking-[0.15em] opacity-80 leading-none mb-0.5">System Flow v2.5</h2>
