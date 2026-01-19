@@ -3,10 +3,8 @@
 :root {
   --magenta: #ff00ff;
   --bg-dark: #0a050f;
-}
-
-@theme {
-  --color-magenta: var(--magenta);
+  --safe-area-inset-top: env(safe-area-inset-top);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom);
 }
 
 @layer base {
