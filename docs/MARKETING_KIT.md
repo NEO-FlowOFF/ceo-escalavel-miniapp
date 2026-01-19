@@ -28,14 +28,14 @@
 > 
 > O Agente Flow acabou de ser liberado no Telegram. Simule sua escala, elimine seus gargalos e veja seu valuation em $NEOFLW decolar. 
 > 
-> Tente alcançar a Singularidade: [LINK_DO_BOT] ⦿ #NEOFLW #AI #GlobalSystems
+> Tente alcançar a Singularidade: https://t.me/AgenteFlow_Bot ⦿ #NEOFLW #AI #GlobalSystems
 
 **Opção 2 (O resultado):**
 > +40 horas recuperadas por dia. 0 funcionários humanos. 
 > Escalei minha operação pro nível "Arquiteto de Sistemas" no Agente Flow. 
 > 
 > IA não é sobre chat. É sobre margem de lucro. 
-> Veja meu Raio-X de Valuation: https://agenteflow.vercel.app/ ⦿
+> Veja meu Raio-X de Valuation: https://t.me/AgenteFlow_Bot ⦿
 
 ## Canal: Grupos de Empreendedorismo/Web3 (Telegram) - Foco em Ganância/Escala
 > 🚀 **O fim do trabalho braçal chegou.**
@@ -48,14 +48,14 @@
 > 
 > Você consegue rodar uma empresa de 7 dígitos sem dar um único clique manual?
 > 
-> **Teste agora:** https://agenteflow.vercel.app/
+> **Teste agora:** https://t.me/AgenteFlow_Bot
 
 ## Canal: WhatsApp (Direto para Clientes/Leads) - Foco em Consultoria
 > Fala [Nome], beleza? Acabei de lançar o **Agente Flow**, um Mini App no Telegram que simula o que eu faço na NEØFLW: tirar o empresário do operacional e colocar a IA pra rodar a casa.
 >
 > Dá uma olhada lá, tenta chegar no nível de "CEO Escalável". Se você curtir a lógica, o app tem um botão pra gente agendar um diagnóstico da sua infra real. ⦿
 >
-> https://agenteflow.vercel.app/
+> https://t.me/AgenteFlow_Bot
 
 ---
 
