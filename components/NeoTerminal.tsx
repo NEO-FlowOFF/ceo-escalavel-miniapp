@@ -11,7 +11,10 @@ interface NeoTerminalProps {
   soundEnabled: boolean;
 }
 
-const NEO_AVATAR = "/agent_neo.png";
+const NEO_AVATAR = {
+  primary: "https://res.cloudinary.com/dqhheouq9/image/upload/v1768785508/agent_neo_rfismf.png",
+  fallback: "/agent_neo.png"
+};
 
 const NeoTerminal: React.FC<NeoTerminalProps> = ({ gameState, soundEnabled }) => {
   const [displayedText, setDisplayedText] = useState("");
@@ -197,9 +200,10 @@ const NeoTerminal: React.FC<NeoTerminalProps> = ({ gameState, soundEnabled }) =>
       <div className={`relative bg-[#0d0714]/90 ios-blur border rounded-[28px] p-5 flex gap-4 items-center border-white/10 overflow-hidden`}>
         <div className="w-12 h-12 flex-shrink-0 relative">
           <img
-            src={NEO_AVATAR}
+            src={NEO_AVATAR.primary}
             alt="Neo"
             className={`w-full h-full object-cover rounded-xl grayscale-[0.5] ${gameState.meta.is_crashed ? 'hue-rotate-[300deg]' : ''}`}
+            onError={(e) => { (e.target as HTMLImageElement).src = NEO_AVATAR.fallback; }}
           />
           <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-[#0d0714] ${gameState.meta.is_crashed ? 'bg-red-600' : 'bg-green-500'
             }`}></div>
