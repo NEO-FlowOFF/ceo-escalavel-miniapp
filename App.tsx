@@ -363,6 +363,8 @@ const App: React.FC = () => {
     }));
   };
 
+  const isLowPerf = useMemo(() => telegram.isLowPerformanceDevice(), []);
+
   if (authLoading) {
     return (
       <div className="h-full w-full flex flex-col items-center justify-center bg-[#0a050f] text-magenta">
@@ -371,8 +373,6 @@ const App: React.FC = () => {
       </div>
     );
   }
-
-  const isLowPerf = useMemo(() => telegram.isLowPerformanceDevice(), []);
 
   return (
     <div className={`flex flex-col h-full w-full max-w-lg mx-auto bg-[#0a050f] relative overflow-hidden transition-transform duration-100 ${(visualAlert || gameState.meta.is_crashed) && !isLowPerf ? 'animate-shake' : ''}`}>
