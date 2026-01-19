@@ -84,18 +84,6 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
         ))}
       </div>
 
-      <header className="flex items-center justify-between px-1">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl overflow-hidden border border-magenta/20 shadow-lg shadow-magenta/5">
-            <img src={LOGO_URL} alt="NEØ FlowOFF Logo" className="w-full h-full object-cover" />
-          </div>
-          <div>
-            <h2 className="text-[9px] font-bold text-magenta uppercase tracking-[0.2em] opacity-80 leading-none mb-1">System Flow v2.5</h2>
-            <h1 className="text-xl font-black text-white uppercase italic tracking-tighter">AGENT FLOW CONSOLE</h1>
-          </div>
-        </div>
-      </header>
-
       <NeoTerminal gameState={gameState} soundEnabled={soundEnabled} />
 
       <div className="grid grid-cols-2 gap-3">

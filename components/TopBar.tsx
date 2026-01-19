@@ -91,10 +91,10 @@ const TopBar: React.FC<TopBarProps> = ({ pu, pps, stress, soundEnabled, onToggle
               {content.desc}
             </p>
             <div className="p-4 bg-white/5 rounded-2xl border border-white/5 italic">
-               <p className="text-[11px] text-gray-400 leading-relaxed">
-                 <span className="text-magenta font-black uppercase tracking-widest block mb-1 text-[9px] not-italic">Impacto no ROI:</span>
-                 {content.impact}
-               </p>
+              <p className="text-[11px] text-gray-400 leading-relaxed">
+                <span className="text-magenta font-black uppercase tracking-widest block mb-1 text-[9px] not-italic">Impacto no ROI:</span>
+                {content.impact}
+              </p>
             </div>
           </div>
 
@@ -106,92 +106,105 @@ const TopBar: React.FC<TopBarProps> = ({ pu, pps, stress, soundEnabled, onToggle
 
   return (
     <>
-      <div className={`sticky top-0 z-[60] ios-blur border-b pt-[calc(10px+env(safe-area-inset-top))] pb-3 px-5 flex items-end justify-between gap-2 transition-all duration-300 ${
-        isCritical
+      <div className={`sticky top-0 z-[60] ios-blur border-b pt-[calc(10px+env(safe-area-inset-top))] pb-3 px-5 transition-all duration-300 ${isCritical
         ? 'bg-red-950/40 border-red-500 shadow-[0_0_40px_rgba(255,0,0,0.3)]'
         : isStressed
-        ? 'bg-red-900/10 border-red-600/50'
-        : 'bg-[#0a050f]/60 border-[#ffffff10]'
-      }`}>
+          ? 'bg-red-900/10 border-red-600/50'
+          : 'bg-[#0a050f]/60 border-[#ffffff10]'
+        }`}>
 
-        {/* Metric 1: CAPITAL */}
-        <div
-          className={`flex flex-col items-start flex-1 cursor-pointer select-none transition-all duration-200 ${pressingMetric === 'capital' ? 'scale-90 brightness-150' : ''}`}
-          onTouchStart={() => handleStart('capital')}
-          onTouchEnd={handleEnd}
-          onMouseDown={() => handleStart('capital')}
-          onMouseUp={handleEnd}
-          onMouseLeave={handleEnd}
-        >
-          <div className="flex items-center gap-1 text-magenta mb-0.5 opacity-90">
-            <DollarSign size={10} strokeWidth={3} />
-            <span className="text-[8px] font-black uppercase tracking-widest">Capital</span>
+        {/* Console Header */}
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-10 h-10 rounded-xl overflow-hidden border border-magenta/20 shadow-lg shadow-magenta/5">
+            <img src="https://res.cloudinary.com/dqhheouq9/image/upload/v1768785508/agent_neo_rfismf.png" alt="Agent Flow Logo" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = '/agent_neo.png'; }} />
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="font-mono text-base font-extrabold tracking-tight">${Math.floor(pu).toLocaleString()}</span>
-            {pressingMetric === 'capital' && <Info size={10} className="text-magenta animate-pulse" />}
+          <div>
+            <h2 className="text-[8px] font-bold text-magenta uppercase tracking-[0.15em] opacity-80 leading-none mb-0.5">System Flow v2.5</h2>
+            <h1 className="text-sm font-black text-white uppercase italic tracking-tight">AGENT FLOW CONSOLE</h1>
           </div>
         </div>
 
-        {/* Metric 2: PPS (Receita/s) */}
-        <div
-          className={`flex flex-col items-center flex-1 cursor-pointer select-none transition-all duration-200 ${pressingMetric === 'pps' ? 'scale-90 brightness-150' : ''}`}
-          onTouchStart={() => handleStart('pps')}
-          onTouchEnd={handleEnd}
-          onMouseDown={() => handleStart('pps')}
-          onMouseUp={handleEnd}
-          onMouseLeave={handleEnd}
-        >
-          <div className="flex items-center gap-1 text-cyan-400 mb-0.5 opacity-90">
-            <TrendingUp size={10} strokeWidth={3} />
-            <span className="text-[8px] font-black uppercase tracking-widest">Profit/s</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="font-mono text-base font-extrabold tracking-tight text-white/90">
-              ${pps.toFixed(1)}
-            </span>
-            {pressingMetric === 'pps' && <Info size={10} className="text-cyan-400 animate-pulse" />}
-          </div>
-        </div>
+        {/* Metrics Row */}
+        <div className="flex items-end justify-between gap-2">
 
-        {/* Metric 3: BURNOUT (Stress) */}
-        <div
-          className={`flex flex-col items-end flex-1 cursor-pointer select-none transition-all duration-200 ${pressingMetric === 'burnout' ? 'scale-90 brightness-150' : ''}`}
-          onTouchStart={() => handleStart('burnout')}
-          onTouchEnd={handleEnd}
-          onMouseDown={() => handleStart('burnout')}
-          onMouseUp={handleEnd}
-          onMouseLeave={handleEnd}
-        >
-          <div className={`flex items-center gap-1.5 mb-0.5 transition-colors duration-300 ${isStressed ? 'text-red-500 animate-pulse' : 'text-orange-500'} opacity-90`}>
-            {isCritical ? <AlertCircle size={10} className="animate-pulse" /> : <Brain size={10} className={isStressed ? 'animate-bounce' : ''} />}
-            <span className={`text-[8px] font-black uppercase tracking-widest ${isStressed ? 'red-glow' : ''}`}>
-              Burnout
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            {pressingMetric === 'burnout' && <Info size={10} className="text-orange-500 animate-pulse" />}
-            <div className={`w-16 h-1.5 bg-gray-900 rounded-full overflow-hidden relative shadow-inner border border-white/5 transition-colors ${isStressed ? 'border-red-500/40 shadow-[0_0_10px_rgba(255,0,0,0.2)]' : ''}`}>
-              <div
-                className={`h-full transition-all duration-700 ${
-                  stress > 80
-                  ? 'bg-red-500'
-                  : stress > 70
-                  ? 'bg-red-600'
-                  : 'bg-orange-500'
-                } ${isStressed ? 'pulse-critical' : ''}`}
-                style={{ width: `${Math.min(100, stress)}%` }}
-              />
+          {/* Metric 1: CAPITAL */}
+          <div
+            className={`flex flex-col items-start flex-1 cursor-pointer select-none transition-all duration-200 ${pressingMetric === 'capital' ? 'scale-90 brightness-150' : ''}`}
+            onTouchStart={() => handleStart('capital')}
+            onTouchEnd={handleEnd}
+            onMouseDown={() => handleStart('capital')}
+            onMouseUp={handleEnd}
+            onMouseLeave={handleEnd}
+          >
+            <div className="flex items-center gap-1 text-magenta mb-0.5 opacity-90">
+              <DollarSign size={10} strokeWidth={3} />
+              <span className="text-[8px] font-black uppercase tracking-widest">Capital</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="font-mono text-base font-extrabold tracking-tight">${Math.floor(pu).toLocaleString()}</span>
+              {pressingMetric === 'capital' && <Info size={10} className="text-magenta animate-pulse" />}
             </div>
           </div>
-        </div>
 
-        <button
-          onClick={onToggleSound}
-          className={`ml-1 p-2 bg-white/5 rounded-full transition-all active:scale-90 ${isStressed ? 'text-red-500 border border-red-500/20' : 'text-gray-500'}`}
-        >
-          {soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
-        </button>
+          {/* Metric 2: PPS (Receita/s) */}
+          <div
+            className={`flex flex-col items-center flex-1 cursor-pointer select-none transition-all duration-200 ${pressingMetric === 'pps' ? 'scale-90 brightness-150' : ''}`}
+            onTouchStart={() => handleStart('pps')}
+            onTouchEnd={handleEnd}
+            onMouseDown={() => handleStart('pps')}
+            onMouseUp={handleEnd}
+            onMouseLeave={handleEnd}
+          >
+            <div className="flex items-center gap-1 text-cyan-400 mb-0.5 opacity-90">
+              <TrendingUp size={10} strokeWidth={3} />
+              <span className="text-[8px] font-black uppercase tracking-widest">Profit/s</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="font-mono text-base font-extrabold tracking-tight text-white/90">
+                ${pps.toFixed(1)}
+              </span>
+              {pressingMetric === 'pps' && <Info size={10} className="text-cyan-400 animate-pulse" />}
+            </div>
+          </div>
+
+          {/* Metric 3: BURNOUT (Stress) */}
+          <div
+            className={`flex flex-col items-end flex-1 cursor-pointer select-none transition-all duration-200 ${pressingMetric === 'burnout' ? 'scale-90 brightness-150' : ''}`}
+            onTouchStart={() => handleStart('burnout')}
+            onTouchEnd={handleEnd}
+            onMouseDown={() => handleStart('burnout')}
+            onMouseUp={handleEnd}
+            onMouseLeave={handleEnd}
+          >
+            <div className={`flex items-center gap-1.5 mb-0.5 transition-colors duration-300 ${isStressed ? 'text-red-500 animate-pulse' : 'text-orange-500'} opacity-90`}>
+              {isCritical ? <AlertCircle size={10} className="animate-pulse" /> : <Brain size={10} className={isStressed ? 'animate-bounce' : ''} />}
+              <span className={`text-[8px] font-black uppercase tracking-widest ${isStressed ? 'red-glow' : ''}`}>
+                Burnout
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              {pressingMetric === 'burnout' && <Info size={10} className="text-orange-500 animate-pulse" />}
+              <div className={`w-16 h-1.5 bg-gray-900 rounded-full overflow-hidden relative shadow-inner border border-white/5 transition-colors ${isStressed ? 'border-red-500/40 shadow-[0_0_10px_rgba(255,0,0,0.2)]' : ''}`}>
+                <div
+                  className={`h-full transition-all duration-700 ${stress > 80
+                    ? 'bg-red-500'
+                    : stress > 70
+                      ? 'bg-red-600'
+                      : 'bg-orange-500'
+                    } ${isStressed ? 'pulse-critical' : ''}`}
+                  style={{ width: `${Math.min(100, stress)}%` }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={onToggleSound}
+            className={`ml-1 p-2 bg-white/5 rounded-full transition-all active:scale-90 ${isStressed ? 'text-red-500 border border-red-500/20' : 'text-gray-500'}`}
+          >
+            {soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
+          </button>
+        </div>
       </div>
 
       {renderMetricModal()}
@@ -200,3 +213,4 @@ const TopBar: React.FC<TopBarProps> = ({ pu, pps, stress, soundEnabled, onToggle
 };
 
 export default TopBar;
+
