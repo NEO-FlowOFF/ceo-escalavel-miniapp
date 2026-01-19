@@ -397,7 +397,21 @@ const App: React.FC = () => {
       />
 
       <main className="flex-1 scrollable px-5 pt-6 pb-24">
-        {currentView === 'operacao' && <Operation gameState={gameState} onAction={handleManualAction} soundEnabled={soundEnabled} />}
+        {currentView === 'operacao' && (
+          <Operation
+            gameState={gameState}
+            onAction={handleManualAction}
+            soundEnabled={soundEnabled}
+            onWithdrawAttempt={() => setCurrentView('raiox')}
+            onSocialReset={() => {
+              setGameState(prev => ({
+                ...prev,
+                meta: { ...prev.meta, is_crashed: false, crash_end_time: 0 }
+              }));
+              showToast("SISTEMA REINICIADO VIA SHARE");
+            }}
+          />
+        )}
         {currentView === 'agentes' && (
           <AgentStore
             agents={gameState.agents}

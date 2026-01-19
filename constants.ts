@@ -65,8 +65,7 @@ export const INITIAL_AGENTS: Agent[] = [
     reduz_cliques: ["acao_gerenciar_redes"],
     economia_diaria_minutos: 60,
     descricao_curta: "Transforma cliques em alcance viral.",
-    desbloqueia_em_capital_total: 1000,
-    real_solution_link: "https://www.flowoff.xyz/solutions/social-media" // Substitua pelo seu link real
+    desbloqueia_em_capital_total: 1000
   },
   {
     id: "agent_sdr_v1",

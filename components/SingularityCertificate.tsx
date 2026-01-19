@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Award, Sparkles, X, ArrowRight, ExternalLink, ShieldCheck, Zap } from 'lucide-react';
+import { Award, Sparkles, X, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
+import { openExternalLink } from '../utils/navigation';
 
 interface SingularityCertificateProps {
   userName: string;
@@ -9,7 +10,7 @@ interface SingularityCertificateProps {
 
 const SingularityCertificate: React.FC<SingularityCertificateProps> = ({ userName, onClose }) => {
   const handleConsultancy = () => {
-    window.open('https://www.flowoff.xyz/solutions', '_blank');
+    openExternalLink('https://t.me/neomello');
   };
 
   return (
@@ -57,7 +58,7 @@ const SingularityCertificate: React.FC<SingularityCertificateProps> = ({ userNam
               <p className="text-[8px] font-mono uppercase tracking-[0.3em] font-bold text-white">
                 Agendar Consultoria Estratégica
               </p>
-              <ExternalLink size={10} className="text-yellow-500" />
+              <Zap size={10} className="text-yellow-500" />
             </div>
           </div>
         </div>
