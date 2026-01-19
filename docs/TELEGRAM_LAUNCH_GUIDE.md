@@ -32,26 +32,70 @@ O Telegram não hospeda seu código. Ele apenas abre sua URL dentro de uma Webvi
 *   **SSL (HTTPS):** Obrigatório. Sem ele, o Telegram bloqueia a abertura.
 *   **Performance:** Mini Apps lentos são penalizados na experiência do usuário. Otimize o carregamento inicial.
 
-## 3. Obrigações e Modos de Lançamento [ ]
+## 3. Main Mini App (Obrigatório para Destaque) [ ]
 
-### Tipos de Abertura
-1.  **Menu Button:** O usuário abre o bot e clica no botão fixo.
-2.  **Inline Mode:** Você pode configurar para que o app seja compartilhado em qualquer chat (ex: `@seubot` em um grupo).
-3.  **Direct Link:** Você pode enviar um link tipo `https://t.me/AgenteFlow_Bot` que abre o app direto.
+O **Main Mini App** desbloqueia recursos importantes:
 
-### Obrigações do Telegram
-*   **Privacy Policy:** É obrigatório ter um link de política de privacidade acessível no bot se você for coletar dados do usuário ou usar o `initDataUnsafe`.
-*   **Bot Verification:** Bots que movimentam muito volume podem solicitar o selo azul de verificado, mas requer documentos da empresa.
-*   **Telegram Ads:** Você não pode exibir anúncios externos (Google Adsense) dentro do Mini App sem autorização. Use apenas anúncios do próprio ecossistema ou parcerias diretas.
+### Como Configurar:
+1.  No [@BotFather](https://t.me/botfather), use `/newapp`
+2.  Selecione `@AgenteFlow_Bot`
+3.  Configure a URL: `https://agenteflow.vercel.app/`
+4.  Defina um **short name** (ex: `game`)
 
-## 4. Como funciona o "Lançamento"
+### Benefícios:
+*   **Botão "Launch app"** no perfil do bot
+*   **Aparece na aba Apps** da busca para usuários que já jogaram
+*   **Media Previews** (vídeos/screenshots) com suporte a múltiplos idiomas
+*   **Link direto:** `https://t.me/AgenteFlow_Bot?startapp`
 
-Diferente de uma Apple Store, o Telegram não revisa seu código manualmente toda vez que você atualiza.
+### Formatos de Link:
+```
+https://t.me/AgenteFlow_Bot?startapp           # Abre full-screen
+https://t.me/AgenteFlow_Bot?startapp=ref123    # Com parâmetro (tracking)
+https://t.me/AgenteFlow_Bot?startapp&mode=compact  # Abre em meia-tela
+```
 
-1.  **Update Silencioso:** Você faz o `git push` para sua hospedagem (Vercel), e o app atualiza para todos os usuários instantaneamente.
-2.  **Aprovação no Fragment/Bot Store:** Se você quiser que o app apareça na aba de busca oficial do Telegram (Trending Apps), você precisa submeter o bot para análise via `@BotSupport` ou diretórios da comunidade.
-3.  **Liquidez e Tokens:** Se o seu token `$NEOFLW` for listado na Polygon, o Telegram não interfere, desde que você use carteiras externas (WalletConnect) ou a TON Space.
+### Telegram Mini App Store:
+Para ser **destacado na loja oficial**:
+- [ ] Configure o Main Mini App
+- [ ] Faça upload de mídia de alta qualidade (screenshots/vídeos)
+- [ ] Aceite pagamentos em **Telegram Stars**
+- [ ] Siga as [Design Guidelines](https://core.telegram.org/bots/webapps#design-guidelines)
 
 ---
 
-**DICA DE OURO:** No BotFather, ative o `Inline Mode` (`/setinline`). Isso permite que os jogadores compartilhem o app com amigos e grupos digitando `@nome_do_seu_bot`, o que gera o crescimento orgânico que você precisa.
+## 4. Obrigações e Modos de Lançamento [ ]
+
+### Tipos de Abertura
+1.  **Menu Button:** O usuário abre o bot e clica no botão fixo.
+2.  **Inline Mode:** Compartilhe em qualquer chat digitando `@AgenteFlow_Bot`.
+3.  **Direct Link:** `https://t.me/AgenteFlow_Bot?startapp`
+4.  **Launch Button:** Botão no perfil do bot (requer Main Mini App).
+
+### Obrigações do Telegram
+*   **Privacy Policy:** Obrigatório. Configurado em: `https://agenteflow.vercel.app/privacy.html`
+*   **Bot Verification:** Bots com alto volume podem solicitar selo azul via `@BotSupport`.
+*   **Telegram Ads:** Anúncios externos (Google Adsense) não são permitidos sem autorização.
+
+## 5. Como funciona o "Lançamento"
+
+Diferente de uma Apple Store, o Telegram não revisa seu código manualmente.
+
+1.  **Update Silencioso:** `git push` para Vercel → app atualiza instantaneamente.
+2.  **Mini App Store:** Para aparecer na busca oficial, submeta via `@BotSupport`.
+3.  **Telegram Stars:** Integrar pagamentos aumenta chances de destaque.
+
+---
+
+## Links Oficiais do Agente Flow
+
+| Tipo | URL |
+|------|-----|
+| **Bot** | https://t.me/AgenteFlow_Bot |
+| **Direct Launch** | https://t.me/AgenteFlow_Bot?startapp |
+| **Web App** | https://agenteflow.vercel.app |
+| **Privacy Policy** | https://agenteflow.vercel.app/privacy.html |
+
+---
+
+**DICA DE OURO:** Ative o `Inline Mode` (`/setinline`). Isso permite que jogadores compartilhem o app digitando `@AgenteFlow_Bot`, gerando crescimento orgânico.
