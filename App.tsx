@@ -349,7 +349,7 @@ const App: React.FC = () => {
     return (
       <div className="h-full w-full flex flex-col items-center justify-center bg-[#0a050f] text-magenta">
         <div className="w-10 h-10 border-2 border-magenta border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="font-mono text-[8px] font-black uppercase tracking-[0.4em] opacity-50">Handshaking Nexus...</p>
+        <p className="font-mono text-[8px] font-black uppercase tracking-[0.4em] opacity-50">Handshaking System...</p>
       </div>
     );
   }

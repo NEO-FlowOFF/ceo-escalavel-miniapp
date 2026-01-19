@@ -6,7 +6,7 @@ export const AUDITOR_MESSAGES = {
     },
     CRITICAL: {
         CRASH: (name: string) => `SISTEMA OFFLINE. Burnout nível 10. ${name}, sua infraestrutura biológica falhou. Reinicie ou peça ajuda à rede.`,
-        BURNOUT_WARNING: "ALERTA: Seus níveis de cortisol estão fritando o Nexus. Automatize ou colapse.",
+        BURNOUT_WARNING: "ALERTA: Seus níveis de cortisol estão fritando o sistema. Automatize ou colapse.",
         SOCIAL_VULNERABILITY: "VULNERABILIDADE: Você esqueceu das redes sociais. O algoritmo não perdoa hiatos humanos.",
         TRAFFIC_LOSS: "PREJUÍZO: O gestor esqueceu de pausar a campanha. Orçamento Ads estourado por erro de monitoramento.",
         SUPPORT_BACKLOG: "CHURN: Suporte manual ignorou tickets no final de semana. Clientes pediram reembolso.",

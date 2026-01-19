@@ -1,4 +1,4 @@
-# Nexus v2.5 - Resumo de Implementações & Próximos Passos
+# System Flow v2.5 - Resumo de Implementações & Próximos Passos
 
 Este documento resume o estado atual do **CEO Escalável MiniApp** e mapeia o roadmap técnico e estratégico.
 

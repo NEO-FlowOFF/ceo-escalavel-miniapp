@@ -90,8 +90,8 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
             <img src={LOGO_URL} alt="NEØ FlowOFF Logo" className="w-full h-full object-cover" />
           </div>
           <div>
-            <h2 className="text-[9px] font-bold text-magenta uppercase tracking-[0.2em] opacity-80 leading-none mb-1">Nexus v2.5</h2>
-            <h1 className="text-xl font-black text-white uppercase italic tracking-tighter">AGENTE FLOW CONSOLE</h1>
+            <h2 className="text-[9px] font-bold text-magenta uppercase tracking-[0.2em] opacity-80 leading-none mb-1">System Flow v2.5</h2>
+            <h1 className="text-xl font-black text-white uppercase italic tracking-tighter">AGENT FLOW CONSOLE</h1>
           </div>
         </div>
       </header>
