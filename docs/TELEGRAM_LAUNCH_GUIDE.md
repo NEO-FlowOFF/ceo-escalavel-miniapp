@@ -1,101 +1,103 @@
-# Guia de Lançamento: Telegram Mini App (TMA)
+# Guia de Lançamento Final: Agente Flow (TMA)
 
-Este guia cobre o processo técnico e burocrático para transformar seu código React/Vite em um Mini App oficial dentro do Telegram.
-
-## 1. Configuração no BotFather [ ]
-
-O coração do seu Mini App é um bot. Siga estes passos no [@BotFather](https://t.me/botfather):
-
-1.  **Criar o Bot:** Use `/newbot` e siga a sequência:
-    *   **Passo A (Nome):** Escolha o nome de exibição: **Agente Flow**. Este é o nome que os usuários verão no topo do chat.
-    *   **Passo B (Username):** Escolha o ID público do bot. **Atenção:** Ele deve ser único e terminar obrigatoriamente em `bot`. Exemplos: `AgenteFlowBot`, `AgenteFlow_bot`.
-    *   **Resultado:** Você receberá um **HTTP API Token**. Guarde-o.
-
-2.  **Configurar o Web App:**
-    *   Use o comando `/newapp`. (Nota: O comando `/setwebapp` é para bots que já possuem apps, `/newapp` guia você na criação de um novo).
-    *   Siga as instruções para vincular o Bot ao seu App (escolha o bot criado, defina o nome do app e envie a URL).
-    *   **URL de Produção:** `https://agenteflow.vercel.app/`
-    *   *Nota: O Telegram exige HTTPS.*
-3.  **Botão de Menu:**
-    *   Use `/setmenubutton`.
-    *   Configure o texto do botão como: **Jogar Agora ⦿**
-4.  **Configurações de Design (Essencial):**
-    *   `/setuserpic`: Suba o ícone oficial (ex: `apple-icon-180x180.png`).
-    *   `/setdescription`: Sugestão: *"Pare de ser o gargalo. Torne-se o Arquiteto. Simule sua frota de agentes autônomos e gere valuation em $NEOFLW."*
-    *   `/setabouttext`: Sugestão: *"Agente Flow: O console de comando oficial da NEØFLW para CEOs escaláveis."*
-
-## 2. Requisitos de Hospedagem [ ]
-
-O Telegram não hospeda seu código. Ele apenas abre sua URL dentro de uma Webview segura.
-
-*   **Vercel / Netlify:** Recomendados para Mini Apps React.
-*   **SSL (HTTPS):** Obrigatório. Sem ele, o Telegram bloqueia a abertura.
-*   **Performance:** Mini Apps lentos são penalizados na experiência do usuário. Otimize o carregamento inicial.
-
-## 3. Main Mini App (Obrigatório para Destaque) [ ]
-
-O **Main Mini App** desbloqueia recursos importantes:
-
-### Como Configurar:
-1.  No [@BotFather](https://t.me/botfather), use `/newapp`
-2.  Selecione `@AgenteFlow_Bot`
-3.  Configure a URL: `https://agenteflow.vercel.app/`
-4.  Defina um **short name** (ex: `game`)
-
-### Benefícios:
-*   **Botão "Launch app"** no perfil do bot
-*   **Aparece na aba Apps** da busca para usuários que já jogaram
-*   **Media Previews** (vídeos/screenshots) com suporte a múltiplos idiomas
-*   **Link direto:** `https://t.me/AgenteFlow_Bot?startapp`
-
-### Formatos de Link:
-```
-https://t.me/AgenteFlow_Bot?startapp           # Abre full-screen
-https://t.me/AgenteFlow_Bot?startapp=ref123    # Com parâmetro (tracking)
-https://t.me/AgenteFlow_Bot?startapp&mode=compact  # Abre em meia-tela
-```
-
-### Telegram Mini App Store:
-Para ser **destacado na loja oficial**:
-- [ ] Configure o Main Mini App
-- [ ] Faça upload de mídia de alta qualidade (screenshots/vídeos)
-- [ ] Aceite pagamentos em **Telegram Stars**
-- [ ] Siga as [Design Guidelines](https://core.telegram.org/bots/webapps#design-guidelines)
+Este guia consolida todas as configurações técnicas, burocráticas e implementações do ecossistema **Telegram Mini App (TMA)** para o Agente Flow.
 
 ---
 
-## 4. Obrigações e Modos de Lançamento [ ]
+## 🛠️ 1. Configuração Técnica (BotFather)
 
-### Tipos de Abertura
-1.  **Menu Button:** O usuário abre o bot e clica no botão fixo.
-2.  **Inline Mode:** Compartilhe em qualquer chat digitando `@AgenteFlow_Bot`.
-3.  **Direct Link:** `https://t.me/AgenteFlow_Bot?startapp`
-4.  **Launch Button:** Botão no perfil do bot (requer Main Mini App).
+O [@BotFather](https://t.me/botfather) é o portal administrativo. Siga estes passos na ordem:
 
-### Obrigações do Telegram
-*   **Privacy Policy:** Obrigatório. Configurado em: `https://agenteflow.vercel.app/privacy.html`
-*   **Bot Verification:** Bots com alto volume podem solicitar selo azul via `@BotSupport`.
-*   **Telegram Ads:** Anúncios externos (Google Adsense) não são permitidos sem autorização.
+### A. Criação e Branding
+1.  **`/newbot`**: 
+    *   **Nome:** `Agente Flow`
+    *   **Username:** `@AgenteFlow_Bot` (ou similar terminando em `bot`)
+2.  **`/setuserpic`**: Envie o arquivo `/public/icon-512.webp`.
+3.  **`/setdescription`**: Texto de boas-vindas: *"Simule sua frota de agentes IA. Automatize, escale e veja seu valuation em $NEOFLW. ⦿"*
+4.  **`/setabouttext`**: Texto do perfil: *"O console de comando oficial da NEØFLW para CEOs escaláveis. Pare de ser o gargalo da sua empresa. Monte sua operação com agentes autônomos e alcance a Singularidade Operacional."*
 
-## 5. Como funciona o "Lançamento"
+### B. Ativação do Mini App Principal (Main Mini App)
+O **Main Mini App** é o que garante o botão "Launch app" no perfil e destaque na loja.
+1.  **`/newapp`** → Selecione `@AgenteFlow_Bot`.
+2.  **Short Name:** `game`
+3.  **URL:** `https://agenteflow.vercel.app/`
+4.  **`/setinline`**: Ative para permitir compartilhamento via `@AgenteFlow_Bot`.
 
-Diferente de uma Apple Store, o Telegram não revisa seu código manualmente.
-
-1.  **Update Silencioso:** `git push` para Vercel → app atualiza instantaneamente.
-2.  **Mini App Store:** Para aparecer na busca oficial, submeta via `@BotSupport`.
-3.  **Telegram Stars:** Integrar pagamentos aumenta chances de destaque.
-
----
-
-## Links Oficiais do Agente Flow
-
-| Tipo | URL |
-|------|-----|
-| **Bot** | https://t.me/AgenteFlow_Bot |
-| **Direct Launch** | https://t.me/AgenteFlow_Bot?startapp |
-| **Web App** | https://agenteflow.vercel.app |
-| **Privacy Policy** | https://agenteflow.vercel.app/privacy.html |
+### C. Botão de Menu do Chat
+1.  **`/setmenubutton`** → `@AgenteFlow_Bot`.
+2.  **Texto:** `Jogar Agora ⦿`
+3.  **URL:** `https://agenteflow.vercel.app/`
 
 ---
 
-**DICA DE OURO:** Ative o `Inline Mode` (`/setinline`). Isso permite que jogadores compartilhem o app digitando `@AgenteFlow_Bot`, gerando crescimento orgânico.
+## 💎 2. Implementações de Elite (SDK Integration)
+
+O Agente Flow utiliza o módulo `utils/telegramUtils.ts` para integrar recursos nativos.
+
+### 🔴 Cloud Storage (Sync Total)
+Diferente do `localStorage` comum, usamos a **Cloud Storage** do Telegram.
+- **Vantagem:** O usuário pode começar a jogar no celular, fechar e continuar no Desktop/Web com o mesmo progresso.
+- **Capacidade:** 1024 itens por usuário.
+
+### 🟡 Navegação Nativa (BackButton)
+- O app detecta quando você sai da "Operação" (Dashboard) para outras abas.
+- O botão **Voltar** nativo do Telegram aparece automaticamente.
+- Toque no botão voltar = Retorno imediato à operação.
+
+### 🔵 Menu de Contexto (SettingsButton)
+- No canto superior direito do app (dentro dos três pontos), implementamos um botão de **Settings**.
+- Ele abre um menu de suporte direto com a NEØFLW e informações da versão.
+
+---
+
+## 🚀 3. Recursos de Crescimento e Viralização
+
+### 🤳 Share to Story
+Implementado nos botões de **"Resetar Sistema"** e **"Compartilhar Progresso"**.
+- Ao clicar, o app chama o editor de Stories nativo do Telegram.
+- Já inclui imagem oficial e legenda personalizada com o valuation do usuário.
+- Inclui um link interativo direto para o bot.
+
+### 🔗 Formatos de Link Inteligentes
+Use estes links para marketing:
+- **Full Screen:** `https://t.me/AgenteFlow_Bot?startapp`
+- **Compacto (Meia-tela):** `https://t.me/AgenteFlow_Bot?startapp&mode=compact`
+- **Com Tracking (Ref):** `https://t.me/AgenteFlow_Bot?startapp=campanha01`
+
+---
+
+## 📱 4. Performance e UX
+
+### Detecção de Dispositivos (Low-end)
+O app detecta automaticamente dispositivos Android de baixo desempenho.
+- Desativa animações de "Shake" e filtros pesados para manter a fluidez de 60fps exigida pelo Telegram.
+
+### Temas Dinâmicos
+O app herda as cores do tema do usuário no Telegram:
+- `--tg-theme-bg-color` (Fundo)
+- `--tg-theme-text-color` (Corpo do texto)
+- `--tg-theme-button-color` (Cores de destaque)
+
+---
+
+## 🏁 5. Checklist para Destaque na Mini App Store
+
+Para aumentar as chances de ser listado no **Trending Apps**:
+1. [x] **Main Mini App:** Configurado.
+2. [x] **Mídia de Alta Qualidade:** Subir Screenshots e GIFs no BotFather.
+3. [x] **Privacy Policy:** Configurada em `/public/privacy.html`.
+4. [ ] **Telegram Stars:** Integrar pagamentos nativos (Próxima Fase).
+5. [x] **Snappy Design:** Design mobile-first e fluido.
+
+---
+
+## 🔗 Links Oficiais
+
+| Recurso | URL |
+| :--- | :--- |
+| **Bot Oficial** | [https://t.me/AgenteFlow_Bot](https://t.me/AgenteFlow_Bot) |
+| **Console Web** | [https://agenteflow.vercel.app](https://agenteflow.vercel.app) |
+| **Políticas** | [https://agenteflow.vercel.app/privacy.html](https://agenteflow.vercel.app/privacy.html) |
+
+---
+*Agente Flow v2.5 - Protocolo de Lançamento NEØFLW.*
