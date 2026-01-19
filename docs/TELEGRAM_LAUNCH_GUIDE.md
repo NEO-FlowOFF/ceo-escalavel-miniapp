@@ -6,11 +6,15 @@ Este guia cobre o processo técnico e burocrático para transformar seu código 
 
 O coração do seu Mini App é um bot. Siga estes passos no [@BotFather](https://t.me/botfather):
 
-1.  **Criar o Bot:** Use `/newbot` e escolha o nome: **Agente Flow**.
+1.  **Criar o Bot:** Use `/newbot` e siga a sequência:
+    *   **Passo A (Nome):** Escolha o nome de exibição: **Agente Flow**. Este é o nome que os usuários verão no topo do chat.
+    *   **Passo B (Username):** Escolha o ID público do bot. **Atenção:** Ele deve ser único e terminar obrigatoriamente em `bot`. Exemplos: `AgenteFlowBot`, `AgenteFlow_bot`.
+    *   **Resultado:** Você receberá um **HTTP API Token**. Guarde-o.
+
 2.  **Configurar o Web App:**
-    *   Use o comando `/setwebapp`.
-    *   Selecione seu bot.
-    *   O BotFather pedirá a **URL de Produção**: `https://agenteflow.vercel.app/`
+    *   Use o comando `/newapp`. (Nota: O comando `/setwebapp` é para bots que já possuem apps, `/newapp` guia você na criação de um novo).
+    *   Siga as instruções para vincular o Bot ao seu App (escolha o bot criado, defina o nome do app e envie a URL).
+    *   **URL de Produção:** `https://agenteflow.vercel.app/`
     *   *Nota: O Telegram exige HTTPS.*
 3.  **Botão de Menu:**
     *   Use `/setmenubutton`.
