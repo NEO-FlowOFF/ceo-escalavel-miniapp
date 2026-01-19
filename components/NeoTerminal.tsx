@@ -129,9 +129,8 @@ const NeoTerminal: React.FC<NeoTerminalProps> = ({ gameState, soundEnabled }) =>
 
       if (currentCta) {
         const isTelegram = gameState.meta.user?.type === 'telegram';
-        const finalLink = isTelegram
-          ? currentCta.tg
-          : currentCta.wa.replace('{{NAME}}', encodeURIComponent(userName));
+        const rawLink = isTelegram ? currentCta.tg : currentCta.wa;
+        const finalLink = rawLink.replace('{{NAME}}', encodeURIComponent(userName));
 
         setActiveCta({
           label: currentCta.label,

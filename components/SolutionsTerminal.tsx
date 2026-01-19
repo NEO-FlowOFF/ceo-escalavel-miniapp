@@ -68,7 +68,11 @@ const SOLUTIONS = [
   }
 ];
 
-const SolutionsTerminal: React.FC = () => {
+interface SolutionsTerminalProps {
+  userName?: string;
+}
+
+const SolutionsTerminal: React.FC<SolutionsTerminalProps> = ({ userName = 'CEO' }) => {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700 pb-32">
       <header className="px-1 space-y-2">
@@ -103,7 +107,10 @@ const SolutionsTerminal: React.FC = () => {
                   </div>
                 </div>
                 <button
-                  onClick={() => openExternalLink(sol.cta_link)}
+                  onClick={() => {
+                    const text = encodeURIComponent(`Olá Mellø, sou o ${userName}. Vi o manifesto técnico e quero implementar o protocolo ${sol.title} no meu negócio.`);
+                    openExternalLink(`https://t.me/neomello?text=${text}`);
+                  }}
                   className="p-2 text-gray-600 hover:text-magenta transition-colors"
                 >
                   <ExternalLink size={18} />
@@ -134,7 +141,10 @@ const SolutionsTerminal: React.FC = () => {
               </div>
 
               <button
-                onClick={() => openExternalLink(sol.cta_link)}
+                onClick={() => {
+                  const text = encodeURIComponent(`Olá Mellø, sou o ${userName}. Vi o manifesto técnico e quero implementar o protocolo ${sol.title} no meu negócio.`);
+                  openExternalLink(`https://t.me/neomello?text=${text}`);
+                }}
                 className="w-full py-4 bg-white/5 border border-white/10 rounded-[20px] flex items-center justify-center gap-2 text-[10px] font-black text-white uppercase tracking-[0.2em] transition-all group-hover:bg-magenta group-hover:border-magenta group-hover:shadow-[0_10px_30px_rgba(255,0,255,0.2)]"
               >
                 Implementar Agora
@@ -148,7 +158,10 @@ const SolutionsTerminal: React.FC = () => {
       <div className="relative mt-8 group">
         <div className="absolute -inset-1 bg-gradient-to-r from-magenta to-purple-600 rounded-[35px] blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
         <div
-          onClick={() => openExternalLink('https://t.me/neomello')}
+          onClick={() => {
+            const text = encodeURIComponent(`Olá Mellø, sou o ${userName}. Gostaria de agendar um diagnóstico de infraestrutura real para minha empresa.`);
+            openExternalLink(`https://t.me/neomello?text=${text}`);
+          }}
           className="relative bg-[#0d0714] border border-white/10 rounded-[35px] p-8 text-center cursor-pointer hover:border-magenta/50 transition-all shadow-2xl"
         >
           <Network className="mx-auto text-magenta mb-4 animate-spin-slow" size={32} />

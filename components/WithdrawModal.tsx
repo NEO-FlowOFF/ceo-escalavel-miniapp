@@ -5,10 +5,15 @@ import { openExternalLink } from '../utils/navigation';
 
 interface WithdrawModalProps {
     valuation: string;
+    userName: string;
     onClose: () => void;
 }
 
-const WithdrawModal: React.FC<WithdrawModalProps> = ({ valuation, onClose }) => {
+const WithdrawModal: React.FC<WithdrawModalProps> = ({ valuation, userName, onClose }) => {
+    const handleWithdraw = () => {
+        const text = encodeURIComponent(`Olá Mellø, sou o ${userName}. Cheguei ao topo do game e quero protocolar o Saque Real do meu Equity de ${valuation} $NEOFLW.`);
+        openExternalLink(`https://t.me/neomello?text=${text}`);
+    };
     return (
         <div className="fixed inset-0 z-[600] flex items-end justify-center">
             <div className="absolute inset-0 bg-black/90 backdrop-blur-md animate-in fade-in" onClick={onClose} />
@@ -55,8 +60,8 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ valuation, onClose }) => 
                     </div>
 
                     <button
-                        onClick={() => openExternalLink('https://t.me/neomello')}
-                        className="w-full py-6 bg-magenta text-white rounded-[24px] font-black uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-3 shadow-[0_20px_40px_rgba(255,0,255,0.3)] active:scale-95 transition-all mt-2 group"
+                        onClick={handleWithdraw}
+                        className="w-full py-6 bg-magenta text-white rounded-[24px] font-black uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-3 shadow-[0_20px_40px_rgba(255,0,255,0.3)] active:scale-[0.96] transition-all mt-2 group"
                     >
                         PROTOCOLAR SAQUE REAL
                         <TrendingUp size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />

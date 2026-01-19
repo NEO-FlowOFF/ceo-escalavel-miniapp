@@ -10,7 +10,8 @@ interface SingularityCertificateProps {
 
 const SingularityCertificate: React.FC<SingularityCertificateProps> = ({ userName, onClose }) => {
   const handleConsultancy = () => {
-    openExternalLink('https://t.me/neomello');
+    const text = encodeURIComponent(`Olá Mellø, sou o ${userName}. Alcancei a Singularidade no game e quero transicionar minha infra para o mundo real.`);
+    openExternalLink(`https://t.me/neomello?text=${text}`);
   };
 
   return (

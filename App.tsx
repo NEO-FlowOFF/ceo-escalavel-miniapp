@@ -368,7 +368,13 @@ const App: React.FC = () => {
 
       {offlineData && <OfflineEarningsModal pu={offlineData.capital} seconds={offlineData.seconds} onClose={() => setOfflineData(null)} />}
       {showSingularity && <SingularityCertificate userName={gameState.meta.user?.name || 'CEO'} onClose={() => setShowSingularity(false)} />}
-      {showWithdraw && <WithdrawModal valuation={calculateValuation(gameState).toFixed(0)} onClose={() => setShowWithdraw(false)} />}
+      {showWithdraw && (
+        <WithdrawModal
+          valuation={calculateValuation(gameState).toFixed(0)}
+          userName={gameState.meta.user?.name || 'CEO'}
+          onClose={() => setShowWithdraw(false)}
+        />
+      )}
 
       {selectedAgentId && currentView === 'agentes' && (
         (() => {
@@ -426,7 +432,7 @@ const App: React.FC = () => {
             onSelect={setSelectedAgentId}
           />
         )}
-        {currentView === 'protocols' && <SolutionsTerminal />}
+        {currentView === 'protocols' && <SolutionsTerminal userName={gameState.meta.user?.name || 'CEO'} />}
         {currentView === 'raiox' && <XRay gameState={gameState} onCopySuccess={showToast} />}
       </main>
 

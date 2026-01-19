@@ -18,7 +18,7 @@ export const AUDITOR_MESSAGES = {
             text: "Você já entendeu o game, não é mesmo? Acabei de avisar o MELLØ (CEO da NEØFLW) que temos um player de elite por aqui.",
             cta: {
                 label: "Falar com o MELLØ",
-                tg: "https://t.me/neomello",
+                tg: "https://t.me/neomello?text=Olá+Mellø,+sou+o+{{NAME}},+o+auditor+me+recomendou+falar+com+você+sobre+os+meus+resultados+no+jogo.",
                 wa: "https://wa.me/5562983231110?text=Olá+Mellø,+sou+o+{{NAME}},+entendi+o+jogo+e+quero+levar+minha+empresa+para+o+próximo+nível."
             }
         },
@@ -26,7 +26,7 @@ export const AUDITOR_MESSAGES = {
             text: "Trabalhando até colapsar? Isso é muito 2023. O MELLØ prega escala, não sacrifício inútil. Automatize logo.",
             cta: {
                 label: "Escalar sem Burnout",
-                tg: "https://t.me/neomello",
+                tg: "https://t.me/neomello?text=Olá+Mellø,+sou+o+{{NAME}}.+Estou+sofrendo+com+burnout+no+game+e+preciso+de+agentes+para+escalar.",
                 wa: "https://wa.me/5562983231110?text=Olá+Mellø,+sou+o+{{NAME}}.+Estou+sofrendo+com+burnout+e+preciso+de+agentes+para+escalar."
             }
         },
@@ -34,7 +34,7 @@ export const AUDITOR_MESSAGES = {
             text: "Equity de respeito. Você parou de jogar e começou a construir um império. MELLØ adoraria te conhecer.",
             cta: {
                 label: "Chame ele agora",
-                tg: "https://t.me/neomello",
+                tg: "https://t.me/neomello?text=Olá+Mellø,+sou+o+{{NAME}}.+Atingi+um+Valuation+de+elite+no+seu+DAPP+e+quero+conversar.",
                 wa: "https://wa.me/5562983231110?text=Olá+Mellø,+sou+o+{{NAME}}.+Atingi+um+Valuation+de+elite+no+seu+DAPP+e+quero+conversar."
             }
         },
