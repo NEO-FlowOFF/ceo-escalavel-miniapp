@@ -35,7 +35,7 @@
 > Escalei minha operação pro nível "Arquiteto de Sistemas" no Agente Flow. 
 > 
 > IA não é sobre chat. É sobre margem de lucro. 
-> Veja meu Raio-X de Valuation: [LINK_DO_BOT] ⦿
+> Veja meu Raio-X de Valuation: https://agenteflow.vercel.app/ ⦿
 
 ## Canal: Grupos de Empreendedorismo/Web3 (Telegram) - Foco em Ganância/Escala
 > 🚀 **O fim do trabalho braçal chegou.**
@@ -48,14 +48,14 @@
 > 
 > Você consegue rodar uma empresa de 7 dígitos sem dar um único clique manual?
 > 
-> **Teste agora:** [LINK_DO_BOT]
+> **Teste agora:** https://agenteflow.vercel.app/
 
 ## Canal: WhatsApp (Direto para Clientes/Leads) - Foco em Consultoria
 > Fala [Nome], beleza? Acabei de lançar o **Agente Flow**, um Mini App no Telegram que simula o que eu faço na NEØFLW: tirar o empresário do operacional e colocar a IA pra rodar a casa.
 >
 > Dá uma olhada lá, tenta chegar no nível de "CEO Escalável". Se você curtir a lógica, o app tem um botão pra gente agendar um diagnóstico da sua infra real. ⦿
 >
-> [LINK_DO_BOT]
+> https://agenteflow.vercel.app/
 
 ---
 

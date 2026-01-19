@@ -10,7 +10,8 @@ O coração do seu Mini App é um bot. Se você já tem o bot, pule para o passo
 2.  **Configurar o Web App:**
     *   Use o comando `/setwebapp`.
     *   Selecione seu bot.
-    *   O BotFather pedirá a **URL de Produção** (ex: `https://seu-dapp.vercel.app`). *Nota: Deve ser obrigatoriamente HTTPS.*
+    *   O BotFather pedirá a **URL de Produção**: `https://agenteflow.vercel.app/`
+    *   *Nota: O Telegram exige HTTPS para Mini Apps.*
 3.  **Botão de Menu:**
     *   Use `/setmenubutton`.
     *   Isso fará com que um botão apareça ao lado do campo de digitação do chat, abrindo seu app instantaneamente.
