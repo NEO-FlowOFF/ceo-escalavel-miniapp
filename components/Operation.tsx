@@ -4,6 +4,7 @@ import { ManualAction, GameState } from '../types';
 import { isActionAutomated, formatHours, calculateManualGain, calculateValuation } from '../engine/gameLogic';
 import { CheckCircle2, Clock, RefreshCcw, TrendingUp, ShieldCheck, Share2, Sparkles } from 'lucide-react';
 import NeoTerminal from './NeoTerminal';
+import telegram from '../utils/telegramUtils';
 import { STATUS_MILESTONES, TOKEN_TICKER, POLYGON_PURPLE } from '../constants';
 
 interface OperationProps {
@@ -130,12 +131,39 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
       </div>
 
       <div className="space-y-3 relative">
+        <div className="flex gap-2">
+          <button
+            onClick={() => {
+              const valuation = calculateValuation(gameState).toFixed(0);
+              telegram.shareToStory("https://res.cloudinary.com/dqhheouq9/image/upload/v1767168000/flowoff/public/icon-512.webp", `Alcancei $${valuation}M de valuation no Agent Flow! 🚀\n\nPare de ser o gargalo da sua empresa.`, {
+                url: "https://t.me/AgenteFlow_Bot?startapp",
+                name: "Jogar Agente Flow"
+              });
+            }}
+            className="flex-1 bg-white/5 border border-white/10 p-4 rounded-[22px] flex items-center justify-center gap-3 active:scale-95 transition-all group hover:border-magenta/50"
+          >
+            <Share2 size={16} className="text-magenta group-hover:animate-bounce" />
+            <span className="text-[10px] font-black text-white uppercase tracking-widest">Compartilhar Progresso</span>
+          </button>
+        </div>
+
         {meta.is_crashed && (
-          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#0a050f]/80 backdrop-blur-md rounded-[22px] border border-red-500/30 p-6 text-center animate-in fade-in duration-300">
-            <RefreshCcw size={32} className="text-red-500 animate-spin mb-3" />
-            <h4 className="text-lg font-black text-red-500 uppercase italic tracking-tighter mb-1">COLAPSO OPERACIONAL</h4>
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#0a050f]/90 backdrop-blur-xl rounded-[22px] border border-red-500/50 p-6 text-center animate-in fade-in zoom-in duration-300 shadow-[0_0_50px_rgba(255,0,0,0.2)]">
+            <RefreshCcw size={32} className="text-red-500 animate-spin mb-3 shadow-[0_0_15px_rgba(255,0,0,0.5)]" />
+            <h4 className="text-lg font-black text-red-500 uppercase italic tracking-tighter mb-1 red-glow">COLAPSO OPERACIONAL</h4>
             <p className="text-[10px] text-red-500/70 font-bold uppercase tracking-widest mb-6">Reiniciando Processos... {crashTimeRemaining}s</p>
-            <button onClick={onSocialReset} className="w-full bg-red-500 text-white py-4 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-3 shadow-[0_10px_20_rgba(255,0,0,0.3)] active:scale-95 transition-all"><Share2 size={16} />RESETAR SISTEMA (Compartilhar)</button>
+            <button
+              onClick={() => {
+                telegram.shareToStory("https://res.cloudinary.com/dqhheouq9/image/upload/v1767168000/flowoff/public/icon-512.webp", "Minha operação colapsou por excesso de stress! 🚨\nPreciso de mais agentes no Agent Flow.", {
+                  url: "https://t.me/AgenteFlow_Bot?startapp",
+                  name: "Ajudar Operação"
+                });
+                onSocialReset();
+              }}
+              className="w-full bg-red-600 text-white py-4 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(255,0,0,0.4)] active:scale-95 transition-all"
+            >
+              <Share2 size={16} />RESETAR COM STORY
+            </button>
           </div>
         )}
 

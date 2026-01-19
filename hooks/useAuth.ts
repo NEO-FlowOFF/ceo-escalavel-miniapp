@@ -1,6 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { UserProfile, GameState } from '../types';
+import telegram from '../utils/telegramUtils';
 
 export const useAuth = () => {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -8,35 +8,28 @@ export const useAuth = () => {
   const [initialData, setInitialData] = useState<Partial<GameState> | null>(null);
 
   useEffect(() => {
-    const tg = (window as any).Telegram?.WebApp;
-
-    const loadState = (userId: string | number) => {
-      // Tentar carregar do CloudStorage do Telegram primeiro
-      if (tg?.cloudStorage) {
-        tg.cloudStorage.getItem('ceo_game_state', (err: any, value: string) => {
-          if (!err && value) {
-            try {
-              setInitialData(JSON.parse(value));
-            } catch (e) {
-              console.error("CloudStorage Parse Error", e);
-            }
+    const loadState = async (userId: string | number) => {
+      try {
+        const value = await telegram.cloudStorage.getItem(`ceo_state_${userId}`);
+        if (value) {
+          setInitialData(JSON.parse(value));
+        } else {
+          // Fallback para LocalStorage se não houver na nuvem (migração)
+          const localSaved = localStorage.getItem(`ceo_state_${userId}`);
+          if (localSaved) {
+            setInitialData(JSON.parse(localSaved));
           }
-          setLoading(false);
-        });
-      } else {
-        // Fallback LocalStorage
-        const saved = localStorage.getItem(`ceo_state_${userId}`);
-        if (saved) {
-          try {
-            setInitialData(JSON.parse(saved));
-          } catch (e) {}
         }
+      } catch (e) {
+        console.error("Erro ao carregar estado:", e);
+      } finally {
         setLoading(false);
       }
     };
 
-    if (tg && tg.initDataUnsafe?.user) {
-      const tgUser = tg.initDataUnsafe.user;
+    const tgUser = telegram.getUser();
+
+    if (tgUser) {
       const profile: UserProfile = {
         id: tgUser.id,
         name: tgUser.first_name || 'Operador',
@@ -44,8 +37,9 @@ export const useAuth = () => {
         type: 'telegram'
       };
       setUser(profile);
-      tg.expand();
-      tg.ready();
+      telegram.expand();
+      telegram.ready();
+      telegram.enableClosingConfirmation();
       loadState(tgUser.id);
     } else {
       const savedId = localStorage.getItem('ceo_visitor_id') || `v_${Math.random().toString(36).substring(2, 9)}`;

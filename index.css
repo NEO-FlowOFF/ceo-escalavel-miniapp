@@ -2,7 +2,10 @@
 
 :root {
   --magenta: #ff00ff;
-  --bg-dark: #0a050f;
+  --bg-dark: var(--tg-theme-bg-color, #0a050f);
+  --text-main: var(--tg-theme-text-color, #e2e8f0);
+  --button-color: var(--tg-theme-button-color, #ff00ff);
+  --button-text: var(--tg-theme-button-text-color, #ffffff);
   --safe-area-inset-top: env(safe-area-inset-top);
   --safe-area-inset-bottom: env(safe-area-inset-bottom);
 }

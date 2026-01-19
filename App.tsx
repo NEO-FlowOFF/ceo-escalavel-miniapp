@@ -25,6 +25,7 @@ import AgentDetailsModal from './components/AgentDetailsModal';
 import WithdrawModal from './components/WithdrawModal';
 import { playAlert, playNotification } from './engine/soundEffects';
 import { useAuth } from './hooks/useAuth';
+import telegram from './utils/telegramUtils';
 
 const CRASH_DURATION_MS = 12000;
 const CLICK_THRESHOLD_MS = 100;
@@ -35,8 +36,6 @@ const App: React.FC = () => {
   const [showSingularity, setShowSingularity] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
-
-  const tg = (window as any).Telegram?.WebApp;
 
   const [showIntro, setShowIntro] = useState(() => {
     const seen = localStorage.getItem('ceo_intro_seen');
@@ -51,6 +50,41 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<View>('operacao');
   const [toast, setToast] = useState<string | null>(null);
   const toastTimerRef = useRef<number | null>(null);
+
+  // Configuração do BackButton conforme a view
+  useEffect(() => {
+    if (currentView !== 'operacao') {
+      telegram.backButton.show();
+      const handleBack = () => setCurrentView('operacao');
+      telegram.backButton.onClick(handleBack);
+      return () => {
+        telegram.backButton.offClick(handleBack);
+      };
+    } else {
+      telegram.backButton.hide();
+    }
+  }, [currentView]);
+
+  // Configuração do SettingsButton
+  useEffect(() => {
+    telegram.settingsButton.show();
+    const handleSettings = () => {
+      telegram.showPopup({
+        title: "Protocolo Agente Flow",
+        message: "Versão 2.5. Para suporte ou diagnóstico da sua infraestrutura real, fale com a NEØFLW.",
+        buttons: [
+          { id: "consult", type: "default", text: "Diagnóstico Real" },
+          { id: "close", type: "close", text: "Voltar ao Console" }
+        ]
+      }).then((buttonId) => {
+        if (buttonId === "consult") {
+          telegram.openTelegramLink("https://t.me/neomello");
+        }
+      });
+    };
+    telegram.settingsButton.onClick(handleSettings);
+    return () => telegram.settingsButton.offClick(handleSettings);
+  }, []);
 
   const showToast = useCallback((message: string, duration = 3000) => {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
@@ -88,24 +122,15 @@ const App: React.FC = () => {
     lastSaveTime.current = now;
 
     const data = JSON.stringify(state);
-    localStorage.setItem(`ceo_state_${user?.id}`, data);
-
-    if (tg?.cloudStorage) {
-      tg.cloudStorage.setItem('ceo_game_state', data);
-    }
-  }, [user?.id, tg]);
+    telegram.cloudStorage.setItem(`ceo_state_${user?.id}`, data);
+  }, [user?.id]);
 
   // Haptic Feedback Helper
   const triggerHaptic = useCallback((type: 'impact' | 'error' | 'success') => {
-    if (tg?.HapticFeedback) {
-      if (type === 'impact') tg.HapticFeedback.impactOccurred('medium');
-      else if (type === 'error') tg.HapticFeedback.notificationOccurred('error');
-      else if (type === 'success') tg.HapticFeedback.notificationOccurred('success');
-    } else if (window.navigator?.vibrate) {
-      if (type === 'impact') window.navigator.vibrate(15);
-      else if (type === 'error') window.navigator.vibrate([50, 50, 50]);
-    }
-  }, [tg]);
+    if (type === 'impact') telegram.hapticFeedback.impact('medium');
+    else if (type === 'error') telegram.hapticFeedback.notification('error');
+    else if (type === 'success') telegram.hapticFeedback.notification('success');
+  }, []);
 
   // Sync user from auth hook
   useEffect(() => {
@@ -216,7 +241,7 @@ const App: React.FC = () => {
           if (soundEnabled) playAlert();
         }
 
-        // Novo: Cálculo de Valuation no Loop
+        // Valuation Calculation
         const currentValuation = calculateValuation({
           ...prev,
           resources: { ...prev.resources, capital: newCapital, receita_passiva: pps },
@@ -232,7 +257,7 @@ const App: React.FC = () => {
           ...prev,
           resources: {
             ...prev.resources,
-            capital: capital + pps, // capital já inclui deduções de multas, somamos pps do tick
+            capital: capital + pps,
             receita_passiva: pps,
             stress: Math.min(100, stress)
           },
@@ -291,8 +316,6 @@ const App: React.FC = () => {
 
   // Telegram MainButton Logic
   useEffect(() => {
-    if (!tg || !tg.MainButton) return;
-
     if (selectedAgentId && currentView === 'agentes') {
       const agent = gameState.agents.find(a => a.id === selectedAgentId);
       if (agent) {
@@ -300,12 +323,7 @@ const App: React.FC = () => {
         const cost = calculateAgentCost(agent.custo_base, owned);
         const canAfford = gameState.resources.capital >= cost;
 
-        tg.MainButton.setText(canAfford ? `INVESTIR $${cost.toLocaleString()}` : `CAPITAL INSUFICIENTE ($${cost.toLocaleString()})`);
-        tg.MainButton.setParams({
-          is_active: canAfford,
-          color: canAfford ? '#ff00ff' : '#222222',
-          text_color: '#ffffff'
-        });
+        telegram.mainButton.setText(canAfford ? `INVESTIR $${cost.toLocaleString()}` : `CAPITAL INSUFICIENTE ($${cost.toLocaleString()})`);
 
         const handleMainClick = () => {
           if (buyAgent(agent)) {
@@ -313,17 +331,17 @@ const App: React.FC = () => {
           }
         };
 
-        tg.MainButton.show();
-        tg.MainButton.onClick(handleMainClick);
+        telegram.mainButton.show();
+        telegram.mainButton.onClick(handleMainClick);
         return () => {
-          tg.MainButton.offClick(handleMainClick);
-          tg.MainButton.hide();
+          telegram.mainButton.offClick(handleMainClick);
+          telegram.mainButton.hide();
         };
       }
     } else {
-      tg.MainButton.hide();
+      telegram.mainButton.hide();
     }
-  }, [selectedAgentId, currentView, gameState.resources.capital, gameState.agents, gameState.inventory, tg, buyAgent]);
+  }, [selectedAgentId, currentView, gameState.resources.capital, gameState.agents, gameState.inventory, buyAgent]);
 
   const handleManualAction = (action: ManualAction) => {
     if (gameState.meta.is_crashed) return;
@@ -354,8 +372,10 @@ const App: React.FC = () => {
     );
   }
 
+  const isLowPerf = useMemo(() => telegram.isLowPerformanceDevice(), []);
+
   return (
-    <div className={`flex flex-col h-full w-full max-w-lg mx-auto bg-[#0a050f] relative overflow-hidden transition-transform duration-100 ${visualAlert || gameState.meta.is_crashed ? 'animate-shake' : ''}`}>
+    <div className={`flex flex-col h-full w-full max-w-lg mx-auto bg-[#0a050f] relative overflow-hidden transition-transform duration-100 ${(visualAlert || gameState.meta.is_crashed) && !isLowPerf ? 'animate-shake' : ''}`}>
       {/* Visual Alert Overlay (Flash Vermelho) */}
       <div className={`fixed inset-0 z-[2000] pointer-events-none transition-opacity duration-300 bg-red-600/20 ${visualAlert ? 'opacity-100' : 'opacity-0'}`} />
 
