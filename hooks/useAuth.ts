@@ -21,7 +21,15 @@ export const useAuth = () => {
           }
         }
       } catch (e) {
-        console.error("Erro ao carregar estado:", e);
+        console.warn("CloudStorage não disponível, tentando LocalStorage:", e);
+        const localSaved = localStorage.getItem(`ceo_state_${userId}`);
+        if (localSaved) {
+          try {
+            setInitialData(JSON.parse(localSaved));
+          } catch (parseError) {
+            console.error("Erro ao dar parse no LocalStorage:", parseError);
+          }
+        }
       } finally {
         setLoading(false);
       }
