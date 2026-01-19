@@ -1,6 +1,3 @@
-
-import { createAlchemyWeb3 } from "@alch/alchemy-web3";
-
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const WEB_APP_URL = "https://agenteflow.vercel.app/";
 
