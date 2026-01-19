@@ -22,6 +22,7 @@ import OfflineEarningsModal from './components/OfflineEarningsModal';
 import SingularityCertificate from './components/SingularityCertificate';
 import IntroOverlay from './components/IntroOverlay';
 import AgentDetailsModal from './components/AgentDetailsModal';
+import WithdrawModal from './components/WithdrawModal';
 import { playAlert, playNotification } from './engine/soundEffects';
 import { useAuth } from './hooks/useAuth';
 
@@ -32,6 +33,7 @@ const App: React.FC = () => {
   const { user, loading: authLoading, initialData } = useAuth();
   const [offlineData, setOfflineData] = useState<{ capital: number; seconds: number } | null>(null);
   const [showSingularity, setShowSingularity] = useState(false);
+  const [showWithdraw, setShowWithdraw] = useState(false);
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
 
   const tg = (window as any).Telegram?.WebApp;
@@ -366,6 +368,7 @@ const App: React.FC = () => {
 
       {offlineData && <OfflineEarningsModal pu={offlineData.capital} seconds={offlineData.seconds} onClose={() => setOfflineData(null)} />}
       {showSingularity && <SingularityCertificate userName={gameState.meta.user?.name || 'CEO'} onClose={() => setShowSingularity(false)} />}
+      {showWithdraw && <WithdrawModal valuation={calculateValuation(gameState).toFixed(0)} onClose={() => setShowWithdraw(false)} />}
 
       {selectedAgentId && currentView === 'agentes' && (
         (() => {
@@ -402,7 +405,7 @@ const App: React.FC = () => {
             gameState={gameState}
             onAction={handleManualAction}
             soundEnabled={soundEnabled}
-            onWithdrawAttempt={() => setCurrentView('raiox')}
+            onWithdrawAttempt={() => setShowWithdraw(true)}
             onSocialReset={() => {
               setGameState(prev => ({
                 ...prev,
