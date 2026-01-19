@@ -91,17 +91,17 @@ const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
       {/* Camada de Cor Pink (Magenta) - Agora só pulsa na entrada (isInitialActive) e na saída (isExiting) */}
       <div className={`absolute inset-0 pointer-events-none z-[511] opacity-[0.02] bg-magenta transition-opacity duration-1000 ${isInitialActive || isExiting ? 'animate-pulse opacity-[0.04]' : 'opacity-[0.01]'}`} />
 
-      {/* Noise Visual nos Cantos */}
-      <div className="absolute top-4 left-4 font-mono text-[8px] text-magenta/20 select-none">
+      {/* Noise Visual nos Cantos - Adicionado safe area top */}
+      <div className="absolute left-6 font-mono text-[8px] text-magenta/20 select-none z-10" style={{ top: 'calc(1.5rem + env(safe-area-inset-top, 0px))' }}>
         ADDR: 0x59aa4EaE743d6...<br />
         MEM_LOAD: 88.4%
       </div>
-      <div className="absolute top-4 right-4 font-mono text-[8px] text-magenta/20 text-right select-none">
+      <div className="absolute right-6 font-mono text-[8px] text-magenta/20 text-right select-none z-10" style={{ top: 'calc(1.5rem + env(safe-area-inset-top, 0px))' }}>
         LATENCY: 12ms<br />
         ENCRYPTION: AES-256
       </div>
 
-      <div className="w-full max-w-md flex-1 flex flex-col justify-center font-mono relative z-20">
+      <div className="w-full max-w-md flex-1 flex flex-col justify-center font-mono relative z-20" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <div className="mb-10 flex items-center gap-3">
           <div className="w-12 h-12 bg-magenta/10 border border-magenta/30 rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(255,0,255,0.2)]">
             <Terminal className="text-magenta" size={24} />
@@ -124,8 +124,8 @@ const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
               <div key={idx} className="flex gap-3 items-start">
                 <span className="text-magenta/40 mt-1 shrink-0">{'>'}</span>
                 <p className={`text-sm md:text-base leading-relaxed tracking-tight font-medium ${config.type === 'error' ? 'text-magenta font-black text-glow' :
-                    config.type === 'instruction' ? 'text-cyan-400/90' :
-                      'text-gray-300'
+                  config.type === 'instruction' ? 'text-cyan-400/90' :
+                    'text-gray-300'
                   }`}>
                   {line}
                   {config.type === 'instruction' && idx < currentLineIdx && (
