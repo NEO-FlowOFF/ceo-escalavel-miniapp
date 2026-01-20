@@ -6,9 +6,10 @@ import { openExternalLink } from '../utils/navigation';
 interface SingularityCertificateProps {
   userName: string;
   onClose: () => void;
+  onReset: () => void;
 }
 
-const SingularityCertificate: React.FC<SingularityCertificateProps> = ({ userName, onClose }) => {
+const SingularityCertificate: React.FC<SingularityCertificateProps> = ({ userName, onClose, onReset }) => {
   const handleConsultancy = () => {
     const text = encodeURIComponent(`Olá Mellø, sou o ${userName}. Alcancei a Singularidade no game e quero transicionar minha infra para o mundo real.`);
     openExternalLink(`https://t.me/neomello?text=${text}`);
@@ -55,9 +56,16 @@ const SingularityCertificate: React.FC<SingularityCertificateProps> = ({ userNam
               <ArrowRight size={18} strokeWidth={3} />
             </button>
 
+            <button
+              onClick={onReset}
+              className="w-full py-4 bg-white/5 border border-white/10 rounded-[20px] text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] hover:bg-magenta/10 hover:border-magenta/30 hover:text-magenta transition-all"
+            >
+              REINICIAR PARA NOVA ESCALA
+            </button>
+
             <div className="flex flex-col items-center gap-1 opacity-40">
               <p className="text-[8px] font-mono uppercase tracking-[0.3em] font-bold text-white">
-                Agendar Consultoria Estratégica
+                Diagnóstico Estratégico Real
               </p>
               <Zap size={10} className="text-yellow-500" />
             </div>

@@ -363,6 +363,23 @@ const App: React.FC = () => {
     }));
   };
 
+  const resetGame = useCallback(() => {
+    telegram.showConfirm("Você deseja reiniciar sua operação? Você manterá seu nome e conquistas, mas o capital e agentes serão resetados para uma nova escala.").then((confirmed) => {
+      if (confirmed) {
+        setGameState({
+          ...INITIAL_GAME_STATE,
+          meta: {
+            ...INITIAL_GAME_STATE.meta,
+            user: gameState.meta.user,
+            start_time: Date.now()
+          }
+        });
+        setShowSingularity(false);
+        showToast("SISTEMA RESETADO. INICIANDO NOVA ESCALA...");
+      }
+    });
+  }, [gameState.meta.user, showToast]);
+
   const isLowPerf = useMemo(() => telegram.isLowPerformanceDevice(), []);
 
   if (authLoading) {
@@ -387,7 +404,13 @@ const App: React.FC = () => {
       )}
 
       {offlineData && <OfflineEarningsModal pu={offlineData.capital} seconds={offlineData.seconds} onClose={() => setOfflineData(null)} />}
-      {showSingularity && <SingularityCertificate userName={gameState.meta.user?.name || 'CEO'} onClose={() => setShowSingularity(false)} />}
+      {showSingularity && (
+        <SingularityCertificate
+          userName={gameState.meta.user?.name || 'CEO'}
+          onClose={() => setShowSingularity(false)}
+          onReset={resetGame}
+        />
+      )}
       {showWithdraw && (
         <WithdrawModal
           valuation={calculateValuation(gameState).toFixed(0)}

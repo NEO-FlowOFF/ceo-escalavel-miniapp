@@ -172,27 +172,44 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
             const automated = isActionAutomated(action.id, inventory, agents);
             const currentManualGain = calculateManualGain(action, meta.capital_total_gerado);
             return (
-              <button key={action.id} disabled={automated || meta.is_crashed} onClick={(e) => handleInteraction(e, action)} className={`group relative flex items-center justify-between p-5 rounded-[22px] border transition-all duration-300 active:scale-[0.96] ${automated ? 'bg-black/20 border-white/5 opacity-40' : 'bg-white/5 border-white/10 hover:border-magenta shadow-xl'}`}>
-                <div className="flex flex-col items-start text-left">
+              <button
+                key={action.id}
+                disabled={automated || meta.is_crashed}
+                onClick={(e) => handleInteraction(e, action)}
+                className={`group relative flex items-center justify-between p-5 rounded-[22px] border transition-all duration-300 active:scale-[0.96] 
+                  ${automated
+                    ? 'bg-black/20 border-white/5 opacity-40'
+                    : 'bg-white/5 border-magenta/30 hover:border-magenta shadow-[0_0_20px_rgba(255,0,255,0.05)] animate-pulse-subtle'
+                  }`}
+              >
+                {!automated && (
+                  <div className="absolute -inset-0.5 bg-magenta/20 rounded-[22px] blur opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                )}
+
+                <div className="flex flex-col items-start text-left relative z-10">
                   <span className={`text-base font-bold tracking-tight ${automated ? 'text-gray-600' : 'text-white'}`}>{action.label}</span>
                   {!automated && (
                     <div className="flex gap-2.5 mt-1.5">
-                      <div className="flex items-center gap-1 bg-magenta/10 px-2 py-0.5 rounded-lg">
-                        <span className="text-[9px] font-bold text-magenta">+$ {currentManualGain}</span>
+                      <div className="flex items-center gap-1 bg-magenta/10 px-2 py-0.5 rounded-lg border border-magenta/20">
+                        <span className="text-[9px] font-black text-magenta uppercase tracking-tighter cursor-default">AÇÃO MANUAL</span>
+                        <div className="w-1 h-1 rounded-full bg-magenta animate-ping" />
                       </div>
-                      {currentManualGain > action.capital_gain && (
-                        <div className="flex items-center gap-1 bg-green-500/10 px-2 py-0.5 rounded-lg border border-green-500/20">
-                          <TrendingUp size={8} className="text-green-500" />
-                          <span className="text-[8px] font-bold text-green-500">BÔNUS STATUS</span>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-1 bg-white/5 px-2 py-0.5 rounded-lg">
+                        <span className="text-[9px] font-bold text-gray-400">+$ {currentManualGain}</span>
+                      </div>
                     </div>
                   )}
                 </div>
+
                 {automated ? (
-                  <div className="flex items-center gap-1.5 text-green-500 bg-green-500/10 px-3 py-1.5 rounded-full border border-green-500/20"><CheckCircle2 size={16} strokeWidth={3} /><span className="text-[10px] font-bold uppercase tracking-tight">AUTÔNOMO</span></div>
+                  <div className="flex items-center gap-1.5 text-green-500 bg-green-500/10 px-3 py-1.5 rounded-full border border-green-500/20 relative z-10 font-black italic">
+                    <CheckCircle2 size={14} strokeWidth={3} />
+                    <span className="text-[9px] uppercase tracking-tight">AUTO</span>
+                  </div>
                 ) : (
-                  <div className="w-10 h-10 rounded-2xl bg-magenta/10 border border-magenta/20 flex items-center justify-center text-magenta group-active:bg-magenta group-active:text-white transition-all"><span className="text-xl font-light leading-none">+</span></div>
+                  <div className="w-10 h-10 rounded-2xl bg-magenta/20 border border-magenta/40 flex items-center justify-center text-magenta group-active:bg-magenta group-active:text-white transition-all relative z-10 shadow-[0_0_15px_rgba(255,0,255,0.2)]">
+                    <span className="text-xl font-light leading-none">+</span>
+                  </div>
                 )}
               </button>
             );

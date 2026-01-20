@@ -23,6 +23,10 @@ const TopBar: React.FC<TopBarProps> = ({ pu, pps, stress, soundEnabled, onToggle
   const isStressed = stress > 70;
   const isCritical = stress > 85;
 
+  // Meta da Singularidade
+  const SINGULARITY_PPS_GOAL = 1500; // Aumentado para escala épica
+  const singularityProgress = Math.min(100, (pps / SINGULARITY_PPS_GOAL) * 100);
+
   const handleStart = (type: MetricType) => {
     setPressingMetric(type);
     timerRef.current = window.setTimeout(() => {
@@ -112,6 +116,15 @@ const TopBar: React.FC<TopBarProps> = ({ pu, pps, stress, soundEnabled, onToggle
           ? 'bg-red-900/10 border-red-600/50'
           : 'bg-[#0a050f]/60 border-[#ffffff10]'
         }`}>
+
+        {/* Goal Indicator */}
+        <div className="absolute top-[env(safe-area-inset-top)] right-5 flex items-center gap-2 px-2 py-1 bg-magenta/5 border border-magenta/10 rounded-full group hover:bg-magenta/10 transition-all cursor-help mt-1">
+          <Target size={10} className="text-magenta opacity-60 group-hover:opacity-100" />
+          <div className="w-12 h-1 bg-gray-900 rounded-full overflow-hidden shadow-inner">
+            <div className="h-full bg-magenta transition-all duration-1000 shadow-[0_0_8px_#ff00ff]" style={{ width: `${singularityProgress}%` }} />
+          </div>
+          <span className="text-[7px] font-black text-magenta tracking-tighter opacity-60 group-hover:opacity-100">{singularityProgress.toFixed(0)}%</span>
+        </div>
 
         {/* Console Header */}
         <div className="flex items-center gap-3 mb-3">
@@ -211,6 +224,7 @@ const TopBar: React.FC<TopBarProps> = ({ pu, pps, stress, soundEnabled, onToggle
     </>
   );
 };
+
 
 export default TopBar;
 

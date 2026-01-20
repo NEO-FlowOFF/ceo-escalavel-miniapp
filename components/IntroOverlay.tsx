@@ -10,11 +10,13 @@ interface IntroOverlayProps {
 const INTRO_SCRIPT = [
   { text: "> INICIANDO PROTOCOLO Agente Flow v2.5...", type: 'system' },
   { text: "> ESCANEANDO SISTEMA ATUAL... ERRO: DEPENDÊNCIA HUMANA DETECTADA.", type: 'error' },
-  { text: "> INSTRUÇÃO 1: Na Dashboard, clique nos BOTÕES DE AÇÃO para gerar capital.", type: 'instruction' },
-  { text: "> INSTRUÇÃO 2: Use a aba AGENTES para automatizar e evitar o Colapso (Burnout).", type: 'instruction' }
+  { text: "> O JOGO: Você é um CEO em busca da Escala Infinita. Não seja o gargalo.", type: 'instruction' },
+  { text: "> INSTRUÇÃO 1: Clique nos botões de OPERAÇÃO para gerar capital inicial.", type: 'instruction' },
+  { text: "> INSTRUÇÃO 2: Use o CAPITAL para comprar AGENTES e automatizar sua rotina.", type: 'instruction' },
+  { text: "> CUIDADO: Agentes reduzem seu STRESS. Se o Stress atingir 100%, você entra em BURNOUT.", type: 'error' }
 ];
 
-const LEGAL_NOTICE = "> AVISO LEGAL: Esta é uma simulação de mercado. O $NEOFLW exibido é uma projeção de valuation baseada em performance.";
+const LEGAL_NOTICE = "> AVISO LEGAL: Esta é uma simulação educacional e de entretenimento. Os valores em $NEOFLW são virtuais e representam o valuation teórico da sua operação no simulador.";
 
 const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
   const [currentLineIdx, setCurrentLineIdx] = useState(0);
@@ -24,6 +26,7 @@ const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
   const [isExiting, setIsExiting] = useState(false);
   const [isFastForward, setIsFastForward] = useState(false);
   const [isInitialActive, setIsInitialActive] = useState(true);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   // Remove o pulso inicial após 2 segundos de imersão
   useEffect(() => {
@@ -54,12 +57,12 @@ const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
           setCurrentCharIdx(currentCharIdx + 1);
 
           if (currentCharIdx % 3 === 0) playTyping();
-        }, isFastForward ? 5 : 30);
+        }, isFastForward ? 5 : 25);
         return () => clearTimeout(timeout);
       } else {
-        let pauseDuration = isFastForward ? 50 : 400;
-        if (currentLineIdx === 0) pauseDuration = isFastForward ? 100 : 1200;
-        if (currentLineIdx === 1) pauseDuration = isFastForward ? 200 : 2500;
+        let pauseDuration = isFastForward ? 50 : 300;
+        if (currentLineIdx === 0) pauseDuration = isFastForward ? 100 : 800;
+        if (currentLineIdx === 1) pauseDuration = isFastForward ? 200 : 1500;
 
         const timeout = setTimeout(() => {
           setCurrentLineIdx(currentLineIdx + 1);
@@ -73,6 +76,7 @@ const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
   }, [currentLineIdx, currentCharIdx, displayedLines, isFastForward]);
 
   const handleStart = () => {
+    if (!termsAccepted) return;
     playNotification();
     setIsExiting(true);
     setTimeout(() => {
@@ -117,13 +121,13 @@ const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
           )}
         </div>
 
-        <div className="space-y-5 min-h-[220px]">
+        <div className="space-y-4 min-h-[220px]">
           {displayedLines.map((line, idx) => {
             const config = INTRO_SCRIPT[idx];
             return (
               <div key={idx} className="flex gap-3 items-start">
                 <span className="text-magenta/40 mt-1 shrink-0">{'>'}</span>
-                <p className={`text-sm md:text-base leading-relaxed tracking-tight font-medium ${config.type === 'error' ? 'text-magenta font-black text-glow' :
+                <p className={`text-[13px] md:text-sm leading-relaxed tracking-tight font-medium ${config.type === 'error' ? 'text-magenta font-black text-glow' :
                   config.type === 'instruction' ? 'text-cyan-400/90' :
                     'text-gray-300'
                   }`}>
@@ -141,27 +145,41 @@ const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
         </div>
 
         <div className={`mt-10 transition-all duration-1000 ${isFinished ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
+          <div className="mb-6 flex items-start gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
+            <input
+              type="checkbox"
+              id="terms"
+              checked={termsAccepted}
+              onChange={() => setTermsAccepted(!termsAccepted)}
+              className="mt-1 w-5 h-5 rounded border-magenta/40 bg-black text-magenta focus:ring-magenta"
+            />
+            <label htmlFor="terms" className="text-[10px] text-gray-500 leading-tight cursor-pointer select-none">
+              Eu entendo que este é um simulador gamificado e concordo com os termos de uso e privacidade da plataforma NEØFLW.
+            </label>
+          </div>
+
           <div className="relative group mb-8">
-            <div className="absolute -inset-1 bg-magenta/40 rounded-[24px] blur-xl group-hover:bg-magenta/60 transition-all duration-500 animate-pulse" />
+            <div className={`absolute -inset-1 bg-magenta/40 rounded-[24px] blur-xl transition-all duration-500 ${termsAccepted ? 'group-hover:bg-magenta/60 animate-pulse' : 'bg-gray-800/40 opacity-0'}`} />
 
             <button
               onClick={(e) => { e.stopPropagation(); handleStart(); }}
-              className="w-full relative py-6 px-4 bg-black/40 backdrop-blur-xl border border-magenta/50 rounded-[22px] overflow-hidden transition-all active:scale-[0.97] group"
+              disabled={!termsAccepted}
+              className={`w-full relative py-6 px-4 bg-black/40 backdrop-blur-xl border rounded-[22px] overflow-hidden transition-all active:scale-[0.97] group ${termsAccepted ? 'border-magenta/50' : 'border-white/10 opacity-50 grayscale'}`}
             >
-              <div className="absolute inset-0 opacity-20 group-hover:opacity-40 transition-opacity bg-[conic-gradient(from_0deg_at_50%_50%,#ff00ff_0%,#000_25%,#ff00ff_50%,#000_75%,#ff00ff_100%)] animate-[spin_4s_linear_infinite]" />
+              {termsAccepted && <div className="absolute inset-0 opacity-20 group-hover:opacity-40 transition-opacity bg-[conic-gradient(from_0deg_at_50%_50%,#ff00ff_0%,#000_25%,#ff00ff_50%,#000_75%,#ff00ff_100%)] animate-[spin_4s_linear_infinite]" />}
               <div className="absolute inset-y-0 left-0 w-1 bg-white/40 shadow-[0_0_15px_#fff] -translate-x-full animate-[scan_3s_linear_infinite] z-20" />
 
               <div className="relative flex flex-col items-center gap-2 z-10">
                 <div className="flex items-center gap-4 text-white font-black uppercase tracking-[0.3em] text-xs md:text-sm">
-                  <Cpu size={18} className="text-magenta animate-pulse" />
+                  <Cpu size={18} className={`${termsAccepted ? 'text-magenta animate-pulse' : 'text-gray-500'}`} />
                   CONECTAR COM NEØFLW
-                  <ArrowRight size={18} strokeWidth={3} className="text-magenta group-hover:translate-x-2 transition-transform duration-300" />
+                  <ArrowRight size={18} strokeWidth={3} className={`transition-transform duration-300 ${termsAccepted ? 'text-magenta group-hover:translate-x-2' : 'text-gray-500'}`} />
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div className="h-0.5 w-8 bg-magenta/30 rounded-full" />
-                  <span className="text-[8px] font-bold text-magenta/60 uppercase tracking-widest">Acesso Autorizado</span>
-                  <div className="h-0.5 w-8 bg-magenta/30 rounded-full" />
+                  <div className="h-0.5 w-8 bg-white/10 rounded-full" />
+                  <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Acesso Autorizado</span>
+                  <div className="h-0.5 w-8 bg-white/10 rounded-full" />
                 </div>
               </div>
             </button>

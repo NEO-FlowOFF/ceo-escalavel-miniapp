@@ -55,14 +55,11 @@ const NeoTerminal: React.FC<NeoTerminalProps> = ({ gameState, soundEnabled }) =>
 
     // 1. Mensagens Críticas (Sempre Verificadas)
     if (meta.is_crashed) {
-      if (burnoutProRef.current < 2) {
+      if (burnoutProRef.current < 1) {
         priorityMessage = AUDITOR_MESSAGES.CRITICAL.CRASH(userName);
-        burnoutProRef.current += 1;
-      } else {
-        priorityMessage = AUDITOR_MESSAGES.EASTER_EGG.BURNOUT_PRO.text;
-        currentCta = AUDITOR_MESSAGES.EASTER_EGG.BURNOUT_PRO.cta;
+        burnoutProRef.current = 1;
+        isHighPriority = true;
       }
-      isHighPriority = true;
     } else if (currentValuation > 500 && playMinutes < 3 && !fastGrowthRef.current) {
       priorityMessage = AUDITOR_MESSAGES.EASTER_EGG.FAST_GROWTH.text;
       currentCta = AUDITOR_MESSAGES.EASTER_EGG.FAST_GROWTH.cta;
@@ -93,7 +90,7 @@ const NeoTerminal: React.FC<NeoTerminalProps> = ({ gameState, soundEnabled }) =>
       priorityMessage = AUDITOR_MESSAGES.CRITICAL.INFRA_DOWNTIME;
       infraEventTriggeredRef.current = true;
       isHighPriority = true;
-    } else if (stress > 95) {
+    } else if (stress > 95 && lastMessageRef.current !== AUDITOR_MESSAGES.CRITICAL.BURNOUT_WARNING) {
       priorityMessage = AUDITOR_MESSAGES.CRITICAL.BURNOUT_WARNING;
       isHighPriority = true;
     }
@@ -109,12 +106,12 @@ const NeoTerminal: React.FC<NeoTerminalProps> = ({ gameState, soundEnabled }) =>
       priorityMessage = AUDITOR_MESSAGES.SYSTEM.INITIAL(userName);
     }
 
-    // 3. Conselhos Contextuais (Com Cooldown de 60s)
+    // 3. Conselhos Contextuais (Com Cooldown de 120s)
     else {
       const nextAgent = agents.find(a => totalCap >= a.desbloqueia_em_capital_total);
       const nextAgentCost = nextAgent ? calculateAgentCost(nextAgent.custo_base, inventory.find(i => i.id === nextAgent.id)?.quantity || 0) : 0;
 
-      const isAdviceCooldownOver = now - lastAdviceTimeRef.current > 60000;
+      const isAdviceCooldownOver = now - lastAdviceTimeRef.current > 120000;
 
       if (nextAgentCost > 0 && resources.capital > nextAgentCost * 2 && isAdviceCooldownOver) {
         priorityMessage = AUDITOR_MESSAGES.ADVICE.IDLE_CAPITAL;
@@ -122,8 +119,13 @@ const NeoTerminal: React.FC<NeoTerminalProps> = ({ gameState, soundEnabled }) =>
       }
     }
 
+    // Reset burnout ref when not crashed
+    if (!meta.is_crashed && burnoutProRef.current > 0) {
+      burnoutProRef.current = 0;
+    }
+
     // 4. Lógica de Troca de Mensagem
-    const shouldUpdateIdle = now - lastIdleSwitchRef.current > 25000;
+    const shouldUpdateIdle = now - lastIdleSwitchRef.current > 45000;
 
     if (priorityMessage && priorityMessage !== lastMessageRef.current) {
       // Se houver uma mensagem de prioridade NOVA, exibe imediatamente
@@ -148,7 +150,7 @@ const NeoTerminal: React.FC<NeoTerminalProps> = ({ gameState, soundEnabled }) =>
         if (isHighPriority) playAlert();
         else playNotification();
       }
-    } else if (shouldUpdateIdle) {
+    } else if (shouldUpdateIdle && !priorityMessage && !isTyping) {
       // Se não houver prioridade NOVA, mas for hora de atualizar, roda pensamentos IDLE
       const idlePool = AUDITOR_MESSAGES.IDLE_THOUGHTS;
       let nextIdle = lastMessageRef.current;
@@ -176,7 +178,9 @@ const NeoTerminal: React.FC<NeoTerminalProps> = ({ gameState, soundEnabled }) =>
     gameState.resources.capital,
     userName,
     soundEnabled,
-    gameState // Adicionado para garantir re-execução em mudanças de capital total para easter eggs
+    // Removido gameState inteiro para evitar triggers de 1s, usando apenas o necessário
+    gameState.resources.stress,
+    gameState.meta.capital_total_gerado
   ]);
 
   useEffect(() => {
