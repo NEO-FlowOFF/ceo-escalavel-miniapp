@@ -25,9 +25,12 @@ import IntroOverlay from './components/IntroOverlay';
 import AgentDetailsModal from './components/AgentDetailsModal';
 import WithdrawModal from './components/WithdrawModal';
 import { StoreModal } from './components/StoreModal';
+import { DailyTasksModal } from './components/DailyTasksModal';
+import { LeaderboardModal } from './components/LeaderboardModal';
 import { playAlert, playNotification } from './engine/soundEffects';
 import { useAuth } from './hooks/useAuth';
 import telegram from './utils/telegramUtils';
+import { DailyTask, DayStreak, DAILY_TASKS, calculateStreak } from './utils/dailyTasks';
 
 const CRASH_DURATION_MS = 12000;
 const CLICK_THRESHOLD_MS = 100;
@@ -38,6 +41,12 @@ const App: React.FC = () => {
   const [showSingularity, setShowSingularity] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
   const [showStore, setShowStore] = useState(false);
+  const [showDailyTasks, setShowDailyTasks] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+
+  const [dailyTasks, setDailyTasks] = useState<DailyTask[]>(DAILY_TASKS);
+  const [streak, setStreak] = useState<DayStreak>({ current: 0, lastLoginDate: 0 });
+
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
 
   const [showIntro, setShowIntro] = useState(() => {
@@ -88,6 +97,61 @@ const App: React.FC = () => {
     telegram.settingsButton.onClick(handleSettings);
     return () => telegram.settingsButton.offClick(handleSettings);
   }, []);
+
+  // Listener para evento 'open-tasks' (Similar ao open-store)
+  useEffect(() => {
+    const handleOpenTasks = () => setShowDailyTasks(true);
+    const handleOpenLeaderboard = () => setShowLeaderboard(true);
+
+    window.addEventListener('open-tasks', handleOpenTasks);
+    window.addEventListener('open-leaderboard', handleOpenLeaderboard);
+
+    return () => {
+      window.removeEventListener('open-tasks', handleOpenTasks);
+      window.removeEventListener('open-leaderboard', handleOpenLeaderboard);
+    };
+  }, []);
+
+  // Daily Check Logic
+  useEffect(() => {
+    const savedStreakStr = localStorage.getItem('ceo_streak');
+    const savedTasksStr = localStorage.getItem('ceo_daily_tasks');
+    const lastLogin = savedStreakStr ? JSON.parse(savedStreakStr).lastLoginDate : 0;
+
+    const newStreakValue = calculateStreak(lastLogin);
+
+    let currentStreak = savedStreakStr ? JSON.parse(savedStreakStr) : { current: 1, lastLoginDate: Date.now() };
+
+    if (newStreakValue === 1) { // Login consecutivo
+      currentStreak = { current: currentStreak.current + 1, lastLoginDate: Date.now() };
+      showToast(`STREAK AUMENTOU! ${currentStreak.current} DIAS 🔥`);
+    } else if (newStreakValue === -1) { // Quebrou streak
+      currentStreak = { current: 1, lastLoginDate: Date.now() };
+      showToast(`STREAK PERDIDA! REINICIANDO...`);
+    } else {
+      // Mesmo dia, só atualiza timestamp se precisar
+      currentStreak.lastLoginDate = Date.now();
+    }
+
+    setStreak(currentStreak);
+    localStorage.setItem('ceo_streak', JSON.stringify(currentStreak));
+
+    // Reset Tasks if new day
+    const today = new Date().toDateString();
+    const lastTaskDate = localStorage.getItem('ceo_task_date');
+
+    if (lastTaskDate !== today) {
+      setDailyTasks(DAILY_TASKS.map(t => ({ ...t, current: 0, completed: false })));
+      localStorage.setItem('ceo_task_date', today);
+    } else if (savedTasksStr) {
+      setDailyTasks(JSON.parse(savedTasksStr));
+    }
+  }, []);
+
+  // Persist Tasks on Change
+  useEffect(() => {
+    localStorage.setItem('ceo_daily_tasks', JSON.stringify(dailyTasks));
+  }, [dailyTasks]);
 
   // Listener para evento 'open-store'
   useEffect(() => {
@@ -357,6 +421,12 @@ const App: React.FC = () => {
         const handleMainClick = () => {
           if (buyAgent(agent)) {
             setSelectedAgentId(null);
+            // Daily Task: Buy Agent
+            setDailyTasks(prev => prev.map(t =>
+              t.id === 'task_agent' && !t.completed
+                ? { ...t, current: Math.min(t.target, t.current + 1) }
+                : t
+            ));
           }
         };
 
@@ -377,6 +447,13 @@ const App: React.FC = () => {
     const now = Date.now();
     if (now - lastClickTime.current < CLICK_THRESHOLD_MS) return;
     lastClickTime.current = now;
+
+    // Daily Task: Tracker de Cliques
+    setDailyTasks(prev => prev.map(t =>
+      t.id === 'task_clicks' && !t.completed
+        ? { ...t, current: Math.min(t.target, t.current + 1) }
+        : t
+    ));
 
     import('./utils/tracing').then(({ withSpanSync }) => {
       withSpanSync('game.manual_action', (span) => {
@@ -476,8 +553,6 @@ const App: React.FC = () => {
               newResources.stress = 0;
               newMeta.is_crashed = false;
               newMeta.crash_end_time = 0;
-            } else if (item.effect_type === 'time_warp') {
-              // Not implemented yet
             }
 
             return {
@@ -487,6 +562,39 @@ const App: React.FC = () => {
             };
           });
         }}
+      />
+
+      <DailyTasksModal
+        isOpen={showDailyTasks}
+        onClose={() => setShowDailyTasks(false)}
+        streak={streak}
+        tasks={dailyTasks}
+        onClaim={(taskId) => {
+          const task = dailyTasks.find(t => t.id === taskId);
+          if (!task || task.completed) return;
+
+          triggerHaptic('success');
+          showToast(`RECOMPENSA RESGATADA: ${task.reward}`);
+
+          // Apply Reward Logic
+          setGameState(prev => {
+            let r = { ...prev.resources };
+            if (taskId === 'task_login') r.capital += (r.capital * 0.10);
+            if (taskId === 'task_clicks') r.stress = Math.max(0, r.stress - 20);
+            if (taskId === 'task_agent') r.capital += 500;
+            return { ...prev, resources: r };
+          });
+
+          setDailyTasks(prev => prev.map(t => t.id === taskId ? { ...t, completed: true } : t));
+        }}
+      />
+
+      <LeaderboardModal
+        isOpen={showLeaderboard}
+        onClose={() => setShowLeaderboard(false)}
+        currentValuation={calculateValuation(gameState)}
+        userName={gameState.meta.user?.name || 'CEO'}
+        userId={gameState.meta.user?.id || 0}
       />
 
       {selectedAgentId && currentView === 'agentes' && (

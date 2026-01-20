@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useCallback } from 'react';
-import { Brain, Volume2, VolumeX, X, AlertCircle, TrendingUp, DollarSign, Target, Info, Star } from 'lucide-react';
+import { Brain, Volume2, VolumeX, X, AlertCircle, TrendingUp, DollarSign, Target, Info, Star, Trophy } from 'lucide-react';
 import { TOKEN_TICKER } from '../constants';
 
 interface TopBarProps {
@@ -219,13 +219,27 @@ const TopBar: React.FC<TopBarProps> = ({ pu, pps, stress, soundEnabled, onToggle
           </button>
 
           <button
-            onClick={() => {
-              // Dispara evento customizado para abrir a loja
-              window.dispatchEvent(new CustomEvent('open-store'));
-            }}
+            onClick={() => window.dispatchEvent(new CustomEvent('open-store'))}
             className="ml-1 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-full text-yellow-500 hover:bg-yellow-500/20 transition-all active:scale-90"
           >
             <Star size={14} className="fill-yellow-500/20" />
+          </button>
+
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('open-tasks'))}
+            className="ml-1 p-2 bg-orange-500/10 border border-orange-500/20 rounded-full text-orange-500 hover:bg-orange-500/20 transition-all active:scale-90 relative"
+          >
+            <Target size={14} />
+            {/* Ping de notificação se houver tasks (poderia ser prop) */}
+            <div className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full animate-ping" />
+            <div className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
+          </button>
+
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('open-leaderboard'))}
+            className="ml-1 p-2 bg-purple-500/10 border border-purple-500/20 rounded-full text-purple-500 hover:bg-purple-500/20 transition-all active:scale-90"
+          >
+            <Trophy size={14} />
           </button>
         </div>
       </div>
