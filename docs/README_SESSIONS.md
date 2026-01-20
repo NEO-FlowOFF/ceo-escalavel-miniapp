@@ -20,6 +20,11 @@ Este documento resume o estado atual do **CEO Escalável MiniApp** e mapeia o ro
 - [x] **Share to X / Warpcast:** Compartilhamento de resultados com texto dinâmico.
 - [x] **X-Ray Dashboard:** Otimização visual para snapshots e prints de auditoria.
 
+### Monetização (Telegram Stars)
+- [x] **Loja Premium:** UI dedicada para compra de assets digitais.
+- [x] **Integração de Pagamentos:** Backend serverless para processar invoices via Bot API.
+- [x] **Produtos Digitais:** Venda de Capital e 'Seguro Burnout'.
+
 ---
 
 ## ⦿ O que seria ideal fazer [ ]
