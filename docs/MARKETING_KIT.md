@@ -30,6 +30,12 @@
 > 
 > Tente alcançar a Singularidade: https://t.me/AgenteFlow_Bot ⦿ #NEOFLW #AI #GlobalSystems
 
+### Comandos Habilitados (BotFather)
+- **/start** - Iniciar o Protocolo Agent Flow
+- **/play** - Abrir o Console de Comando
+- **/app** - Abrir o Console de Operação
+- **/help** - Ver protocolos de suporte e ajuda
+
 **Opção 2 (O resultado):**
 > +40 horas recuperadas por dia. 0 funcionários humanos. 
 > Escalei minha operação pro nível "Arquiteto de Sistemas" no Agente Flow. 

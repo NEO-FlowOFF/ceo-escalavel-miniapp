@@ -76,6 +76,13 @@ export default async function handler(req, res) {
                 [{ text: "🚀 INICIAR OPERAÇÃO", web_app: { url: WEB_APP_URL } }]
             ]
         };
+    } else if (text === '/play') {
+        responseText = "Gamificação iniciada. Acesse o console para continuar:";
+        replyMarkup = {
+            inline_keyboard: [
+                [{ text: "🎮 JOGAR AGORA", web_app: { url: WEB_APP_URL } }]
+            ]
+        };
     } else if (text === '/help') {
         responseText = `**PROTOCOLO DE SUPORTE**\n\n` +
             `Se você precisa de diagnósticos reais para escalar sua operação fora da simulação:\n\n` +
