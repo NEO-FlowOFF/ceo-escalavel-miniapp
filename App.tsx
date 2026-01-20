@@ -31,6 +31,7 @@ import { playAlert, playNotification } from './engine/soundEffects';
 import { useAuth } from './hooks/useAuth';
 import telegram from './utils/telegramUtils';
 import { DailyTask, DayStreak, DAILY_TASKS, calculateStreak } from './utils/dailyTasks';
+import { CloudSaveService } from './utils/cloudSave';
 
 const CRASH_DURATION_MS = 12000;
 const CLICK_THRESHOLD_MS = 100;
@@ -152,6 +153,23 @@ const App: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('ceo_daily_tasks', JSON.stringify(dailyTasks));
   }, [dailyTasks]);
+
+  // Cloud Save Auto-Sync
+  useEffect(() => {
+    if (!gameState.meta.user?.id) return;
+
+    const syncInterval = setInterval(async () => {
+      await CloudSaveService.save(gameState.meta.user!.id.toString(), gameState);
+    }, 60000); // 1 Minute
+
+    return () => clearInterval(syncInterval);
+  }, [gameState.meta.user?.id, gameState]);
+
+  // Local Persistence (Backup/Offline)
+  useEffect(() => {
+    localStorage.setItem('ceo_game_state', JSON.stringify(gameState));
+  }, [gameState]);
+
 
   // Listener para evento 'open-store'
   useEffect(() => {
