@@ -41,6 +41,27 @@ Processamento de escalabilidade B2B para Telegram. O sistema transforma o gargal
 
 ---
 
+## ⬡ Web3 Integration
+
+### Official Token: $NEOFLW
+
+-  **Network**: Base Mainnet (Chain ID: 8453)
+-  **Contract**: `0xF4Fbd30e3Ea69457adD30F7C3D6fde25f7D8Db26`
+-  **Symbol**: NEOFLW
+-  **Supply**: 1,000,000,000 (1 billion)
+-  **Explorer**: [BaseScan](https://basescan.org/address/0xF4Fbd30e3Ea69457adD30F7C3D6fde25f7D8Db26)
+
+#### Features
+- ✅ ERC20Permit (Gasless transactions)
+- ✅ Bridge Minter Role (Multichain ready)
+- ✅ Anti-bot Protection
+- ✅ Immutable Supply Cap
+- ✅ Burnable
+
+📖 **Docs**: [Deployment History](./docs/DEPLOYMENT_HISTORY.md) | [Web3 Roadmap](./docs/ROADMAP_WEB3.md)
+
+---
+
 ## Contact
 
 [neo@neoprotocol.space](mailto:neo@neoprotocol.space)

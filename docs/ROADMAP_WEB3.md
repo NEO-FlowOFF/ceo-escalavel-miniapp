@@ -1,11 +1,12 @@
 # Roadmap Web3 - Lançamento $NEOFLW
 
-Planejamento estratégico para a transição do ecossistema para a Mainnet Polygon e listagem oficial.
+Planejamento estratégico para a expansão multichain do ecossistema e listagem oficial.
 
-## Fase 1: Smart Contract & Segurança [ ]
-- [ ] **Verificação On-Chain:** Validar e publicar o código-fonte do contrato `0x59aa...` no PolygonScan.
-- [ ] **Auditoria de Contrato:** Revisão de segurança nas funções de Mint/Burn e taxas.
-- [ ] **Renúncia de Propriedade (Opcional):** Decidir sobre o lock de funções administrativas para aumentar a confiança dos holders.
+## Fase 1: Smart Contract & Segurança [✅ CONCLUÍDA]
+- [✅] **Deploy Base Mainnet:** Token NEOFLW deployado com sucesso na Base Mainnet
+- [✅] **Verificação On-Chain:** Código-fonte verificado no BaseScan (`0xF4Fbd30e3Ea69457adD30F7C3D6fde25f7D8Db26`)
+- [✅] **Auditoria de Contrato:** Implementadas proteções de segurança (rate limiting, cooldown, reentrancy guard)
+- [ ] **Renúncia de Propriedade (Opcional):** Decidir sobre o lock de funções administrativas para aumentar a confiança dos holders
 
 ## Fase 2: Presença & Social [ ]
 - [ ] **Identidade Visual:** Criar assets da marca (Logo, Banners) seguindo a estética dark/magenta do app.
@@ -15,8 +16,8 @@ Planejamento estratégico para a transição do ecossistema para a Mainnet Polyg
 - [ ] **Perfil na Polygon:** Atualizar metadados do token (site, redes, descrição) no explorador de blocos.
 
 ## Fase 3: Liquidez & Mercado [ ]
-- [ ] **Criação de Pool (DEX):** Implementar liquidez inicial na QuickSwap ou Uniswap (Par $NEOFLW/MATIC ou $NEOFLW/USDC).
-- [ ] **Locked Liquidity:** Bloquear os tokens da pool (LP Tokens) via serviço de locker (ex: Unicrypt) para evitar Rug Pull.
+- [ ] **Criação de Pool (DEX):** Implementar liquidez inicial na Uniswap V3 (Base) ou Aerodrome (Par $NEOFLW/ETH ou $NEOFLW/USDC).
+- [ ] **Locked Liquidity:** Bloquear os tokens da pool (LP Tokens) via serviço de locker (ex: Unicrypt, Team Finance) para evitar Rug Pull.
 - [ ] **Listagem em Rastreadores:** Submeter token para CoinGecko e CoinMarketCap.
 
 ## Fase 4: Integração com MiniApp [ ]
