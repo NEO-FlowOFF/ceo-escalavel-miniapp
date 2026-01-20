@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { GameState, View, Agent, ManualAction } from './types';
 import { INITIAL_GAME_STATE, STATUS_MILESTONES } from './constants';
 import {
@@ -121,8 +122,17 @@ const App: React.FC = () => {
     if (now - lastSaveTime.current < 5000) return;
     lastSaveTime.current = now;
 
-    const data = JSON.stringify(state);
-    telegram.cloudStorage.setItem(`ceo_state_${user?.id}`, data);
+    import('./utils/tracing').then(({ withSpanSync }) => {
+      withSpanSync('game.persist_state', (span) => {
+        const data = JSON.stringify(state);
+        telegram.cloudStorage.setItem(`ceo_state_${user?.id}`, data);
+        span.setAttributes({
+          'user.id': user?.id || 'anonymous',
+          'game.valuation': calculateValuation(state).toFixed(2),
+          'payload.size': data.length
+        });
+      });
+    });
   }, [user?.id]);
 
   // Haptic Feedback Helper
@@ -291,28 +301,38 @@ const App: React.FC = () => {
     const cost = calculateAgentCost(agent.custo_base, currentOwned);
 
     if (gameState.resources.capital >= cost) {
-      setGameState(prev => {
-        const newInventory = [...prev.inventory];
-        const index = newInventory.findIndex(i => i.id === agent.id);
-        if (index >= 0) newInventory[index].quantity += 1;
-        else newInventory.push({ id: agent.id, quantity: 1 });
+      import('./utils/tracing').then(({ withSpanSync }) => {
+        withSpanSync('game.buy_agent', (span) => {
+          span.setAttributes({
+            'agent.id': agent.id,
+            'agent.cost': cost,
+            'agent.new_quantity': currentOwned + 1
+          });
 
-        return {
-          ...prev,
-          resources: {
-            ...prev.resources,
-            capital: prev.resources.capital - cost,
-            horas_manuais_eliminadas: prev.resources.horas_manuais_eliminadas + (agent.economia_diaria_minutos / 60)
-          },
-          inventory: newInventory
-        };
+          setGameState(prev => {
+            const newInventory = [...prev.inventory];
+            const index = newInventory.findIndex(i => i.id === agent.id);
+            if (index >= 0) newInventory[index].quantity += 1;
+            else newInventory.push({ id: agent.id, quantity: 1 });
+
+            return {
+              ...prev,
+              resources: {
+                ...prev.resources,
+                capital: prev.resources.capital - cost,
+                horas_manuais_eliminadas: prev.resources.horas_manuais_eliminadas + (agent.economia_diaria_minutos / 60)
+              },
+              inventory: newInventory
+            };
+          });
+        });
       });
       triggerHaptic('success');
       showToast(`ROI: +${agent.economia_diaria_minutos}min/dia recuperados.`);
       return true;
     }
     return false;
-  }, [gameState.resources.capital, gameState.inventory, triggerHaptic]);
+  }, [gameState.resources.capital, gameState.inventory, triggerHaptic, showToast]);
 
   // Telegram MainButton Logic
   useEffect(() => {
@@ -349,18 +369,28 @@ const App: React.FC = () => {
     if (now - lastClickTime.current < CLICK_THRESHOLD_MS) return;
     lastClickTime.current = now;
 
-    triggerHaptic('impact');
+    import('./utils/tracing').then(({ withSpanSync }) => {
+      withSpanSync('game.manual_action', (span) => {
+        const scaledGain = calculateManualGain(action, gameState.meta.capital_total_gerado);
+        span.setAttributes({
+          'action.id': action.id,
+          'action.gain': scaledGain,
+          'action.stress': action.stress_gain
+        });
 
-    const scaledGain = calculateManualGain(action, gameState.meta.capital_total_gerado);
-    setGameState(prev => ({
-      ...prev,
-      resources: {
-        ...prev.resources,
-        capital: prev.resources.capital + scaledGain,
-        stress: prev.resources.stress + action.stress_gain
-      },
-      meta: { ...prev.meta, capital_total_gerado: prev.meta.capital_total_gerado + scaledGain }
-    }));
+        triggerHaptic('impact');
+
+        setGameState(prev => ({
+          ...prev,
+          resources: {
+            ...prev.resources,
+            capital: prev.resources.capital + scaledGain,
+            stress: prev.resources.stress + action.stress_gain
+          },
+          meta: { ...prev.meta, capital_total_gerado: prev.meta.capital_total_gerado + scaledGain }
+        }));
+      });
+    });
   };
 
   const resetGame = useCallback(() => {
@@ -434,7 +464,7 @@ const App: React.FC = () => {
         })()
       )}
       <div className={`fixed bottom-28 left-1/2 -translate-x-1/2 z-[1000] transition-all duration-500 transform ${toast ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
-        <div className="bg-[#130b1a]/90 ios-blur text-white px-5 py-2.5 rounded-full font-bold text-[9px] uppercase shadow-[0_10px_30px_rgba(0,0,0,0.5)] tracking-widest border border-white/10 flex items-center gap-3">
+        <div className="bg-[#130b1a]/90 ios-blur text-white px-5 py-2.5 rounded-full font-bold text-[9px] uppercase shadow-[0_10px_30px_rgba(0,0,0,0.5)] tracking-widest border border-white/5 flex items-center gap-3">
           <div className="w-1.5 h-1.5 rounded-full bg-magenta animate-pulse" />
           {toast}
         </div>
@@ -480,6 +510,7 @@ const App: React.FC = () => {
       </main>
 
       <Navigation active={currentView} onChange={setCurrentView} />
+      <SpeedInsights />
     </div>
   );
 };

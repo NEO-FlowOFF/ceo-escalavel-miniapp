@@ -201,7 +201,7 @@ const NeoTerminal: React.FC<NeoTerminalProps> = ({ gameState, soundEnabled }) =>
       <div className={`absolute -inset-0.5 rounded-[28px] blur-xl opacity-20 transition-all duration-1000 ${gameState.meta.is_crashed ? 'bg-red-600 animate-pulse' : 'bg-magenta/40'
         }`}></div>
 
-      <div className={`relative bg-[#0d0714]/90 ios-blur border rounded-[28px] p-5 flex gap-4 items-center border-white/10 overflow-hidden`}>
+      <div className={`relative bg-[#0d0714]/90 ios-blur border rounded-[28px] p-5 flex gap-4 items-center border-white/5 overflow-hidden`}>
         <div className="w-12 h-12 flex-shrink-0 relative">
           <img
             src={NEO_AVATAR.primary}

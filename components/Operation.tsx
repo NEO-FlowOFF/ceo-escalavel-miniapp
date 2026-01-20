@@ -88,7 +88,7 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
       <NeoTerminal gameState={gameState} soundEnabled={soundEnabled} />
 
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-white/5 ios-blur border border-white/10 p-4 rounded-[24px] shadow-lg flex flex-col justify-between h-28 transition-all">
+        <div className="bg-white/5 ios-blur border border-white/5 p-4 rounded-[24px] shadow-lg flex flex-col justify-between h-28 transition-all">
           <div className="flex items-center gap-2 opacity-60">
             <TrendingUp size={12} className="text-magenta" />
             <span className="text-[9px] font-black uppercase tracking-widest">Nível de Maturidade</span>
@@ -99,7 +99,7 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
           </div>
         </div>
 
-        <div className="ios-blur border p-4 rounded-[24px] shadow-lg flex flex-col justify-between h-28 relative overflow-hidden group transition-all active:scale-95 cursor-pointer" style={{ borderColor: `${POLYGON_PURPLE}60`, backgroundColor: `${POLYGON_PURPLE}15` }} onClick={() => onWithdrawAttempt?.()}>
+        <div className="ios-blur border p-4 rounded-[24px] shadow-lg flex flex-col justify-between h-28 relative overflow-hidden group transition-all active:scale-95 cursor-pointer" style={{ borderColor: `${POLYGON_PURPLE}25`, backgroundColor: `${POLYGON_PURPLE}10` }} onClick={() => onWithdrawAttempt?.()}>
           <div className="flex items-center justify-between relative z-10">
             <div className="flex items-center gap-2" style={{ color: POLYGON_PURPLE }}>
               <Sparkles size={12} />
@@ -116,7 +116,7 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
         </div>
       </div>
 
-      <div className="bg-white/5 border border-white/10 p-4 rounded-[24px] flex justify-between items-center shadow-lg">
+      <div className="bg-white/5 border border-white/5 p-4 rounded-[24px] flex justify-between items-center shadow-lg">
         <div className="flex-1 space-y-1">
           <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Tempo Devolvido p/ Dia</span>
           <div className="flex items-center gap-2 text-green-400 font-mono text-xl font-black leading-none">
@@ -140,7 +140,7 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
                 name: "Jogar Agente Flow"
               });
             }}
-            className="flex-1 bg-white/5 border border-white/10 p-4 rounded-[22px] flex items-center justify-center gap-3 active:scale-95 transition-all group hover:border-magenta/50"
+            className="flex-1 bg-white/5 border border-white/5 p-4 rounded-[22px] flex items-center justify-center gap-3 active:scale-95 transition-all group hover:border-magenta/50"
           >
             <Share2 size={16} className="text-magenta group-hover:animate-bounce" />
             <span className="text-[10px] font-black text-white uppercase tracking-widest">Compartilhar Progresso</span>
@@ -176,10 +176,10 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
                 key={action.id}
                 disabled={automated || meta.is_crashed}
                 onClick={(e) => handleInteraction(e, action)}
-                className={`group relative flex items-center justify-between p-5 rounded-[22px] border transition-all duration-300 active:scale-[0.96] 
+                className={`group relative flex items-center justify-between p-5 rounded-[22px] transition-all duration-300 active:scale-[0.96] border
                   ${automated
-                    ? 'bg-black/20 border-white/5 opacity-40'
-                    : 'bg-white/5 border-magenta/30 hover:border-magenta shadow-[0_0_20px_rgba(255,0,255,0.05)] animate-pulse-subtle'
+                    ? 'bg-black/20 border-white/5 opacity-30'
+                    : 'bg-magenta/[0.03] border-magenta/15 hover:border-magenta/30 shadow-[0_0_15px_rgba(255,0,255,0.02)] animate-pulse-subtle'
                   }`}
               >
                 {!automated && (
