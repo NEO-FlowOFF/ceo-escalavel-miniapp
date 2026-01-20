@@ -6,15 +6,52 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { message } = req.body;
+    const { message, pre_checkout_query } = req.body;
 
-    if (!message || !message.text) {
+    // 1. Handle Pre-Checkout Query (Validate before payment)
+    if (pre_checkout_query) {
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/answerPreCheckoutQuery`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                pre_checkout_query_id: pre_checkout_query.id,
+                ok: true // Always approve for digital goods (unless you have limited stock logic)
+            }),
+        });
+        return res.status(200).json({ ok: true });
+    }
+
+    // 2. Handle Messages (Commands or Successful Payments)
+    if (!message) {
         return res.status(200).json({ ok: true });
     }
 
     const chatId = message.chat.id;
-    const text = message.text;
 
+    // 2a. Handle Successful Payment
+    if (message.successful_payment) {
+        const payment = message.successful_payment;
+        // Here you would typically update a database or notify the user
+        // Since we are client-side heavy, the Client actively listens for the transaction completion.
+        // But we send a receipt message to be nice.
+
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: `✅ **Pagamento Confirmado!**\n\n` +
+                    `Recebemos ${payment.total_amount} Stars.\n` +
+                    `Seus recursos foram creditados na operação.\n\n` +
+                    `_Mantenha o flow._`,
+                parse_mode: 'Markdown'
+            }),
+        });
+        return res.status(200).json({ ok: true });
+    }
+
+    // 2b. Handle Text Commands
+    const text = message.text;
     let responseText = "";
     let replyMarkup = {};
 

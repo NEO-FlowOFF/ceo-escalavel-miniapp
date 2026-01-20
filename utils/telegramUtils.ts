@@ -90,12 +90,13 @@ declare global {
                 onEvent: (eventType: string, callback: () => void) => void;
                 offEvent: (eventType: string, callback: () => void) => void;
                 sendData: (data: string) => void;
+                openInvoice: (url: string, callback?: (status: string) => void) => void;
             };
         };
     }
 }
 
-const webApp = typeof window !== 'undefined' ? window.Telegram?.WebApp : null;
+export const webApp = typeof window !== 'undefined' ? window.Telegram?.WebApp : null;
 
 // ============================================
 // CLOUD STORAGE (Sync across devices)

@@ -24,6 +24,7 @@ import SingularityCertificate from './components/SingularityCertificate';
 import IntroOverlay from './components/IntroOverlay';
 import AgentDetailsModal from './components/AgentDetailsModal';
 import WithdrawModal from './components/WithdrawModal';
+import { StoreModal } from './components/StoreModal';
 import { playAlert, playNotification } from './engine/soundEffects';
 import { useAuth } from './hooks/useAuth';
 import telegram from './utils/telegramUtils';
@@ -36,6 +37,7 @@ const App: React.FC = () => {
   const [offlineData, setOfflineData] = useState<{ capital: number; seconds: number } | null>(null);
   const [showSingularity, setShowSingularity] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
+  const [showStore, setShowStore] = useState(false);
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
 
   const [showIntro, setShowIntro] = useState(() => {
@@ -85,6 +87,13 @@ const App: React.FC = () => {
     };
     telegram.settingsButton.onClick(handleSettings);
     return () => telegram.settingsButton.offClick(handleSettings);
+  }, []);
+
+  // Listener para evento 'open-store'
+  useEffect(() => {
+    const handleOpenStore = () => setShowStore(true);
+    window.addEventListener('open-store', handleOpenStore);
+    return () => window.removeEventListener('open-store', handleOpenStore);
   }, []);
 
   const showToast = useCallback((message: string, duration = 5000) => {
@@ -448,6 +457,37 @@ const App: React.FC = () => {
           onClose={() => setShowWithdraw(false)}
         />
       )}
+
+      <StoreModal
+        isOpen={showStore}
+        onClose={() => setShowStore(false)}
+        onPurchaseSuccess={(item) => {
+          showToast(`COMPRA REALIZADA: ${item.title}`);
+          triggerHaptic('success');
+
+          setGameState(prev => {
+            let newResources = { ...prev.resources };
+            let newMeta = { ...prev.meta };
+
+            if (item.effect_type === 'capital') {
+              newResources.capital += item.effect_value;
+              newMeta.capital_total_gerado += item.effect_value;
+            } else if (item.effect_type === 'insurance') {
+              newResources.stress = 0;
+              newMeta.is_crashed = false;
+              newMeta.crash_end_time = 0;
+            } else if (item.effect_type === 'time_warp') {
+              // Not implemented yet
+            }
+
+            return {
+              ...prev,
+              resources: newResources,
+              meta: newMeta
+            };
+          });
+        }}
+      />
 
       {selectedAgentId && currentView === 'agentes' && (
         (() => {

@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useCallback } from 'react';
-import { Brain, Volume2, VolumeX, X, AlertCircle, TrendingUp, DollarSign, Target, Info } from 'lucide-react';
+import { Brain, Volume2, VolumeX, X, AlertCircle, TrendingUp, DollarSign, Target, Info, Star } from 'lucide-react';
 import { TOKEN_TICKER } from '../constants';
 
 interface TopBarProps {
@@ -216,6 +216,16 @@ const TopBar: React.FC<TopBarProps> = ({ pu, pps, stress, soundEnabled, onToggle
             className={`ml-1 p-2 bg-white/5 rounded-full transition-all active:scale-90 ${isStressed ? 'text-red-500 border border-red-500/20' : 'text-gray-500'}`}
           >
             {soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
+          </button>
+
+          <button
+            onClick={() => {
+              // Dispara evento customizado para abrir a loja
+              window.dispatchEvent(new CustomEvent('open-store'));
+            }}
+            className="ml-1 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-full text-yellow-500 hover:bg-yellow-500/20 transition-all active:scale-90"
+          >
+            <Star size={14} className="fill-yellow-500/20" />
           </button>
         </div>
       </div>
