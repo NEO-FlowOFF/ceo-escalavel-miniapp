@@ -135,15 +135,31 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
           <button
             onClick={() => {
               const valuation = calculateValuation(gameState).toFixed(0);
-              telegram.shareToStory("https://res.cloudinary.com/dqhheouq9/image/upload/v1767168000/flowoff/public/icon-512.webp", `Alcancei $${valuation}M de valuation no Agent Flow! 🚀\n\nPare de ser o gargalo da sua empresa.`, {
-                url: "https://t.me/AgenteFlow_Bot?startapp",
-                name: "Jogar Agente Flow"
-              });
+              const text = `Alcancei $${valuation}M de valuation no Agent Flow! 🚀\n\nPare de ser o gargalo da sua empresa.\n\n$NEOFLW\n\nhttps://t.me/AgenteFlow_Bot`;
+              const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+              window.open(twitterUrl, '_blank');
             }}
-            className="flex-1 bg-white/5 border border-white/5 p-4 rounded-[22px] flex items-center justify-center gap-3 active:scale-95 transition-all group hover:border-magenta/50"
+            className="flex-1 bg-white/5 border border-white/5 p-3 rounded-[22px] flex items-center justify-center gap-2 active:scale-95 transition-all group hover:border-cyan-500/50"
           >
-            <Share2 size={16} className="text-magenta group-hover:animate-bounce" />
-            <span className="text-[10px] font-black text-white uppercase tracking-widest">Compartilhar Progresso</span>
+            <svg className="w-4 h-4 text-cyan-400 group-hover:animate-bounce" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
+            <span className="text-[10px] font-black text-white uppercase tracking-widest">Postar no X</span>
+          </button>
+
+          <button
+            onClick={() => {
+              const valuation = calculateValuation(gameState).toFixed(0);
+              const text = `Alcancei $${valuation}M de valuation no Agent Flow! 🚀\n\nPare de ser o gargalo da sua empresa.\n\n$NEOFLW\n\nhttps://t.me/AgenteFlow_Bot`;
+              const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`;
+              window.open(farcasterUrl, '_blank');
+            }}
+            className="flex-1 bg-white/5 border border-white/5 p-3 rounded-[22px] flex items-center justify-center gap-2 active:scale-95 transition-all group hover:border-purple-500/50"
+          >
+            <svg className="w-4 h-4 text-purple-400 group-hover:animate-bounce" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M23.2 12c0-1.5-.6-2.9-1.7-4L18 4.5c-.8-.8-1.8-1.2-2.9-1.2H8.9c-1.1 0-2.1.4-2.9 1.2L2.5 8C1.4 9.1.8 10.5.8 12s.6 2.9 1.7 4L6 19.5c.8.8 1.8 1.2 2.9 1.2h6.2c1.1 0 2.1-.4 2.9-1.2l3.5-3.5c1.1-1.1 1.7-2.5 1.7-4zm-11.2 5c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5z" />
+            </svg>
+            <span className="text-[10px] font-black text-white uppercase tracking-widest">Fazer Cast</span>
           </button>
         </div>
 
@@ -152,18 +168,38 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
             <RefreshCcw size={32} className="text-red-500 animate-spin mb-3 shadow-[0_0_15px_rgba(255,0,0,0.5)]" />
             <h4 className="text-lg font-black text-red-500 uppercase italic tracking-tighter mb-1 red-glow">COLAPSO OPERACIONAL</h4>
             <p className="text-[10px] text-red-500/70 font-bold uppercase tracking-widest mb-6">Reiniciando Processos... {crashTimeRemaining}s</p>
-            <button
-              onClick={() => {
-                telegram.shareToStory("https://res.cloudinary.com/dqhheouq9/image/upload/v1767168000/flowoff/public/icon-512.webp", "Minha operação colapsou por excesso de stress! 🚨\nPreciso de mais agentes no Agent Flow.", {
-                  url: "https://t.me/AgenteFlow_Bot?startapp",
-                  name: "Ajudar Operação"
-                });
-                onSocialReset();
-              }}
-              className="w-full bg-red-600 text-white py-4 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(255,0,0,0.4)] active:scale-95 transition-all"
-            >
-              <Share2 size={16} />RESETAR COM STORY
-            </button>
+
+            <div className="w-full space-y-2">
+              <button
+                onClick={() => {
+                  const text = `Minha operação colapsou por excesso de stress! 🚨\n\nPreciso de mais agentes no Agent Flow.\n\n$NEOFLW\n\nhttps://t.me/AgenteFlow_Bot`;
+                  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+                  window.open(twitterUrl, '_blank');
+                  onSocialReset();
+                }}
+                className="w-full bg-cyan-600 hover:bg-cyan-500 text-white py-3 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-2 shadow-[0_10px_30px_rgba(6,182,212,0.4)] active:scale-95 transition-all"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+                RESETAR COM POST NO X
+              </button>
+
+              <button
+                onClick={() => {
+                  const text = `Minha operação colapsou por excesso de stress! 🚨\n\nPreciso de mais agentes no Agent Flow.\n\n$NEOFLW\n\nhttps://t.me/AgenteFlow_Bot`;
+                  const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`;
+                  window.open(farcasterUrl, '_blank');
+                  onSocialReset();
+                }}
+                className="w-full bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-2 shadow-[0_10px_30px_rgba(168,85,247,0.4)] active:scale-95 transition-all"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M23.2 12c0-1.5-.6-2.9-1.7-4L18 4.5c-.8-.8-1.8-1.2-2.9-1.2H8.9c-1.1 0-2.1.4-2.9 1.2L2.5 8C1.4 9.1.8 10.5.8 12s.6 2.9 1.7 4L6 19.5c.8.8 1.8 1.2 2.9 1.2h6.2c1.1 0 2.1-.4 2.9-1.2l3.5-3.5c1.1-1.1 1.7-2.5 1.7-4zm-11.2 5c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5z" />
+                </svg>
+                RESETAR COM CAST
+              </button>
+            </div>
           </div>
         )}
 
