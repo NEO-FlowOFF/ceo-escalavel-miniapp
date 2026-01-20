@@ -13,9 +13,9 @@ Este documento registra todos os deploys oficiais do ecossistema CEO Escalável.
 #### Contract Information
 - **Network:** Base Mainnet (Chain ID: 8453)
 - **Contract:** NeoTokenV2
-- **Address:** `0xF4Fbd30e3Ea69457adD30F7C3D6fde25f7D8Db26`
-- **Explorer:** https://basescan.org/address/0xF4Fbd30e3Ea69457adD30F7C3D6fde25f7D8Db26
-- **Verified Code:** https://basescan.org/address/0xF4Fbd30e3Ea69457adD30F7C3D6fde25f7D8Db26#code
+- **Address:** `0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B`
+- **Explorer:** https://basescan.org/address/0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B
+- **Verified Code:** https://basescan.org/address/0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B#code
 
 #### Token Details
 - **Name:** NEOFlowOFF

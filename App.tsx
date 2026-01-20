@@ -27,6 +27,7 @@ import WithdrawModal from './components/WithdrawModal';
 import { StoreModal } from './components/StoreModal';
 import { DailyTasksModal } from './components/DailyTasksModal';
 import { LeaderboardModal } from './components/LeaderboardModal';
+import NeoMintModal from './components/NeoMintModal';
 import { playAlert, playNotification } from './engine/soundEffects';
 import { useAuth } from './hooks/useAuth';
 import telegram from './utils/telegramUtils';
@@ -44,6 +45,7 @@ const App: React.FC = () => {
   const [showStore, setShowStore] = useState(false);
   const [showDailyTasks, setShowDailyTasks] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showNeoMint, setShowNeoMint] = useState(false);
 
   const [dailyTasks, setDailyTasks] = useState<DailyTask[]>(DAILY_TASKS);
   const [streak, setStreak] = useState<DayStreak>({ current: 0, lastLoginDate: 0 });
@@ -101,13 +103,16 @@ const App: React.FC = () => {
 
   // Listener para evento 'open-tasks' (Similar ao open-store)
   useEffect(() => {
+    const handleOpenMint = () => setShowNeoMint(true);
     const handleOpenTasks = () => setShowDailyTasks(true);
     const handleOpenLeaderboard = () => setShowLeaderboard(true);
 
+    window.addEventListener('open-mint', handleOpenMint);
     window.addEventListener('open-tasks', handleOpenTasks);
     window.addEventListener('open-leaderboard', handleOpenLeaderboard);
 
     return () => {
+      window.removeEventListener('open-mint', handleOpenMint);
       window.removeEventListener('open-tasks', handleOpenTasks);
       window.removeEventListener('open-leaderboard', handleOpenLeaderboard);
     };
@@ -614,6 +619,10 @@ const App: React.FC = () => {
         userName={gameState.meta.user?.name || 'CEO'}
         userId={gameState.meta.user?.id || 0}
       />
+
+      {showNeoMint && (
+        <NeoMintModal onClose={() => setShowNeoMint(false)} />
+      )}
 
       {selectedAgentId && currentView === 'agentes' && (
         (() => {

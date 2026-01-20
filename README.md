@@ -46,10 +46,10 @@ Processamento de escalabilidade B2B para Telegram. O sistema transforma o gargal
 ### Official Token: $NEOFLW
 
 -  **Network**: Base Mainnet (Chain ID: 8453)
--  **Contract**: `0xF4Fbd30e3Ea69457adD30F7C3D6fde25f7D8Db26`
+-  **Contract**: `0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B`
 -  **Symbol**: NEOFLW
 -  **Supply**: 1,000,000,000 (1 billion)
--  **Explorer**: [BaseScan](https://basescan.org/address/0xF4Fbd30e3Ea69457adD30F7C3D6fde25f7D8Db26)
+-  **Explorer**: [BaseScan](https://basescan.org/address/0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B)
 
 #### Features
 - ✅ ERC20Permit (Gasless transactions)

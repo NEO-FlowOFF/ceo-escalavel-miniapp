@@ -1,7 +1,15 @@
 
 import React, { useState, useRef, useCallback } from 'react';
-import { Brain, Volume2, VolumeX, X, AlertCircle, TrendingUp, DollarSign, Target, Info, Star, Trophy } from 'lucide-react';
+import { Brain, Volume2, VolumeX, X, AlertCircle, TrendingUp, DollarSign, Target, Info, Star, Trophy, Zap } from 'lucide-react';
 import { TOKEN_TICKER } from '../constants';
+
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'appkit-button': any;
+    }
+  }
+}
 
 interface TopBarProps {
   pu: number;
@@ -226,14 +234,24 @@ const TopBar: React.FC<TopBarProps> = ({ pu, pps, stress, soundEnabled, onToggle
           </button>
 
           <button
+            onClick={() => window.dispatchEvent(new CustomEvent('open-mint'))}
+            className="ml-1 p-2 bg-magenta/10 border border-magenta/20 rounded-full text-magenta hover:bg-magenta/20 transition-all active:scale-90"
+          >
+            <Zap size={14} className="animate-pulse" />
+          </button>
+
+          <button
             onClick={() => window.dispatchEvent(new CustomEvent('open-tasks'))}
             className="ml-1 p-2 bg-orange-500/10 border border-orange-500/20 rounded-full text-orange-500 hover:bg-orange-500/20 transition-all active:scale-90 relative"
           >
             <Target size={14} />
-            {/* Ping de notificação se houver tasks (poderia ser prop) */}
             <div className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full animate-ping" />
             <div className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
           </button>
+
+          <div className="hidden">
+            <appkit-button />
+          </div>
 
           <button
             onClick={() => window.dispatchEvent(new CustomEvent('open-leaderboard'))}

@@ -11,7 +11,7 @@ interface LeaderboardModalProps {
     onClose: () => void;
     currentValuation: number;
     userName: string;
-    userId: number;
+    userId: number | string;
 }
 
 export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onClose, currentValuation, userName, userId }) => {
@@ -93,15 +93,15 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
                                 <div
                                     key={index}
                                     className={`flex items-center justify-between p-3 rounded-xl border ${leader.name === userName
-                                            ? 'bg-purple-500/20 border-purple-500/40'
-                                            : 'bg-white/5 border-white/5'
+                                        ? 'bg-purple-500/20 border-purple-500/40'
+                                        : 'bg-white/5 border-white/5'
                                         }`}
                                 >
                                     <div className="flex items-center gap-3">
                                         <div className={`w-8 h-8 flex items-center justify-center rounded-lg font-black text-sm ${index === 0 ? 'bg-yellow-500 text-black' :
-                                                index === 1 ? 'bg-gray-400 text-black' :
-                                                    index === 2 ? 'bg-orange-700 text-white' :
-                                                        'bg-white/5 text-white/40'
+                                            index === 1 ? 'bg-gray-400 text-black' :
+                                                index === 2 ? 'bg-orange-700 text-white' :
+                                                    'bg-white/5 text-white/40'
                                             }`}>
                                             {index + 1}
                                         </div>
