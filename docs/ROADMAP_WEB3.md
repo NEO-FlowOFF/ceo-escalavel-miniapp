@@ -24,6 +24,9 @@ Planejamento estratégico para a transição do ecossistema para a Mainnet Polyg
 - [ ] **Mint de Airdrop:** Mecanismo para o usuário "sacar" seus ganhos virtuais para tokens reais na carteira (conforme regras de vesting).
 - [ ] **Utility Rewards:** Uso do token para comprar agentes exclusivos ou boost de velocidade.
 
+## Fase 5: Expansão de Pagamentos [ ]
+- [ ] **Integração de Provider Token:** Configurar `PAYMENT_PROVIDER_TOKEN` no backend para habilitar pagamentos via Stripe/Smart Glocal (caso passemos a vender bens físicos ou assinaturas fora do ecossistema Stars).
+
 ---
 
 **Nota:** Este roadmap é focado na infraestrutura pública para garantir que o projeto seja aprovado pela comunidade e exchanges.
