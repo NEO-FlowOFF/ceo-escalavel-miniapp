@@ -54,6 +54,8 @@ export interface GameMeta {
   event_infra_downtime_triggered: boolean;
   start_time: number;
   user?: UserProfile;
+  prestige_level?: number; // Nível de prestígio (quantas vezes resetou)
+  final_victory_reached?: boolean; // Se atingiu vitória final
 }
 
 export interface GameState {

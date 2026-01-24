@@ -94,6 +94,22 @@ export default async function handler(req, res) {
                 [{ text: "Voltar para o App", web_app: { url: WEB_APP_URL } }]
             ]
         };
+    } else if (text === '/reset') {
+        responseText = `⚠️ **RESETAR DADOS DO JOGO**\n\n` +
+            `Isso vai ZERAR completamente seu progresso:\n` +
+            `• Capital e Valuation\n` +
+            `• Agentes adquiridos\n` +
+            `• Status e conquistas\n` +
+            `• Streak e tarefas diárias\n\n` +
+            `**ATENÇÃO:** Esta ação é IRREVERSÍVEL!\n\n` +
+            `Para resetar, abra o console e digite no navegador:\n` +
+            `\`resetAgentFlow()\`\n\n` +
+            `Ou use o botão de reset dentro do jogo.`;
+        replyMarkup = {
+            inline_keyboard: [
+                [{ text: "🕹 ABRIR CONSOLE", web_app: { url: WEB_APP_URL } }]
+            ]
+        };
     }
 
     if (responseText) {

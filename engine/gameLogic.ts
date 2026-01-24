@@ -1,9 +1,10 @@
 
 import { GameState, AgentOwnership, Agent, ManualAction } from '../types';
-import { COST_SCALING_FACTOR, STATUS_MILESTONES } from '../constants';
+import { COST_SCALING_FACTOR, STATUS_MILESTONES, MAX_VALUATION, VALUATION_DECELERATION_START, PRESTIGE_THRESHOLD, PRESTIGE_MULTIPLIER_BASE } from '../constants';
 
-export const calculateAgentCost = (baseCost: number, quantity: number): number => {
-  return Math.floor(baseCost * Math.pow(COST_SCALING_FACTOR, quantity));
+export const calculateAgentCost = (baseCost: number, quantity: number, prestigeLevel: number = 0): number => {
+  const baseCostWithPrestige = baseCost / (1 + (prestigeLevel * (PRESTIGE_MULTIPLIER_BASE - 1) * 0.5)); // Prestígio reduz custo em 50% do bônus
+  return Math.floor(baseCostWithPrestige * Math.pow(COST_SCALING_FACTOR, quantity));
 };
 
 // NOVO: Multiplicador de Sinergia (Recompensa por frota diversificada)
@@ -15,19 +16,23 @@ export const calculateSynergyMultiplier = (inventory: AgentOwnership[], totalAge
   return uniqueAgents === totalAgentsAvailable ? baseSynergy * 1.5 : baseSynergy;
 };
 
-export const calculateTotalPPS = (agents: Agent[], inventory: AgentOwnership[]): number => {
+export const calculateTotalPPS = (agents: Agent[], inventory: AgentOwnership[], prestigeLevel: number = 0): number => {
   const basePPS = inventory.reduce((total, item) => {
     const agentData = agents.find(a => a.id === item.id);
     return total + (agentData ? agentData.receita_passiva_segundo * item.quantity : 0);
   }, 0);
 
-  return basePPS * calculateSynergyMultiplier(inventory, agents.length);
+  const synergyMultiplier = calculateSynergyMultiplier(inventory, agents.length);
+  const prestigeMultiplier = 1 + (prestigeLevel * (PRESTIGE_MULTIPLIER_BASE - 1));
+
+  return basePPS * synergyMultiplier * prestigeMultiplier;
 };
 
 // NOVO: O ganho manual agora escala com o seu Status para não se tornar irrelevante
-export const calculateManualGain = (action: ManualAction, totalCapitalGenerated: number): number => {
-  const multiplier = 1 + Math.log10(Math.max(1, totalCapitalGenerated / 500));
-  return Math.floor(action.capital_gain * multiplier);
+export const calculateManualGain = (action: ManualAction, totalCapitalGenerated: number, prestigeLevel: number = 0): number => {
+  const statusMultiplier = 1 + Math.log10(Math.max(1, totalCapitalGenerated / 500));
+  const prestigeMultiplier = 1 + (prestigeLevel * (PRESTIGE_MULTIPLIER_BASE - 1));
+  return Math.floor(action.capital_gain * statusMultiplier * prestigeMultiplier);
 };
 
 export const updateStatus = (valuation: number): string => {
@@ -61,9 +66,11 @@ export const checkSingularity = (gameState: GameState): boolean => {
 /**
  * Calcula o Valuation da empresa (em tokens $NEOFLW)
  * Baseado no Múltiplo de MKT: (PPS * 15x) + (Aceleração por Eficiência de Horas) + (Equity de Capital Acumulado)
+ * Com desaceleração progressiva após 100k e limite máximo de 1M
  */
 export const calculateValuation = (gameState: GameState): number => {
-  const pps = calculateTotalPPS(gameState.agents, gameState.inventory);
+  const prestigeLevel = gameState.meta.prestige_level || 0;
+  const pps = calculateTotalPPS(gameState.agents, gameState.inventory, prestigeLevel);
   const totalCap = gameState.meta.capital_total_gerado;
   const hoursSaved = gameState.resources.horas_manuais_eliminadas;
 
@@ -71,5 +78,33 @@ export const calculateValuation = (gameState: GameState): number => {
   const efficiencyBonus = hoursSaved * 12; // Valorização por tempo recuperado
   const equityBase = totalCap / 1000; // 10% do faturamento histórico vira valuation base
 
-  return (ppsMktMultiple + efficiencyBonus + equityBase);
+  let rawValuation = ppsMktMultiple + efficiencyBonus + equityBase;
+
+  // Desaceleração progressiva após 100k
+  if (rawValuation > VALUATION_DECELERATION_START) {
+    const excess = rawValuation - VALUATION_DECELERATION_START;
+    const decelerationFactor = Math.max(0.1, 1 - (excess / MAX_VALUATION) * 0.9); // Reduz progressivamente até 10% do crescimento
+    rawValuation = VALUATION_DECELERATION_START + (excess * decelerationFactor);
+  }
+
+  // Limite máximo absoluto
+  return Math.min(rawValuation, MAX_VALUATION);
+};
+
+/**
+ * Verifica se o jogador atingiu a vitória final (além da Singularity)
+ * Vitória Final = Singularity + Valuation >= 500k
+ */
+export const checkFinalVictory = (gameState: GameState): boolean => {
+  const singularityReached = checkSingularity(gameState);
+  const valuation = calculateValuation(gameState);
+  return singularityReached && valuation >= PRESTIGE_THRESHOLD;
+};
+
+/**
+ * Verifica se o jogador pode fazer Prestígio (atingiu o limite ou vitória final)
+ */
+export const canPrestige = (gameState: GameState): boolean => {
+  const valuation = calculateValuation(gameState);
+  return valuation >= PRESTIGE_THRESHOLD || checkFinalVictory(gameState);
 };

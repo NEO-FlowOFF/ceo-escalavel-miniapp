@@ -134,7 +134,9 @@ export const INITIAL_GAME_STATE: GameState = {
     event_support_backlog_triggered: false,
     event_sdr_fatigue_triggered: false,
     event_infra_downtime_triggered: false,
-    start_time: Date.now()
+    start_time: Date.now(),
+    prestige_level: 0,
+    final_victory_reached: false
   },
   lastTick: Date.now()
 };
@@ -147,3 +149,9 @@ export const STATUS_MILESTONES = [
   { pu: 10000, label: "Arquiteto de Sistemas" },
   { pu: 50000, label: "Empresa Autônoma" }
 ];
+
+// Sistema de Limites e Prestígio
+export const MAX_VALUATION = 1000000; // Limite máximo de 1M de valuation
+export const PRESTIGE_THRESHOLD = 500000; // A partir de 500k, pode fazer Prestígio
+export const VALUATION_DECELERATION_START = 100000; // Começa a desacelerar em 100k
+export const PRESTIGE_MULTIPLIER_BASE = 1.1; // Bônus de 10% por prestígio

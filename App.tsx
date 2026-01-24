@@ -11,7 +11,9 @@ import {
   formatHours,
   checkSingularity,
   calculateManualGain,
-  calculateValuation
+  calculateValuation,
+  checkFinalVictory,
+  canPrestige
 } from './engine/gameLogic';
 import TopBar from './components/TopBar';
 import Navigation from './components/Navigation';
@@ -24,6 +26,7 @@ import SingularityCertificate from './components/SingularityCertificate';
 import IntroOverlay from './components/IntroOverlay';
 import AgentDetailsModal from './components/AgentDetailsModal';
 import WithdrawModal from './components/WithdrawModal';
+import PrestigeModal from './components/PrestigeModal';
 import { StoreModal } from './components/StoreModal';
 import { DailyTasksModal } from './components/DailyTasksModal';
 import { LeaderboardModal } from './components/LeaderboardModal';
@@ -33,6 +36,7 @@ import { useAuth } from './hooks/useAuth';
 import telegram from './utils/telegramUtils';
 import { DailyTask, DayStreak, DAILY_TASKS, calculateStreak } from './utils/dailyTasks';
 import { CloudSaveService } from './utils/cloudSave';
+import { resetUserData, saveFreshState } from './utils/resetUserData';
 
 const CRASH_DURATION_MS = 12000;
 const CLICK_THRESHOLD_MS = 100;
@@ -46,6 +50,7 @@ const App: React.FC = () => {
   const [showDailyTasks, setShowDailyTasks] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showNeoMint, setShowNeoMint] = useState(false);
+  const [showPrestige, setShowPrestige] = useState(false);
 
   const [dailyTasks, setDailyTasks] = useState<DailyTask[]>(DAILY_TASKS);
   const [streak, setStreak] = useState<DayStreak>({ current: 0, lastLoginDate: 0 });
@@ -266,7 +271,7 @@ const App: React.FC = () => {
         let stress = prev.resources.stress;
         let capital = prev.resources.capital;
 
-        const pps = calculateTotalPPS(prev.agents, prev.inventory);
+        const pps = calculateTotalPPS(prev.agents, prev.inventory, prev.meta.prestige_level || 0);
         const newCapital = capital + pps;
         const newTotalCapital = prev.meta.capital_total_gerado + pps;
 
@@ -359,6 +364,25 @@ const App: React.FC = () => {
           setShowSingularity(true);
         }
 
+        // Verifica vitória final
+        const currentStateForCheck = {
+          ...prev,
+          resources: { ...prev.resources, capital: newCapital, receita_passiva: pps },
+          meta: { ...prev.meta, capital_total_gerado: newTotalCapital }
+        };
+        const finalVictory = checkFinalVictory(currentStateForCheck);
+        if (finalVictory && !prev.meta.final_victory_reached) {
+          singularity_reached = true; // Marca também como singularity se ainda não foi
+        }
+
+        // Mostra modal de prestígio se atingir o limite (apenas uma vez por sessão)
+        if (canPrestige(currentStateForCheck) && currentValuation >= 500000 && !prev.meta.final_victory_reached) {
+          // Usa um pequeno delay para evitar múltiplos triggers
+          setTimeout(() => {
+            setShowPrestige(true);
+          }, 2000);
+        }
+
         const newState = {
           ...prev,
           resources: {
@@ -375,6 +399,7 @@ const App: React.FC = () => {
             is_crashed,
             crash_end_time,
             singularity_reached,
+            final_victory_reached: finalVictory || prev.meta.final_victory_reached,
             event_social_media_triggered,
             event_traffic_loss_triggered,
             event_support_backlog_triggered,
@@ -394,7 +419,7 @@ const App: React.FC = () => {
 
   const buyAgent = useCallback((agent: Agent) => {
     const currentOwned = gameState.inventory.find(i => i.id === agent.id)?.quantity || 0;
-    const cost = calculateAgentCost(agent.custo_base, currentOwned);
+    const cost = calculateAgentCost(agent.custo_base, currentOwned, gameState.meta.prestige_level || 0);
 
     if (gameState.resources.capital >= cost) {
       import('./utils/tracing').then(({ withSpanSync }) => {
@@ -436,7 +461,7 @@ const App: React.FC = () => {
       const agent = gameState.agents.find(a => a.id === selectedAgentId);
       if (agent) {
         const owned = gameState.inventory.find(i => i.id === agent.id)?.quantity || 0;
-        const cost = calculateAgentCost(agent.custo_base, owned);
+        const cost = calculateAgentCost(agent.custo_base, owned, gameState.meta.prestige_level || 0);
         const canAfford = gameState.resources.capital >= cost;
 
         telegram.mainButton.setText(canAfford ? `INVESTIR $${cost.toLocaleString()}` : `CAPITAL INSUFICIENTE ($${cost.toLocaleString()})`);
@@ -480,7 +505,7 @@ const App: React.FC = () => {
 
     import('./utils/tracing').then(({ withSpanSync }) => {
       withSpanSync('game.manual_action', (span) => {
-        const scaledGain = calculateManualGain(action, gameState.meta.capital_total_gerado);
+        const scaledGain = calculateManualGain(action, gameState.meta.capital_total_gerado, gameState.meta.prestige_level || 0);
         span.setAttributes({
           'action.id': action.id,
           'action.gain': scaledGain,
@@ -502,22 +527,97 @@ const App: React.FC = () => {
     });
   };
 
-  const resetGame = useCallback(() => {
-    telegram.showConfirm("Você deseja reiniciar sua operação? Você manterá seu nome e conquistas, mas o capital e agentes serão resetados para uma nova escala.").then((confirmed) => {
-      if (confirmed) {
-        setGameState({
+  const resetGame = useCallback(async () => {
+    const confirmed = await telegram.showConfirm("Você deseja reiniciar sua operação? Você manterá seu nome e conquistas, mas o capital e agentes serão resetados para uma nova escala.");
+    if (confirmed) {
+      const freshState = {
+        ...INITIAL_GAME_STATE,
+        meta: {
+          ...INITIAL_GAME_STATE.meta,
+          user: gameState.meta.user,
+          start_time: Date.now()
+        }
+      };
+      
+      setGameState(freshState);
+      setShowSingularity(false);
+      
+      // Limpa e salva estado limpo
+      if (user?.id) {
+        await resetUserData(user.id);
+        await saveFreshState(user.id, gameState.meta.user);
+      }
+      
+      showToast("SISTEMA RESETADO. INICIANDO NOVA ESCALA...");
+    }
+  }, [gameState.meta.user, user?.id, showToast]);
+
+  const handlePrestige = useCallback(async () => {
+    const currentPrestige = gameState.meta.prestige_level || 0;
+    const confirmed = await telegram.showConfirm(`Ativar Prestígio? Você resetará seu progresso mas ganhará +${((currentPrestige + 1) * 10).toFixed(0)}% de bônus permanente em todas as próximas jornadas.`);
+    if (confirmed) {
+      const freshState = {
+        ...INITIAL_GAME_STATE,
+        meta: {
+          ...INITIAL_GAME_STATE.meta,
+          user: gameState.meta.user,
+          start_time: Date.now(),
+          prestige_level: currentPrestige + 1,
+          final_victory_reached: gameState.meta.final_victory_reached || false
+        }
+      };
+      
+      setGameState(freshState);
+      setShowPrestige(false);
+      
+      // Salva estado limpo
+      if (user?.id) {
+        await saveFreshState(user.id, gameState.meta.user);
+      }
+      
+      showToast(`PRESTÍGIO ATIVADO! Bônus permanente: +${((currentPrestige + 1) * 10).toFixed(0)}%`);
+    }
+  }, [gameState.meta.user, gameState.meta.prestige_level, gameState.meta.final_victory_reached, user?.id, showToast]);
+
+  // Função global para resetar dados (disponível no console do navegador)
+  useEffect(() => {
+    (window as any).resetAgentFlow = async () => {
+      if (!user?.id) {
+        console.error('Usuário não identificado');
+        return;
+      }
+      
+      const confirmed = confirm('⚠️ ATENÇÃO: Isso vai ZERAR TODOS os seus dados do jogo. Deseja continuar?');
+      if (!confirmed) return;
+
+      try {
+        await resetUserData(user.id);
+        await saveFreshState(user.id, gameState.meta.user);
+        
+        const freshState = {
           ...INITIAL_GAME_STATE,
           meta: {
             ...INITIAL_GAME_STATE.meta,
             user: gameState.meta.user,
             start_time: Date.now()
           }
-        });
-        setShowSingularity(false);
-        showToast("SISTEMA RESETADO. INICIANDO NOVA ESCALA...");
+        };
+        
+        setGameState(freshState);
+        showToast("DADOS RESETADOS COMPLETAMENTE. RECARREGUE A PÁGINA.");
+        
+        // Recarrega a página após 2 segundos
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      } catch (error) {
+        console.error('Erro ao resetar:', error);
+        showToast("ERRO AO RESETAR. TENTE NOVAMENTE.");
       }
-    });
-  }, [gameState.meta.user, showToast]);
+    };
+    
+    console.log('%c🔄 Reset disponível:', 'color: #ff00ff; font-weight: bold;', 'Digite resetAgentFlow() no console para resetar seus dados');
+  }, [user?.id, gameState.meta.user, showToast]);
 
   const isLowPerf = useMemo(() => telegram.isLowPerformanceDevice(), []);
 
@@ -555,6 +655,15 @@ const App: React.FC = () => {
           valuation={calculateValuation(gameState).toFixed(0)}
           userName={gameState.meta.user?.name || 'CEO'}
           onClose={() => setShowWithdraw(false)}
+        />
+      )}
+      {showPrestige && (
+        <PrestigeModal
+          userName={gameState.meta.user?.name || 'CEO'}
+          valuation={calculateValuation(gameState)}
+          prestigeLevel={gameState.meta.prestige_level || 0}
+          onClose={() => setShowPrestige(false)}
+          onPrestige={handlePrestige}
         />
       )}
 
