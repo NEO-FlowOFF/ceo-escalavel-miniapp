@@ -39,6 +39,9 @@ const NeoTerminal: React.FC<NeoTerminalProps> = ({ gameState, soundEnabled }) =>
 
   const userName = gameState.meta.user?.name || "Operador";
 
+  // Inicialização: marca refs baseado no estado atual para evitar reenvio de mensagens antigas
+  const initializedRef = useRef(false);
+
   useEffect(() => {
     const { resources, inventory, meta, agents } = gameState;
     const totalCap = meta.capital_total_gerado;
@@ -48,6 +51,57 @@ const NeoTerminal: React.FC<NeoTerminalProps> = ({ gameState, soundEnabled }) =>
 
     const currentValuation = calculateValuation(gameState);
     const playMinutes = (now - meta.start_time) / 1000 / 60;
+
+    // Inicialização única: marca refs baseado no estado atual para evitar reenvio de mensagens antigas
+    if (!initializedRef.current && meta.start_time) {
+      initializedRef.current = true;
+
+      // Marca eventos já disparados como processados (evita reenvio)
+      if (meta.event_social_media_triggered) {
+        socialEventTriggeredRef.current = true;
+      }
+      if (meta.event_traffic_loss_triggered) {
+        trafficEventTriggeredRef.current = true;
+      }
+      if (meta.event_support_backlog_triggered) {
+        supportEventTriggeredRef.current = true;
+      }
+      if (meta.event_sdr_fatigue_triggered) {
+        sdrEventTriggeredRef.current = true;
+      }
+      if (meta.event_infra_downtime_triggered) {
+        infraEventTriggeredRef.current = true;
+      }
+
+      // Marca easter eggs já atingidos como processados
+      // Fast Growth: só é válido se valuation > 500 E playMinutes < 3
+      // Se já passou dos 3 minutos OU já tem valuation alto, marca como processado
+      if (playMinutes >= 3 || currentValuation > 10000) {
+        fastGrowthRef.current = true;
+      }
+      if (currentValuation > 10000) {
+        whaleValuationRef.current = true;
+      }
+
+      // Inicializa prevInventoryCount e prevStatus com valores atuais
+      prevInventoryCount.current = currentInventoryCount;
+      prevStatus.current = meta.status;
+
+      // Se já passou do estado inicial, define uma mensagem idle apropriada
+      if (meta.capital_total_gerado > 0) {
+        const idlePool = AUDITOR_MESSAGES.IDLE_THOUGHTS;
+        const initialIdle = idlePool[Math.floor(Math.random() * idlePool.length)];
+        setFullText(initialIdle);
+        lastMessageRef.current = initialIdle;
+        lastIdleSwitchRef.current = now;
+      } else {
+        // Primeiro acesso: mantém mensagem inicial
+        lastMessageRef.current = "";
+      }
+      
+      // Retorna early na primeira inicialização para evitar processar mensagens antigas
+      return;
+    }
 
     let priorityMessage = "";
     let isHighPriority = false;
