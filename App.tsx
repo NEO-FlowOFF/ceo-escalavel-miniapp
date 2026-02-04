@@ -91,7 +91,7 @@ const App: React.FC = () => {
     const handleSettings = () => {
       telegram.showPopup({
         title: "Protocolo Agente Flow",
-        message: "Versão 2.5. Para suporte ou diagnóstico da sua infraestrutura real, fale com a NEØFLW.",
+        message: `Versão ${import.meta.env.VITE_APP_VERSION || '2.5'}. Para suporte ou diagnóstico da sua infraestrutura real, fale com a NEØFLW.`,
         buttons: [
           { id: "consult", type: "default", text: "Diagnóstico Real" },
           { id: "close", type: "close", text: "Voltar ao Console" }
@@ -538,16 +538,16 @@ const App: React.FC = () => {
           start_time: Date.now()
         }
       };
-      
+
       setGameState(freshState);
       setShowSingularity(false);
-      
+
       // Limpa e salva estado limpo
       if (user?.id) {
         await resetUserData(user.id);
         await saveFreshState(user.id, gameState.meta.user);
       }
-      
+
       showToast("SISTEMA RESETADO. INICIANDO NOVA ESCALA...");
     }
   }, [gameState.meta.user, user?.id, showToast]);
@@ -566,15 +566,15 @@ const App: React.FC = () => {
           final_victory_reached: gameState.meta.final_victory_reached || false
         }
       };
-      
+
       setGameState(freshState);
       setShowPrestige(false);
-      
+
       // Salva estado limpo
       if (user?.id) {
         await saveFreshState(user.id, gameState.meta.user);
       }
-      
+
       showToast(`PRESTÍGIO ATIVADO! Bônus permanente: +${((currentPrestige + 1) * 10).toFixed(0)}%`);
     }
   }, [gameState.meta.user, gameState.meta.prestige_level, gameState.meta.final_victory_reached, user?.id, showToast]);
@@ -586,14 +586,14 @@ const App: React.FC = () => {
         console.error('Usuário não identificado');
         return;
       }
-      
+
       const confirmed = confirm('⚠️ ATENÇÃO: Isso vai ZERAR TODOS os seus dados do jogo. Deseja continuar?');
       if (!confirmed) return;
 
       try {
         await resetUserData(user.id);
         await saveFreshState(user.id, gameState.meta.user);
-        
+
         const freshState = {
           ...INITIAL_GAME_STATE,
           meta: {
@@ -602,10 +602,10 @@ const App: React.FC = () => {
             start_time: Date.now()
           }
         };
-        
+
         setGameState(freshState);
         showToast("DADOS RESETADOS COMPLETAMENTE. RECARREGUE A PÁGINA.");
-        
+
         // Recarrega a página após 2 segundos
         setTimeout(() => {
           window.location.reload();
@@ -615,7 +615,7 @@ const App: React.FC = () => {
         showToast("ERRO AO RESETAR. TENTE NOVAMENTE.");
       }
     };
-    
+
     console.log('%c🔄 Reset disponível:', 'color: #ff00ff; font-weight: bold;', 'Digite resetAgentFlow() no console para resetar seus dados');
   }, [user?.id, gameState.meta.user, showToast]);
 
