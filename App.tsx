@@ -15,6 +15,7 @@ import {
   checkFinalVictory,
   canPrestige
 } from './engine/gameLogic';
+import { DEFAULT_REGIME_ID, evaluateMetaGovernor, getRegimeConfig } from './engine/regimes';
 import TopBar from './components/TopBar';
 import Navigation from './components/Navigation';
 import Operation from './components/Operation';
@@ -271,7 +272,12 @@ const App: React.FC = () => {
         let stress = prev.resources.stress;
         let capital = prev.resources.capital;
 
-        const pps = calculateTotalPPS(prev.agents, prev.inventory, prev.meta.prestige_level || 0);
+        const pps = calculateTotalPPS(
+          prev.agents,
+          prev.inventory,
+          prev.meta.prestige_level || 0,
+          prev.meta.active_regime
+        );
         const newCapital = capital + pps;
         const newTotalCapital = prev.meta.capital_total_gerado + pps;
 
@@ -383,13 +389,29 @@ const App: React.FC = () => {
           }, 2000);
         }
 
+        const finalStress = Math.min(100, stress);
+        const currentRegime = prev.meta.active_regime || DEFAULT_REGIME_ID;
+        const proposedRegime = evaluateMetaGovernor(currentStateForCheck);
+        const nextRegime = proposedRegime ?? currentRegime;
+        let governanceHistory = prev.meta.governance_history ? [...prev.meta.governance_history] : [currentRegime];
+        if (proposedRegime) {
+          governanceHistory = [...governanceHistory, proposedRegime].slice(-10);
+          const regimeInfo = getRegimeConfig(proposedRegime);
+          showToast(`Governança: ${regimeInfo.id} · ${regimeInfo.description}`, 7000);
+          if (soundEnabled) playNotification();
+        }
+        const stressFlag = finalStress >= 85 ? 'stress:critical' : 'stress:stable';
+        const normalizedFlags = (prev.meta.regime_flags ?? []).filter(flag => !flag.startsWith('stress:') && !flag.startsWith('regime:'));
+        const regimeBadge = `regime:${nextRegime}`;
+        const regimeFlags = [...normalizedFlags, stressFlag, regimeBadge].slice(-5);
+
         const newState = {
           ...prev,
           resources: {
             ...prev.resources,
             capital: capital + pps,
             receita_passiva: pps,
-            stress: Math.min(100, stress)
+            stress: finalStress
           },
           meta: {
             ...prev.meta,
@@ -404,7 +426,10 @@ const App: React.FC = () => {
             event_traffic_loss_triggered,
             event_support_backlog_triggered,
             event_sdr_fatigue_triggered,
-            event_infra_downtime_triggered
+            event_infra_downtime_triggered,
+            active_regime: nextRegime,
+            governance_history: governanceHistory,
+            regime_flags: regimeFlags
           },
           lastTick: now
         };
@@ -415,7 +440,7 @@ const App: React.FC = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [authLoading, soundEnabled, triggerHaptic, persistState]);
+  }, [authLoading, soundEnabled, triggerHaptic, persistState, showToast]);
 
   const buyAgent = useCallback((agent: Agent) => {
     const currentOwned = gameState.inventory.find(i => i.id === agent.id)?.quantity || 0;
@@ -505,7 +530,12 @@ const App: React.FC = () => {
 
     import('./utils/tracing').then(({ withSpanSync }) => {
       withSpanSync('game.manual_action', (span) => {
-        const scaledGain = calculateManualGain(action, gameState.meta.capital_total_gerado, gameState.meta.prestige_level || 0);
+        const scaledGain = calculateManualGain(
+          action,
+          gameState.meta.capital_total_gerado,
+          gameState.meta.prestige_level || 0,
+          gameState.meta.active_regime
+        );
         span.setAttributes({
           'action.id': action.id,
           'action.gain': scaledGain,

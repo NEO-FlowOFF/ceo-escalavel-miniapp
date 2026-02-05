@@ -1,5 +1,6 @@
 
 import { Agent, ManualAction, GameState } from './types';
+import { DEFAULT_REGIME_ID } from './engine/regimes';
 
 export const TOKEN_TICKER = "$NEOFLW";
 export const TOKEN_CONTRACT = "0x59aa4EaE743d608FBDd4205ebA59b38DCA755Dd2";
@@ -136,7 +137,10 @@ export const INITIAL_GAME_STATE: GameState = {
     event_infra_downtime_triggered: false,
     start_time: Date.now(),
     prestige_level: 0,
-    final_victory_reached: false
+    final_victory_reached: false,
+    active_regime: DEFAULT_REGIME_ID,
+    governance_history: [DEFAULT_REGIME_ID],
+    regime_flags: []
   },
   lastTick: Date.now()
 };

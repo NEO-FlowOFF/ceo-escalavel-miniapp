@@ -39,6 +39,44 @@ export interface AgentOwnership {
   quantity: number;
 }
 
+export interface RegimeMultipliers {
+  pps?: number;
+  manualGain?: number;
+  stressRelief?: number;
+}
+
+export interface RegimeThresholds {
+  capital_total?: number;
+  automation_requirement?: number;
+}
+
+export interface RegimeDeceleration {
+  start: number;
+  max: number;
+  curve: 'linear' | 'logarithmic';
+  intensity: number;
+}
+
+export interface RegimeConfig {
+  id: string;
+  description: string;
+  multipliers?: RegimeMultipliers;
+  constraints?: {
+    centralization_penalty?: boolean;
+    automation_cap?: number;
+  };
+  incentives?: {
+    collective_efficiency?: number;
+  };
+  thresholds?: RegimeThresholds;
+  deceleration?: RegimeDeceleration;
+  allowedActions?: string[];
+  victoryConditions?: {
+    requires?: string[];
+    minDurationCycles?: number;
+  };
+}
+
 export interface GameMeta {
   capital_total_gerado: number;
   status: string;
@@ -56,6 +94,9 @@ export interface GameMeta {
   user?: UserProfile;
   prestige_level?: number; // Nível de prestígio (quantas vezes resetou)
   final_victory_reached?: boolean; // Se atingiu vitória final
+  active_regime?: string;
+  governance_history?: string[];
+  regime_flags?: string[];
 }
 
 export interface GameState {

@@ -64,7 +64,12 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
     // Performance: Limitar criação de partículas a cada 50ms
     const now = Date.now();
     if (now - lastParticleTime.current > 50) {
-      const scaledGain = calculateManualGain(action, meta.capital_total_gerado);
+      const scaledGain = calculateManualGain(
+        action,
+        meta.capital_total_gerado,
+        meta.prestige_level || 0,
+        meta.active_regime
+      );
       const timestamp = now;
       const newParticles: Particle[] = [
         { id: timestamp, x: clientX - 20, y: clientY - 20, text: `+$${scaledGain}`, color: 'text-magenta' }
@@ -206,7 +211,12 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
         <div className={`grid grid-cols-1 gap-3.5 transition-opacity duration-300 ${meta.is_crashed ? 'opacity-20 pointer-events-none' : ''}`}>
           {manualActions.map(action => {
             const automated = isActionAutomated(action.id, inventory, agents);
-            const currentManualGain = calculateManualGain(action, meta.capital_total_gerado);
+            const currentManualGain = calculateManualGain(
+              action,
+              meta.capital_total_gerado,
+              meta.prestige_level || 0,
+              meta.active_regime
+            );
             return (
               <button
                 key={action.id}
