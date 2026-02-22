@@ -2,12 +2,20 @@
 
 :root {
   --magenta: #ff00ff;
-  --bg-dark: var(--tg-theme-bg-color, #0a050f);
+  --bg-dark: var(--tg-theme-bg-color, #070916);
   --text-main: var(--tg-theme-text-color, #e2e8f0);
   --button-color: var(--tg-theme-button-color, #ff00ff);
   --button-text: var(--tg-theme-button-text-color, #ffffff);
   --safe-area-inset-top: env(safe-area-inset-top);
   --safe-area-inset-bottom: env(safe-area-inset-bottom);
+  --app-bg-gradient:
+    radial-gradient(130% 90% at 100% 0%, rgba(255, 0, 166, 0.34) 0%, rgba(255, 0, 166, 0) 52%),
+    radial-gradient(90% 70% at 0% 100%, rgba(0, 116, 255, 0.26) 0%, rgba(0, 116, 255, 0) 65%),
+    linear-gradient(160deg, #060814 0%, #0d1030 48%, #2a0b34 100%);
+  --surface-border: rgba(255, 0, 190, 0.18);
+  --surface-border-strong: rgba(255, 0, 190, 0.3);
+  --surface-glass: rgba(18, 10, 33, 0.58);
+  --surface-glass-strong: rgba(16, 8, 29, 0.74);
 }
 
 @layer base {
@@ -15,11 +23,14 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    position: relative;
+    isolation: isolate;
+    background: var(--app-bg-gradient);
   }
 
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background-color: var(--bg-dark);
+    background: var(--app-bg-gradient);
     color: #e2e8f0;
     overflow: hidden;
     position: fixed;
@@ -29,12 +40,26 @@
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
   }
+
+  #root::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(45% 36% at 85% 8%, rgba(255, 0, 170, 0.2), rgba(255, 0, 170, 0)),
+      radial-gradient(38% 30% at 12% 84%, rgba(0, 180, 255, 0.14), rgba(0, 180, 255, 0));
+  }
 }
 
 @layer utilities {
   .ios-blur {
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background-color: var(--surface-glass);
+    backdrop-filter: blur(24px) saturate(170%);
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+    border-color: var(--surface-border) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 18px 42px rgba(6, 8, 20, 0.46);
   }
 
   .magenta-glow {
@@ -80,6 +105,20 @@
   .bg-dark {
     background-color: var(--bg-dark);
   }
+}
+
+[class*="border-white/"] {
+  border-color: var(--surface-border) !important;
+}
+
+[class*="bg-white/"] {
+  background-color: var(--surface-glass) !important;
+  backdrop-filter: blur(18px) saturate(155%);
+  -webkit-backdrop-filter: blur(18px) saturate(155%);
+}
+
+[class*="hover:border-white/"] {
+  border-color: var(--surface-border-strong) !important;
 }
 
 /* Custom animations */

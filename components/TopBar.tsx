@@ -130,7 +130,7 @@ const TopBar: React.FC<TopBarProps> = ({ pu, pps, stress, soundEnabled, onToggle
         ? 'bg-red-950/40 border-red-500 shadow-[0_0_40px_rgba(255,0,0,0.3)]'
         : isStressed
           ? 'bg-red-900/10 border-red-600/50'
-          : 'bg-[#0a050f]/60 border-white/5'
+          : 'bg-transparent border-magenta/20'
         }`}>
 
         {/* Goal Indicator */}

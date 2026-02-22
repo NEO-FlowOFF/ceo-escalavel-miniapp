@@ -797,7 +797,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className={`flex flex-col h-full w-full max-w-lg mx-auto bg-[#0a050f] relative overflow-hidden transition-transform duration-100 ${(visualAlert || gameState.meta.is_crashed) && !isLowPerf ? 'animate-shake' : ''}`}>
+    <div className={`flex flex-col h-full w-full max-w-lg mx-auto bg-transparent relative overflow-hidden transition-transform duration-100 ${(visualAlert || gameState.meta.is_crashed) && !isLowPerf ? 'animate-shake' : ''}`}>
       {/* Visual Alert Overlay (Flash Vermelho) */}
       <div className={`fixed inset-0 z-[2000] pointer-events-none transition-opacity duration-300 bg-red-600/20 ${visualAlert ? 'opacity-100' : 'opacity-0'}`} />
 

@@ -26,8 +26,8 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ valuation, userName, onCl
         openExternalLink(`https://t.me/neomello?text=${text}`);
     };
     return (
-        <div className="fixed inset-0 z-[600] flex items-end justify-center">
-            <div className="absolute inset-0 bg-black/90 backdrop-blur-md animate-in fade-in" onClick={onClose} />
+        <div id="modal-withdraw" className="fixed inset-0 z-[600] flex items-end justify-center">
+            <div id="modal-withdraw-backdrop" className="absolute inset-0 bg-black/90 backdrop-blur-md animate-in fade-in" onClick={onClose} />
             <div className="relative w-full max-w-lg bg-[#0a0510] border-t-2 border-magenta/30 rounded-t-[40px] p-8 pointer-events-auto animate-in slide-in-from-bottom duration-500 pb-[calc(40px+env(safe-area-inset-bottom))]">
                 <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/10 rounded-full" />
 
@@ -78,7 +78,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ valuation, userName, onCl
                         <TrendingUp size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                     </button>
 
-                    <button onClick={onClose} className="w-full py-4 text-[9px] font-black text-gray-600 uppercase tracking-[0.3em] hover:text-white transition-colors">
+                    <button id="modal-withdraw-close" onClick={onClose} className="w-full py-4 text-[9px] font-black text-gray-600 uppercase tracking-[0.3em] hover:text-white transition-colors">
                         CANCELAR OPERAÇÃO // VOLTAR
                     </button>
                 </div>

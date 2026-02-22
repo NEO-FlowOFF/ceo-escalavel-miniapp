@@ -10,7 +10,7 @@ interface NavigationProps {
 
 const Navigation: React.FC<NavigationProps> = ({ active, onChange }) => {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 w-full max-w-lg mx-auto ios-blur bg-[#0a050f]/80 border-t border-[#ffffff10] px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))] flex justify-between items-center z-[70]">
+    <nav className="fixed bottom-0 left-0 right-0 w-full max-w-lg mx-auto ios-blur border-t border-magenta/20 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))] flex justify-between items-center z-[70]">
       <button
         id="nav-operacao"
         onClick={() => onChange('operacao')}

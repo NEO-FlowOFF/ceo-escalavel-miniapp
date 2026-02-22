@@ -32,14 +32,19 @@ export const StoreModal: React.FC<StoreModalProps> = ({ isOpen, onClose, onPurch
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+        <div id="modal-store" className="fixed inset-0 z-[650] flex items-center justify-center animate-in fade-in duration-200">
+            <div
+                id="modal-store-backdrop"
+                className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                onClick={onClose}
+            />
             <div className="relative w-[90%] max-w-sm bg-[#1a1625] border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
                 <div className="bg-gradient-to-r from-yellow-900/40 to-yellow-600/10 p-4 border-b border-white/5 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Star className="text-yellow-400 fill-yellow-400" size={20} />
                         <h2 className="text-white font-bold text-lg">Loja Premium</h2>
                     </div>
-                    <button onClick={onClose} className="text-white/40 hover:text-white transition-colors">
+                    <button id="modal-store-close" onClick={onClose} className="text-white/40 hover:text-white transition-colors">
                         <X size={24} />
                     </button>
                 </div>

@@ -41,8 +41,8 @@ const AgentDetailsModal: React.FC<AgentDetailsModalProps> = ({ agent, inventory,
     };
 
     return (
-        <div className="fixed inset-0 z-[600] flex items-end justify-center pointer-events-none">
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm pointer-events-auto animate-in fade-in" onClick={() => !deployingId && !successId && onClose()} />
+        <div id="modal-agent-details" className="fixed inset-0 z-[600] flex items-end justify-center pointer-events-none">
+            <div id="modal-agent-details-backdrop" className="absolute inset-0 bg-black/80 backdrop-blur-sm pointer-events-auto animate-in fade-in" onClick={() => !deployingId && !successId && onClose()} />
             <div className="relative w-full max-w-lg bg-[#0d0714] border-t border-white/10 rounded-t-[32px] p-8 pointer-events-auto animate-in slide-in-from-bottom pb-[calc(40px+env(safe-area-inset-bottom))]">
                 <div className="absolute top-3 left-1/2 -translate-x-1/2 w-10 h-1.5 bg-white/20 rounded-full" />
 
@@ -51,7 +51,7 @@ const AgentDetailsModal: React.FC<AgentDetailsModalProps> = ({ agent, inventory,
                         <h2 className="text-2xl font-black text-white uppercase italic tracking-tighter leading-none">{agent.nome}</h2>
                         <p className="text-[10px] text-magenta font-bold uppercase tracking-widest mt-2">Dossiê Operacional</p>
                     </div>
-                    <button onClick={onClose} className="p-2 text-gray-500"><X size={20} /></button>
+                    <button id="modal-agent-details-close" onClick={onClose} className="p-2 text-gray-500"><X size={20} /></button>
                 </div>
 
                 <div className="space-y-6">

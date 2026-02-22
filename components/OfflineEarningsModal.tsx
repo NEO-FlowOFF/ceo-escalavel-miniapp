@@ -11,8 +11,8 @@ interface OfflineEarningsModalProps {
 
 const OfflineEarningsModal: React.FC<OfflineEarningsModalProps> = ({ pu, seconds, onClose }) => {
   return (
-    <div className="fixed inset-0 z-[300] flex items-center justify-center p-6 animate-in fade-in duration-500">
-      <div className="absolute inset-0 bg-black/90 backdrop-blur-xl pointer-events-auto" onClick={onClose} />
+    <div id="modal-offline-earnings" className="fixed inset-0 z-[300] flex items-center justify-center p-6 animate-in fade-in duration-500">
+      <div id="modal-offline-earnings-backdrop" className="absolute inset-0 bg-black/90 backdrop-blur-xl pointer-events-auto" onClick={onClose} />
       <div className="relative w-full max-w-sm bg-[#0d0714] border border-magenta/30 rounded-[32px] p-8 shadow-[0_0_80px_rgba(255,0,255,0.2)]">
         <header className="flex justify-between items-start mb-8">
           <div className="flex items-center gap-3">
@@ -22,7 +22,7 @@ const OfflineEarningsModal: React.FC<OfflineEarningsModalProps> = ({ pu, seconds
               <h3 className="text-xl font-black text-white uppercase italic tracking-tighter">Receita Gerada</h3>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 text-gray-600 hover:text-white"><X size={20} /></button>
+          <button id="modal-offline-earnings-close" onClick={onClose} className="p-2 text-gray-600 hover:text-white"><X size={20} /></button>
         </header>
         <div className="space-y-6 relative z-10">
           <p className="text-sm text-gray-400 font-medium leading-relaxed italic opacity-80">"Seus agentes nunca dormem. A escala continua enquanto você descansa."</p>

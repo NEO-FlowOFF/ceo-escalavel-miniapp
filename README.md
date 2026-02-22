@@ -24,16 +24,32 @@ npm install
 VITE_REOWN_PROJECT_ID=seu_project_id_reown
 TELEGRAM_BOT_TOKEN=seu_bot_token
 VITE_FORCE_RESET_VERSION=20260222
+TELEGRAM_WEBHOOK_SECRET=seu_secret_do_setWebhook
+WEB_APP_URL=https://agenteflow.vercel.app/
+APP_ORIGIN_ALLOWLIST=https://agenteflow.vercel.app
+TELEGRAM_INITDATA_ENFORCE=true
 ```
 3. Rodar:
 ```bash
 npm run dev
 ```
 
+### Gate de navegação e responsividade
+- Rodar o gate de UI antes de cada deploy:
+```bash
+npm run qa:navigation
+```
+- Detalhes dos critérios em: [docs/NAVIGATION_QA_GATE.md](./docs/NAVIGATION_QA_GATE.md)
+
 ### Reset global de usuários (migração forçada)
 - O app compara `meta.state_version` salvo com `VITE_FORCE_RESET_VERSION`.
 - Se o salvo for menor, o estado do usuário é resetado automaticamente no carregamento.
 - Para forçar um novo reset geral, aumente `VITE_FORCE_RESET_VERSION` e faça deploy.
+
+### Hardening recomendado em produção
+- Configure `TELEGRAM_WEBHOOK_SECRET` e aplique o mesmo valor no `setWebhook` do Bot API.
+- Ative `TELEGRAM_INITDATA_ENFORCE=true` para bloquear criação de invoice fora do contexto Telegram WebApp válido.
+- Defina `APP_ORIGIN_ALLOWLIST` com os domínios autorizados do miniapp.
 
 ## Contexto de Produto
 - Simulação: valuation e progresso de operação dentro do jogo.
@@ -46,6 +62,7 @@ npm run dev
 - Guia interno da empresa: [docs/GUIA_EMPRESA_MINIAPP.md](./docs/GUIA_EMPRESA_MINIAPP.md)
 - Deployment History: [docs/DEPLOYMENT_HISTORY.md](./docs/DEPLOYMENT_HISTORY.md)
 - Roadmap Web3: [docs/ROADMAP_WEB3.md](./docs/ROADMAP_WEB3.md)
+- QA Gate de Navegação: [docs/NAVIGATION_QA_GATE.md](./docs/NAVIGATION_QA_GATE.md)
 
 ## Contrato
 - Network: Base Mainnet (8453)

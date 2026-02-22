@@ -253,7 +253,7 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
           </div>
         </div>
 
-        <div className="ios-blur border p-4 rounded-[24px] shadow-lg flex flex-col justify-between h-28 relative overflow-hidden group transition-all active:scale-95 cursor-pointer" style={{ borderColor: `${BASE_MAGENTA}25`, backgroundColor: `${BASE_MAGENTA}10` }} onClick={() => onWithdrawAttempt?.()}>
+        <div id="open-withdraw-modal" className="ios-blur border p-4 rounded-[24px] shadow-lg flex flex-col justify-between h-28 relative overflow-hidden group transition-all active:scale-95 cursor-pointer" style={{ borderColor: `${BASE_MAGENTA}25`, backgroundColor: `${BASE_MAGENTA}10` }} onClick={() => onWithdrawAttempt?.()}>
           <div className="flex items-center justify-between relative z-10">
             <div className="flex items-center gap-2" style={{ color: BASE_MAGENTA }}>
               <Sparkles size={12} />

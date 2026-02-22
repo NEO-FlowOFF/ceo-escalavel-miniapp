@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:e2e": "playwright test",
+    "qa:navigation": "playwright test tests/e2e/navigation.spec.ts"
   },
   "dependencies": {
     "@opentelemetry/api": "^1.9.0",
@@ -23,6 +25,7 @@
     "wagmi": "^3.3.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@types/node": "^22.14.0",
     "@vitejs/plugin-react": "^5.0.0",
     "autoprefixer": "^10.4.23",

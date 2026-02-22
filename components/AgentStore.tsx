@@ -44,6 +44,7 @@ const AgentStore: React.FC<AgentStoreProps> = ({ agents, inventory, pu, totalPu,
           return (
             <div
               key={agent.id}
+              id={`agent-card-${agent.id}`}
               className={`bg-white/5 ios-blur border rounded-[26px] overflow-hidden transition-all active:scale-[0.98] cursor-pointer group ${canAfford ? 'border-white/10' : 'border-white/5 opacity-80'} ${selectedId === agent.id ? 'border-magenta shadow-[0_0_20px_rgba(255,0,255,0.1)]' : ''}`}
               onClick={() => onSelect(agent.id)}
             >

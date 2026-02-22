@@ -61,7 +61,12 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+        <div id="modal-leaderboard" className="fixed inset-0 z-[650] flex items-center justify-center animate-in fade-in duration-200">
+            <div
+                id="modal-leaderboard-backdrop"
+                className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                onClick={onClose}
+            />
             <div className="relative w-[90%] max-w-sm bg-[#1a1625] border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[80vh]">
 
                 {/* Header */}
@@ -70,7 +75,7 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
                         <Trophy className="text-purple-400" size={20} />
                         <h2 className="text-white font-bold text-lg">Ranking Global</h2>
                     </div>
-                    <button onClick={onClose} className="text-white/40 hover:text-white transition-colors">
+                    <button id="modal-leaderboard-close" onClick={onClose} className="text-white/40 hover:text-white transition-colors">
                         <X size={24} />
                     </button>
                 </div>

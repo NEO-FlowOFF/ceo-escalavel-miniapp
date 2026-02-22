@@ -10,6 +10,8 @@ export interface StoreItem {
     effect_value: number;
 }
 
+type PaymentTelemetryEvent = 'invoice_created' | 'invoice_paid' | 'invoice_failed';
+
 export const STORE_ITEMS: StoreItem[] = [
     {
         id: 'capital_injection_small',
@@ -41,52 +43,130 @@ export const STORE_ITEMS: StoreItem[] = [
 ];
 
 class PaymentService {
-    async createInvoice(item: StoreItem): Promise<string | null> {
+    private async trackTelemetry(
+        eventType: PaymentTelemetryEvent,
+        item: StoreItem,
+        extra: Record<string, unknown> = {}
+    ): Promise<void> {
         try {
-            const response = await fetch('/api/create-invoice', {
+            const tgUser = telegram.getUser();
+            const payload = {
+                eventType,
+                itemId: item.id,
+                itemTitle: item.title,
+                itemPrice: item.price,
+                userId: tgUser?.id ? String(tgUser.id) : 'anonymous',
+                username: tgUser?.username || tgUser?.first_name || 'anonymous',
+                source: tgUser ? 'telegram' : 'visitor',
+                appVersion: import.meta.env.VITE_APP_VERSION || 'unknown',
+                timestamp: Date.now(),
+                ...extra
+            };
+
+            await fetch('/api/payment-telemetry', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        } catch (error) {
+            console.warn('[PaymentTelemetry] Event not persisted', eventType, error);
+        }
+    }
+
+    async createInvoice(item: StoreItem): Promise<{ invoiceLink: string | null; errorMessage?: string; details?: unknown }> {
+        try {
+            const initData = webApp?.initData;
+            const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+            if (initData) {
+                headers['x-telegram-init-data'] = initData;
+            }
+
+            const response = await fetch('/api/create-invoice', {
+                method: 'POST',
+                headers,
                 body: JSON.stringify({
                     title: item.title,
                     description: item.description,
                     payload: item.id,
-                    price: item.price
+                    price: item.price,
+                    initData: initData || undefined
                 })
             });
 
             const data = await response.json();
             if (data.ok && data.invoiceLink) {
-                return data.invoiceLink;
+                return { invoiceLink: data.invoiceLink };
             }
             console.error('Falha ao criar invoice:', data);
-            return null;
+            return {
+                invoiceLink: null,
+                errorMessage: data?.details?.description || data?.error || 'Falha ao criar invoice',
+                details: data
+            };
         } catch (error) {
             console.error('Erro de rede ao criar invoice:', error);
-            return null;
+            return {
+                invoiceLink: null,
+                errorMessage: 'Erro de rede ao criar invoice',
+                details: error
+            };
         }
     }
 
     async purchaseItem(item: StoreItem, onSuccess: () => void, onError: (msg: string) => void) {
         if (!webApp) {
+            void this.trackTelemetry('invoice_failed', item, {
+                failureStage: 'open_invoice',
+                invoiceStatus: 'webapp_missing',
+                errorMessage: 'Telegram WebApp não detectado'
+            });
             onError("Telegram WebApp não detectado.");
             return;
         }
 
-        const invoiceLink = await this.createInvoice(item);
+        const invoiceResult = await this.createInvoice(item);
+        const invoiceLink = invoiceResult.invoiceLink;
 
         if (!invoiceLink) {
+            void this.trackTelemetry('invoice_failed', item, {
+                failureStage: 'create_invoice',
+                invoiceStatus: 'invoice_not_created',
+                errorMessage: invoiceResult.errorMessage || 'Erro ao gerar link de pagamento'
+            });
             onError("Erro ao gerar link de pagamento.");
             return;
         }
 
+        void this.trackTelemetry('invoice_created', item, {
+            invoiceStatus: 'created'
+        });
+
         webApp.openInvoice(invoiceLink, (status: string) => {
             if (status === 'paid') {
+                void this.trackTelemetry('invoice_paid', item, {
+                    invoiceStatus: status
+                });
                 onSuccess();
             } else if (status === 'cancelled') {
+                void this.trackTelemetry('invoice_failed', item, {
+                    failureStage: 'checkout',
+                    invoiceStatus: status,
+                    errorMessage: 'Pagamento cancelado pelo usuário'
+                });
                 console.log('Pagamento cancelado pelo usuário');
             } else if (status === 'failed') {
+                void this.trackTelemetry('invoice_failed', item, {
+                    failureStage: 'checkout',
+                    invoiceStatus: status,
+                    errorMessage: 'Pagamento falhou'
+                });
                 onError("Pagamento falhou.");
             } else {
+                void this.trackTelemetry('invoice_failed', item, {
+                    failureStage: 'checkout',
+                    invoiceStatus: status,
+                    errorMessage: `Status inesperado: ${status}`
+                });
                 console.log('Status do pagamento:', status);
             }
         });
