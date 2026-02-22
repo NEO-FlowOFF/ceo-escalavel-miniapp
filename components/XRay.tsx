@@ -3,7 +3,7 @@ import React from 'react';
 import { GameState } from '../types';
 import { formatHours, calculateValuation } from '../engine/gameLogic';
 import { ClipboardCheck, Lock, Wallet, ExternalLink, Coins, Sparkles } from 'lucide-react';
-import { TOKEN_TICKER, TOKEN_CONTRACT, SCAN_LINK, POLYGON_PURPLE } from '../constants';
+import { TOKEN_TICKER, TOKEN_CONTRACT, SCAN_LINK, BASE_MAGENTA } from '../constants';
 import { openExternalLink } from '../utils/navigation';
 
 interface XRayProps {
@@ -85,7 +85,7 @@ const XRay: React.FC<XRayProps> = ({ gameState, onCopySuccess }) => {
           </div>
           <div className="text-right">
             <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest block mb-1">Valuation Real</span>
-            <p className="text-2xl font-black font-mono leading-none" style={{ color: POLYGON_PURPLE }}>{calculateValuation(gameState).toFixed(0)} <span className="text-xs opacity-50">{TOKEN_TICKER}</span></p>
+            <p className="text-2xl font-black font-mono leading-none" style={{ color: BASE_MAGENTA }}>{calculateValuation(gameState).toFixed(0)} <span className="text-xs opacity-50">{TOKEN_TICKER}</span></p>
           </div>
         </div>
 
@@ -104,7 +104,7 @@ const XRay: React.FC<XRayProps> = ({ gameState, onCopySuccess }) => {
 
         <div className="bg-[#1a1025]/50 p-4 rounded-2xl border border-magenta/20 flex justify-between items-center overflow-hidden relative">
           <div className="flex items-center gap-2 relative z-10">
-            <Sparkles size={14} style={{ color: POLYGON_PURPLE }} />
+            <Sparkles size={14} style={{ color: BASE_MAGENTA }} />
             <span className="text-[9px] font-black text-white uppercase tracking-widest">Protocolo Established</span>
           </div>
           <code className="text-[9px] font-mono text-gray-600 relative z-10 italic truncate max-w-[80px]">0x{TOKEN_CONTRACT.slice(2, 10)}</code>

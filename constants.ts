@@ -3,9 +3,9 @@ import { Agent, ManualAction, GameState } from './types';
 import { DEFAULT_REGIME_ID } from './engine/regimes';
 
 export const TOKEN_TICKER = "$NEOFLW";
-export const TOKEN_CONTRACT = "0x59aa4EaE743d608FBDd4205ebA59b38DCA755Dd2";
-export const SCAN_LINK = "https://polygonscan.com/token/0x59aa4EaE743d608FBDd4205ebA59b38DCA755Dd2";
-export const POLYGON_PURPLE = "#8247E5";
+export const TOKEN_CONTRACT = "0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B"; // Base mainnet
+export const SCAN_LINK = "https://basescan.org/token/0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B";
+export const BASE_MAGENTA = "#ff008e";
 
 export const updateStatus = (valuation: number): string => {
   const milestone = [...STATUS_MILESTONES].reverse().find(m => valuation >= m.pu);

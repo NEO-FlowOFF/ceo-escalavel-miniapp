@@ -14,7 +14,7 @@ import {
   MessageSquare,
   Network
 } from 'lucide-react';
-import { POLYGON_PURPLE } from '../constants';
+import { BASE_MAGENTA } from '../constants';
 import { openExternalLink } from '../utils/navigation';
 
 const SOLUTIONS = [
@@ -62,9 +62,9 @@ const SOLUTIONS = [
     id: "token_infrastructure",
     title: "Tokenization Engine",
     game_effect: "Multiplicador de Valuation e Equity.",
-    real_world_tech: "Smart Contracts (ERC-20/721) na Polygon para distribuição de lucros e governança on-chain.",
-    cta_link: "https://polygonscan.com/token/0x59aa4EaE743d608FBDd4205ebA59b38DCA755Dd2",
-    icon: <Network style={{ color: POLYGON_PURPLE }} size={20} />
+    real_world_tech: "Smart Contracts (ERC-20/721) na Base para distribuição de lucros e governança on-chain.",
+    cta_link: "https://basescan.org/token/0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B",
+    icon: <Network style={{ color: BASE_MAGENTA }} size={20} />
   }
 ];
 
