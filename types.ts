@@ -78,6 +78,7 @@ export interface RegimeConfig {
 }
 
 export interface GameMeta {
+  state_version?: number;
   capital_total_gerado: number;
   status: string;
   snapshot_unlocked: boolean;

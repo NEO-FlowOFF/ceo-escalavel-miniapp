@@ -6,6 +6,9 @@ export const TOKEN_TICKER = "$NEOFLW";
 export const TOKEN_CONTRACT = "0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B"; // Base mainnet
 export const SCAN_LINK = "https://basescan.org/token/0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B";
 export const BASE_MAGENTA = "#ff008e";
+const DEFAULT_FORCE_RESET_VERSION = 20260222;
+const parsedForceResetVersion = Number.parseInt(import.meta.env.VITE_FORCE_RESET_VERSION || `${DEFAULT_FORCE_RESET_VERSION}`, 10);
+export const FORCE_RESET_VERSION = Number.isNaN(parsedForceResetVersion) ? DEFAULT_FORCE_RESET_VERSION : parsedForceResetVersion;
 
 export const updateStatus = (valuation: number): string => {
   const milestone = [...STATUS_MILESTONES].reverse().find(m => valuation >= m.pu);
@@ -123,6 +126,7 @@ export const INITIAL_GAME_STATE: GameState = {
   agents: INITIAL_AGENTS,
   inventory: [],
   meta: {
+    state_version: FORCE_RESET_VERSION,
     capital_total_gerado: 0,
     status: "GARGALO HUMANO",
     snapshot_unlocked: false,

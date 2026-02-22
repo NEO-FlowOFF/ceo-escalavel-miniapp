@@ -12,3 +12,5 @@ Original prompt: Aplicar a skill de desenvolvimento de jogos para evoluir o NEØ
 - Definir `VITE_REOWN_PROJECT_ID` válido no ambiente para reativar o AppKit em produção.
 - Ajustar copy da Loja Premium para remover markdown literal (`**Telegram Stars**`) e aumentar clareza comercial.
 - Criar funil de aquisição com tracking de origem (`start_param`) e reward de referral dentro do miniapp.
+- 2026-02-22: README atualizado para refletir setup atual (Reown + Telegram) e removido contexto Gemini. Criados os guias `docs/GUIA_USUARIO_MINIAPP.md` e `docs/GUIA_EMPRESA_MINIAPP.md` com documentação de navegação, capacidades, monetização real e operação empresarial.
+- 2026-02-22: Implementada migração forçada global no load via `VITE_FORCE_RESET_VERSION` + `meta.state_version`. Estados antigos agora resetam automaticamente no primeiro acesso após deploy com versão maior.

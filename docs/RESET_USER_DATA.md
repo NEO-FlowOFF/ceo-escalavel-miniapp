@@ -108,6 +108,20 @@ for (const userId of userIds) {
 }
 ```
 
+### Reset Global por Migração (sem lista de IDs)
+O projeto suporta reset forçado no carregamento com versionamento:
+
+- Variável: `VITE_FORCE_RESET_VERSION`
+- Campo salvo no estado: `meta.state_version`
+
+Regra:
+- Se `meta.state_version < VITE_FORCE_RESET_VERSION`, o usuário recebe estado limpo automaticamente ao abrir o app.
+
+Fluxo recomendado:
+1. Incrementar `VITE_FORCE_RESET_VERSION` no ambiente.
+2. Fazer deploy.
+3. Usuários antigos são resetados no próximo acesso.
+
 ## 🔐 Segurança
 
 - Apenas o próprio usuário pode resetar seus dados via console

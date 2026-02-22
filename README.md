@@ -1,83 +1,58 @@
-# NEØ FlowOFF ⦿ Miniapp Console
+# NEØ FlowOFF Miniapp Console
 
-Processamento de escalabilidade B2B para Telegram. O sistema transforma o gargalo humano em fluxos autônomos através de agentes de IA simulados.
+Miniapp de simulação de escala operacional para Telegram, com camadas de monetização via Telegram Stars e integração on-chain para mint de $NEOFLW.
 
----
+## Stack
+- Engine: React 19 + Vite
+- Interface: Tailwind + CSS customizado
+- Runtime: Telegram Mini App SDK
+- Web3: Wagmi + Reown AppKit + Base Mainnet
 
-## ⧉ Especificações Técnicas
-
--  **Engine**: React 19 + Vite
--  **Sound**: Web Audio API (Procedural Synthesis)
--  **Interface**: Vanilla CSS + Tailwind (Design System Customizado)
--  **Runtime**: Telegram Mini App (TMA) SDK
-
-## ⍟ Guia Operacional
-
+## Setup
 ### Pré-requisitos
+- Node.js 18+
+- `VITE_REOWN_PROJECT_ID` (necessário para wallet connect e mint)
+- `TELEGRAM_BOT_TOKEN` (necessário para `api/webhook` e `api/create-invoice`)
 
--  Node.js (versão 18+)
--  Credenciais `API_KEY` (Gemini)
+### Executar local
+1. Instalar dependências:
+```bash
+npm install
+```
+2. Configurar ambiente (`.env.local` recomendado):
+```env
+VITE_REOWN_PROJECT_ID=seu_project_id_reown
+TELEGRAM_BOT_TOKEN=seu_bot_token
+VITE_FORCE_RESET_VERSION=20260222
+```
+3. Rodar:
+```bash
+npm run dev
+```
 
-### Inicialização
+### Reset global de usuários (migração forçada)
+- O app compara `meta.state_version` salvo com `VITE_FORCE_RESET_VERSION`.
+- Se o salvo for menor, o estado do usuário é resetado automaticamente no carregamento.
+- Para forçar um novo reset geral, aumente `VITE_FORCE_RESET_VERSION` e faça deploy.
 
-1.  Instalação de pacotes:
-    ```bash
-    npm install
-    ```
-2.  Configuração de ambiente:
-    Configure o arquivo `.env.local` com as chaves necessárias.
-3.  Execução em modo desenvolvimento:
-    ```bash
-    npm run dev
-    ```
+## Contexto de Produto
+- Simulação: valuation e progresso de operação dentro do jogo.
+- Monetização real: compra de itens via Telegram Stars.
+- Ativo real: mint on-chain de $NEOFLW (quando mint está ativo no contrato).
+- Saque real: fluxo atual abre contato comercial, não existe saque automático para fiat no app.
 
----
+## Documentação
+- Guia do usuário final: [docs/GUIA_USUARIO_MINIAPP.md](./docs/GUIA_USUARIO_MINIAPP.md)
+- Guia interno da empresa: [docs/GUIA_EMPRESA_MINIAPP.md](./docs/GUIA_EMPRESA_MINIAPP.md)
+- Deployment History: [docs/DEPLOYMENT_HISTORY.md](./docs/DEPLOYMENT_HISTORY.md)
+- Roadmap Web3: [docs/ROADMAP_WEB3.md](./docs/ROADMAP_WEB3.md)
 
-## ⟁ Arquitetura Operational
+## Contrato
+- Network: Base Mainnet (8453)
+- Token: $NEOFLW
+- Contract: `0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B`
+- Explorer: [BaseScan](https://basescan.org/address/0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B)
 
--  **WF-02**: Execução direta focada em performance e feedback tátil.
--  **Sinergia**: Sistema de multiplicadores de capital simulados.
--  **Burnout**: Mecânica de contenção de stress operacional biológico.
-
----
-
-## ⬡ Web3 Integration
-
-### Official Token: $NEOFLW
-
--  **Network**: Base Mainnet (Chain ID: 8453)
--  **Contract**: `0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B`
--  **Symbol**: NEOFLW
--  **Supply**: 1,000,000,000 (1 billion)
--  **Explorer**: [BaseScan](https://basescan.org/address/0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B)
-
-#### Features
-- ✅ ERC20Permit (Gasless transactions)
-- ✅ Bridge Minter Role (Multichain ready)
-- ✅ Anti-bot Protection
-- ✅ Immutable Supply Cap
-- ✅ Burnable
-
-📖 **Docs**: [Deployment History](./docs/DEPLOYMENT_HISTORY.md) | [Web3 Roadmap](./docs/ROADMAP_WEB3.md)
-
----
-
-## Contact
-
-[neo@neoprotocol.space](mailto:neo@neoprotocol.space)
-
-<div align="center">
-  <a href="https://x.com/node_mello">
-    <img src="https://img.shields.io/badge/-@node_mello-ff008e?style=flat-square&logo=twitter&logoColor=white" alt="Twitter @node_mello" />
-  </a>
-  <a href="https://www.instagram.com/neoprotocol.eth/">
-    <img src="https://img.shields.io/badge/-@neoprotocol.eth-ff008e?style=flat-square&logo=instagram&logoColor=white" alt="Instagram @neoprotocol.eth" />
-  </a>
-  <a href="https://etherscan.io/">
-    <img src="https://img.shields.io/badge/-neomello.eth-ff008e?style=flat-square&logo=ethereum&logoColor=white" alt="Ethereum neomello.eth" />
-  </a>
-</div>
-
-<div align="center">
-  <i>"Expand until silence becomes structure."</i>
-</div>
+## Contato
+- [neo@neoprotocol.space](mailto:neo@neoprotocol.space)
+- [Telegram](https://t.me/neomello)
