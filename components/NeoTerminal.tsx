@@ -12,7 +12,7 @@ interface NeoTerminalProps {
 }
 
 const NEO_AVATAR = {
-  primary: "https://res.cloudinary.com/dqhheouq9/image/upload/v1768785508/agent_neo_rfismf.png",
+  primary: "/agent_neo.png",
   fallback: "/agent_neo.png"
 };
 

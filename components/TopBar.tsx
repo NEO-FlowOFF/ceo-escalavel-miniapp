@@ -1,7 +1,6 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import { Brain, Volume2, VolumeX, X, AlertCircle, TrendingUp, DollarSign, Target, Info, Star, Trophy, Zap } from 'lucide-react';
-import { TOKEN_TICKER } from '../constants';
 
 declare global {
   namespace JSX {
@@ -34,6 +33,15 @@ const TopBar: React.FC<TopBarProps> = ({ pu, pps, stress, soundEnabled, onToggle
   // Meta da Singularidade
   const SINGULARITY_PPS_GOAL = 1500; // Aumentado para escala épica
   const singularityProgress = Math.min(100, (pps / SINGULARITY_PPS_GOAL) * 100);
+  const commercialReadiness = Math.min(
+    100,
+    (Math.min(1, pps / 120) * 58 + Math.min(1, totalPuGenerated / 20000) * 42) * 100
+  );
+  const readinessLabel = commercialReadiness >= 80
+    ? 'Pronto para Expansao'
+    : commercialReadiness >= 45
+      ? 'Escala em Aceleracao'
+      : 'Oferta em Validacao';
 
   const handleStart = (type: MetricType) => {
     setPressingMetric(type);
@@ -137,11 +145,24 @@ const TopBar: React.FC<TopBarProps> = ({ pu, pps, stress, soundEnabled, onToggle
         {/* Console Header */}
         <div className="flex items-center gap-3 mb-3">
           <div className="w-10 h-10 rounded-xl overflow-hidden border border-magenta/20 shadow-lg shadow-magenta/5">
-            <img src="https://res.cloudinary.com/dqhheouq9/image/upload/v1768812991/apple-touch-icon_ehtnim.png" alt="Agent Flow Logo" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = '/apple-icon.png'; }} />
+            <img src="/apple-icon.png" alt="Agent Flow Logo" className="w-full h-full object-cover" />
           </div>
           <div>
-            <h2 className="text-[8px] font-bold text-magenta uppercase tracking-[0.15em] opacity-80 leading-none mb-0.5">System Flow v2.5</h2>
-            <h1 className="text-sm font-black text-white uppercase italic tracking-tight">AGENT FLOW CONSOLE</h1>
+            <h2 className="text-[8px] font-bold text-magenta uppercase tracking-[0.15em] opacity-80 leading-none mb-0.5">NEO Growth Engine v2.6</h2>
+            <h1 className="text-sm font-black text-white uppercase italic tracking-tight">Commercial Scale Console</h1>
+          </div>
+        </div>
+
+        <div className="mb-3 rounded-xl border border-white/10 bg-white/[0.03] p-2.5">
+          <div className="mb-1.5 flex items-center justify-between text-[8px] font-black uppercase tracking-widest">
+            <span className="text-magenta/90">Go-To-Market Score</span>
+            <span className="text-white/75">{commercialReadiness.toFixed(0)}% · {readinessLabel}</span>
+          </div>
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-black/30">
+            <div
+              className="h-full bg-gradient-to-r from-magenta via-cyan-400 to-green-400 transition-all duration-700"
+              style={{ width: `${commercialReadiness}%` }}
+            />
           </div>
         </div>
 
@@ -220,6 +241,7 @@ const TopBar: React.FC<TopBarProps> = ({ pu, pps, stress, soundEnabled, onToggle
           </div>
 
           <button
+            id="sound-toggle"
             onClick={onToggleSound}
             className={`ml-1 p-2 bg-white/5 rounded-full transition-all active:scale-90 ${isStressed ? 'text-red-500 border border-red-500/20' : 'text-gray-500'}`}
           >
@@ -227,6 +249,7 @@ const TopBar: React.FC<TopBarProps> = ({ pu, pps, stress, soundEnabled, onToggle
           </button>
 
           <button
+            id="topbar-open-store"
             onClick={() => window.dispatchEvent(new CustomEvent('open-store'))}
             className="ml-1 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-full text-yellow-500 hover:bg-yellow-500/20 transition-all active:scale-90"
           >
@@ -234,6 +257,7 @@ const TopBar: React.FC<TopBarProps> = ({ pu, pps, stress, soundEnabled, onToggle
           </button>
 
           <button
+            id="topbar-open-mint"
             onClick={() => window.dispatchEvent(new CustomEvent('open-mint'))}
             className="ml-1 p-2 bg-magenta/10 border border-magenta/20 rounded-full text-magenta hover:bg-magenta/20 transition-all active:scale-90"
           >
@@ -241,6 +265,7 @@ const TopBar: React.FC<TopBarProps> = ({ pu, pps, stress, soundEnabled, onToggle
           </button>
 
           <button
+            id="topbar-open-tasks"
             onClick={() => window.dispatchEvent(new CustomEvent('open-tasks'))}
             className="ml-1 p-2 bg-orange-500/10 border border-orange-500/20 rounded-full text-orange-500 hover:bg-orange-500/20 transition-all active:scale-90 relative"
           >
@@ -254,6 +279,7 @@ const TopBar: React.FC<TopBarProps> = ({ pu, pps, stress, soundEnabled, onToggle
           </div>
 
           <button
+            id="topbar-open-leaderboard"
             onClick={() => window.dispatchEvent(new CustomEvent('open-leaderboard'))}
             className="ml-1 p-2 bg-purple-500/10 border border-purple-500/20 rounded-full text-purple-500 hover:bg-purple-500/20 transition-all active:scale-90"
           >
@@ -269,4 +295,3 @@ const TopBar: React.FC<TopBarProps> = ({ pu, pps, stress, soundEnabled, onToggle
 
 
 export default TopBar;
-

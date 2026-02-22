@@ -98,6 +98,34 @@ declare global {
 
 export const webApp = typeof window !== 'undefined' ? window.Telegram?.WebApp : null;
 
+const parseVersion = (version: string): number[] => {
+    return version
+        .split('.')
+        .map(part => Number.parseInt(part, 10))
+        .map(part => (Number.isNaN(part) ? 0 : part));
+};
+
+const isVersionAtLeast = (currentVersion: string, requiredVersion: string): boolean => {
+    const current = parseVersion(currentVersion);
+    const required = parseVersion(requiredVersion);
+    const maxLength = Math.max(current.length, required.length);
+
+    for (let index = 0; index < maxLength; index += 1) {
+        const currentPart = current[index] ?? 0;
+        const requiredPart = required[index] ?? 0;
+        if (currentPart > requiredPart) return true;
+        if (currentPart < requiredPart) return false;
+    }
+
+    return true;
+};
+
+const supportsCloudStorage = (): boolean => {
+    if (!webApp?.CloudStorage) return false;
+    const currentVersion = webApp.version || '0.0';
+    return isVersionAtLeast(currentVersion, '6.9');
+};
+
 // ============================================
 // CLOUD STORAGE (Sync across devices)
 // ============================================
@@ -108,7 +136,7 @@ export const cloudStorage = {
      */
     setItem: (key: string, value: string): Promise<boolean> => {
         return new Promise((resolve, reject) => {
-            if (!webApp?.CloudStorage) {
+            if (!supportsCloudStorage()) {
                 // Fallback to localStorage
                 try {
                     localStorage.setItem(key, value);
@@ -119,19 +147,28 @@ export const cloudStorage = {
                 return;
             }
 
-            webApp.CloudStorage.setItem(key, value, (error, stored) => {
-                if (error) {
-                    // Fallback to localStorage
-                    try {
-                        localStorage.setItem(key, value);
-                        resolve(true);
-                    } catch (e) {
-                        reject(error);
+            try {
+                webApp.CloudStorage.setItem(key, value, (error, stored) => {
+                    if (error) {
+                        // Fallback to localStorage
+                        try {
+                            localStorage.setItem(key, value);
+                            resolve(true);
+                        } catch (e) {
+                            reject(error);
+                        }
+                    } else {
+                        resolve(stored);
                     }
-                } else {
-                    resolve(stored);
+                });
+            } catch (error) {
+                try {
+                    localStorage.setItem(key, value);
+                    resolve(true);
+                } catch (fallbackError) {
+                    reject(error ?? fallbackError);
                 }
-            });
+            }
         });
     },
 
@@ -140,20 +177,24 @@ export const cloudStorage = {
      */
     getItem: (key: string): Promise<string | null> => {
         return new Promise((resolve, reject) => {
-            if (!webApp?.CloudStorage) {
+            if (!supportsCloudStorage()) {
                 // Fallback to localStorage
                 resolve(localStorage.getItem(key));
                 return;
             }
 
-            webApp.CloudStorage.getItem(key, (error, value) => {
-                if (error) {
-                    // Fallback to localStorage
-                    resolve(localStorage.getItem(key));
-                } else {
-                    resolve(value || null);
-                }
-            });
+            try {
+                webApp.CloudStorage.getItem(key, (error, value) => {
+                    if (error) {
+                        // Fallback to localStorage
+                        resolve(localStorage.getItem(key));
+                    } else {
+                        resolve(value || null);
+                    }
+                });
+            } catch (error) {
+                resolve(localStorage.getItem(key));
+            }
         });
     },
 
@@ -162,18 +203,23 @@ export const cloudStorage = {
      */
     removeItem: (key: string): Promise<boolean> => {
         return new Promise((resolve) => {
-            if (!webApp?.CloudStorage) {
+            if (!supportsCloudStorage()) {
                 localStorage.removeItem(key);
                 resolve(true);
                 return;
             }
 
-            webApp.CloudStorage.removeItem(key, (error, removed) => {
-                if (error) {
-                    localStorage.removeItem(key);
-                }
-                resolve(removed ?? true);
-            });
+            try {
+                webApp.CloudStorage.removeItem(key, (error, removed) => {
+                    if (error) {
+                        localStorage.removeItem(key);
+                    }
+                    resolve(removed ?? true);
+                });
+            } catch (error) {
+                localStorage.removeItem(key);
+                resolve(true);
+            }
         });
     }
 };

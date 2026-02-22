@@ -1,8 +1,8 @@
 
 import React, { useState, useMemo, useRef } from 'react';
 import { ManualAction, GameState } from '../types';
-import { isActionAutomated, formatHours, calculateManualGain, calculateValuation } from '../engine/gameLogic';
-import { CheckCircle2, Clock, RefreshCcw, TrendingUp, ShieldCheck, Share2, Sparkles } from 'lucide-react';
+import { isActionAutomated, formatHours, calculateManualGain, calculateValuation, calculateAgentCost } from '../engine/gameLogic';
+import { CheckCircle2, Clock, RefreshCcw, TrendingUp, ShieldCheck, Sparkles, Bot, BadgeDollarSign, Radar, ChevronRight, Gem, Rocket } from 'lucide-react';
 import NeoTerminal from './NeoTerminal';
 import telegram from '../utils/telegramUtils';
 import { STATUS_MILESTONES, TOKEN_TICKER, BASE_MAGENTA } from '../constants';
@@ -43,6 +43,59 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
     const currentProgress = valuation - currentMilestone.pu;
     return { progress: Math.min(100, (currentProgress / range) * 100) };
   }, [gameState]);
+
+  const commercialMetrics = useMemo(() => {
+    const valuation = calculateValuation(gameState);
+    const automatedActions = manualActions.filter(action => isActionAutomated(action.id, inventory, agents)).length;
+    const automationCoverage = manualActions.length ? (automatedActions / manualActions.length) * 100 : 100;
+
+    const nextUnlockAgent = [...agents]
+      .sort((a, b) => a.desbloqueia_em_capital_total - b.desbloqueia_em_capital_total)
+      .find(agent => meta.capital_total_gerado < agent.desbloqueia_em_capital_total) || null;
+
+    const unlockedAgents = agents
+      .filter(agent => meta.capital_total_gerado >= agent.desbloqueia_em_capital_total)
+      .map(agent => {
+        const owned = inventory.find(item => item.id === agent.id)?.quantity || 0;
+        const cost = calculateAgentCost(agent.custo_base, owned, meta.prestige_level || 0);
+
+        return {
+          agent,
+          cost,
+          paybackSeconds: agent.receita_passiva_segundo > 0 ? cost / agent.receita_passiva_segundo : Number.POSITIVE_INFINITY
+        };
+      })
+      .sort((a, b) => a.paybackSeconds - b.paybackSeconds);
+
+    const recommended = unlockedAgents[0] || null;
+    const affordableAgents = unlockedAgents.filter(item => resources.capital >= item.cost).length;
+
+    let stage = 'Prova de Oferta';
+    if (valuation >= 30000) stage = 'Dominio Operacional';
+    else if (valuation >= 5000) stage = 'Escala Validada';
+    else if (valuation >= 500) stage = 'Motor Comercial';
+
+    return {
+      stage,
+      valuation,
+      automationCoverage,
+      nextUnlockAgent,
+      recommended,
+      affordableAgents
+    };
+  }, [agents, gameState, inventory, manualActions, meta.active_regime, meta.capital_total_gerado, meta.prestige_level, resources.capital]);
+
+  const openCommercialChannel = (eventName: string) => {
+    window.dispatchEvent(new CustomEvent(eventName));
+  };
+
+  const handleTelegramShare = () => {
+    const shareUrl = encodeURIComponent('https://t.me/AgenteFlow_Bot');
+    const shareText = encodeURIComponent(
+      'Estou estruturando uma operacao autonoma no Agent Flow. Entre no miniapp e compare seu valuation.'
+    );
+    telegram.openTelegramLink(`https://t.me/share/url?url=${shareUrl}&text=${shareText}`);
+  };
 
   const handleInteraction = (e: React.MouseEvent | React.TouchEvent, action: ManualAction) => {
     if (meta.is_crashed) return;
@@ -92,6 +145,102 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
 
       <NeoTerminal gameState={gameState} soundEnabled={soundEnabled} />
 
+      <section className="relative overflow-hidden rounded-[28px] border border-magenta/20 bg-[#12081a]/80 ios-blur p-5 shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_100%_0%,rgba(255,0,142,0.2),transparent_55%)]" />
+        <div className="relative">
+          <header className="mb-4">
+            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-magenta/80">Commercial Command Deck</p>
+            <h3 className="text-xl font-black text-white uppercase tracking-tight">Sistema de Conversao em Escala</h3>
+          </header>
+
+          <div className="grid grid-cols-3 gap-2.5">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
+              <div className="mb-2 flex items-center gap-1.5 text-cyan-300">
+                <Radar size={12} />
+                <span className="text-[8px] font-black uppercase tracking-widest">Estagio</span>
+              </div>
+              <p className="text-[11px] font-black text-white leading-tight uppercase">{commercialMetrics.stage}</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
+              <div className="mb-2 flex items-center gap-1.5 text-green-300">
+                <Bot size={12} />
+                <span className="text-[8px] font-black uppercase tracking-widest">Automacao</span>
+              </div>
+              <p className="text-[13px] font-black text-white">{commercialMetrics.automationCoverage.toFixed(0)}%</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
+              <div className="mb-2 flex items-center gap-1.5 text-yellow-300">
+                <BadgeDollarSign size={12} />
+                <span className="text-[8px] font-black uppercase tracking-widest">Agentes Viaveis</span>
+              </div>
+              <p className="text-[13px] font-black text-white">{commercialMetrics.affordableAgents}</p>
+            </div>
+          </div>
+
+          <div className="mt-4 rounded-2xl border border-magenta/25 bg-magenta/10 p-3.5">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <p className="text-[8px] font-black uppercase tracking-[0.2em] text-magenta/80">Proxima Alavanca</p>
+                <p className="mt-1 text-sm font-black text-white uppercase">
+                  {commercialMetrics.nextUnlockAgent
+                    ? `${commercialMetrics.nextUnlockAgent.nome} em $${Math.max(0, commercialMetrics.nextUnlockAgent.desbloqueia_em_capital_total - meta.capital_total_gerado).toLocaleString()}`
+                    : 'Todas as trilhas de escala liberadas'}
+                </p>
+                {commercialMetrics.recommended && (
+                  <p className="mt-1 text-[10px] text-white/70">
+                    Melhor ROI imediato: {commercialMetrics.recommended.agent.nome} com payback em {Math.max(1, Math.round(commercialMetrics.recommended.paybackSeconds))}s.
+                  </p>
+                )}
+              </div>
+              <Gem size={16} className="text-magenta shrink-0" />
+            </div>
+          </div>
+
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            <button
+              id="cta-open-store"
+              onClick={() => openCommercialChannel('open-store')}
+              className="rounded-xl border border-yellow-400/30 bg-yellow-400/10 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-yellow-200 active:scale-[0.98]"
+            >
+              Loja Premium
+            </button>
+            <button
+              id="cta-open-mint"
+              onClick={() => openCommercialChannel('open-mint')}
+              className="rounded-xl border border-magenta/30 bg-magenta/10 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-magenta-200 active:scale-[0.98]"
+            >
+              Neo Mint
+            </button>
+            <button
+              id="cta-open-leaderboard"
+              onClick={() => openCommercialChannel('open-leaderboard')}
+              className="rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-cyan-200 active:scale-[0.98]"
+            >
+              Ranking
+            </button>
+            <button
+              id="cta-open-tasks"
+              onClick={() => openCommercialChannel('open-tasks')}
+              className="rounded-xl border border-green-400/30 bg-green-400/10 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-green-200 active:scale-[0.98]"
+            >
+              Missoes
+            </button>
+          </div>
+
+          <button
+            id="cta-share-telegram"
+            onClick={handleTelegramShare}
+            className="mt-3 flex w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-left"
+          >
+            <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/85">
+              <Rocket size={13} className="text-magenta" />
+              Convide 1 parceiro estrategico
+            </span>
+            <ChevronRight size={14} className="text-white/60" />
+          </button>
+        </div>
+      </section>
+
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-white/5 ios-blur border border-white/5 p-4 rounded-[24px] shadow-lg flex flex-col justify-between h-28 transition-all">
           <div className="flex items-center gap-2 opacity-60">
@@ -138,9 +287,10 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
       <div className="space-y-3 relative">
         <div className="flex gap-2">
           <button
+            id="post-x-btn"
             onClick={() => {
               const valuation = calculateValuation(gameState).toFixed(0);
-              const text = `Alcancei $${valuation}M de valuation no Agent Flow! 🚀\n\nPare de ser o gargalo da sua empresa.\n\n$NEOFLW\n\nhttps://t.me/AgenteFlow_Bot`;
+              const text = `Alcancei $${valuation}M de valuation no Agent Flow.\n\nPare de ser o gargalo da sua empresa.\n\n$NEOFLW\n\nhttps://t.me/AgenteFlow_Bot`;
               const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
               window.open(twitterUrl, '_blank');
             }}
@@ -153,9 +303,10 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
           </button>
 
           <button
+            id="post-cast-btn"
             onClick={() => {
               const valuation = calculateValuation(gameState).toFixed(0);
-              const text = `Alcancei $${valuation}M de valuation no Agent Flow! 🚀\n\nPare de ser o gargalo da sua empresa.\n\n$NEOFLW\n\nhttps://t.me/AgenteFlow_Bot`;
+              const text = `Alcancei $${valuation}M de valuation no Agent Flow.\n\nPare de ser o gargalo da sua empresa.\n\n$NEOFLW\n\nhttps://t.me/AgenteFlow_Bot`;
               const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`;
               window.open(farcasterUrl, '_blank');
             }}
@@ -177,7 +328,7 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
             <div className="w-full space-y-2">
               <button
                 onClick={() => {
-                  const text = `Minha operação colapsou por excesso de stress! 🚨\n\nPreciso de mais agentes no Agent Flow.\n\n$NEOFLW\n\nhttps://t.me/AgenteFlow_Bot`;
+                  const text = `Minha operacao colapsou por excesso de stress.\n\nPreciso de mais agentes no Agent Flow.\n\n$NEOFLW\n\nhttps://t.me/AgenteFlow_Bot`;
                   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
                   window.open(twitterUrl, '_blank');
                   onSocialReset();
@@ -192,7 +343,7 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
 
               <button
                 onClick={() => {
-                  const text = `Minha operação colapsou por excesso de stress! 🚨\n\nPreciso de mais agentes no Agent Flow.\n\n$NEOFLW\n\nhttps://t.me/AgenteFlow_Bot`;
+                  const text = `Minha operacao colapsou por excesso de stress.\n\nPreciso de mais agentes no Agent Flow.\n\n$NEOFLW\n\nhttps://t.me/AgenteFlow_Bot`;
                   const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`;
                   window.open(farcasterUrl, '_blank');
                   onSocialReset();
@@ -220,12 +371,13 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
             return (
               <button
                 key={action.id}
+                id={`manual-action-${action.id}`}
                 disabled={automated || meta.is_crashed}
                 onClick={(e) => handleInteraction(e, action)}
                 className={`group relative flex items-center justify-between p-5 rounded-[22px] transition-all duration-300 active:scale-[0.96] border
                   ${automated
                     ? 'bg-black/20 border-white/5 opacity-30'
-                    : 'bg-magenta/[0.03] border-magenta/15 hover:border-magenta/30 shadow-[0_0_15px_rgba(255,0,255,0.02)] animate-pulse-subtle'
+                    : 'bg-magenta/[0.03] border-magenta/15 hover:border-magenta/30 shadow-[0_0_15px_rgba(255,0,255,0.02)]'
                   }`}
               >
                 {!automated && (

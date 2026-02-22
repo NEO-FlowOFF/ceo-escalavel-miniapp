@@ -58,10 +58,7 @@ const App: React.FC = () => {
 
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
 
-  const [showIntro, setShowIntro] = useState(() => {
-    const seen = localStorage.getItem('ceo_intro_seen');
-    return seen !== 'true';
-  });
+  const [showIntro, setShowIntro] = useState(false);
 
   const lastClickTime = useRef<number>(0);
   const lastSaveTime = useRef<number>(0);
@@ -71,6 +68,18 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<View>('operacao');
   const [toast, setToast] = useState<string | null>(null);
   const toastTimerRef = useRef<number | null>(null);
+  const gameStateRef = useRef(gameState);
+  const viewRef = useRef(currentView);
+  const introRef = useRef(showIntro);
+  const modalRef = useRef({
+    showStore,
+    showNeoMint,
+    showDailyTasks,
+    showLeaderboard,
+    showWithdraw,
+    showPrestige,
+    showSingularity
+  });
 
   // Configuração do BackButton conforme a view
   useEffect(() => {
@@ -85,6 +94,30 @@ const App: React.FC = () => {
       telegram.backButton.hide();
     }
   }, [currentView]);
+
+  useEffect(() => {
+    gameStateRef.current = gameState;
+  }, [gameState]);
+
+  useEffect(() => {
+    viewRef.current = currentView;
+  }, [currentView]);
+
+  useEffect(() => {
+    introRef.current = showIntro;
+  }, [showIntro]);
+
+  useEffect(() => {
+    modalRef.current = {
+      showStore,
+      showNeoMint,
+      showDailyTasks,
+      showLeaderboard,
+      showWithdraw,
+      showPrestige,
+      showSingularity
+    };
+  }, [showDailyTasks, showLeaderboard, showNeoMint, showPrestige, showSingularity, showStore, showWithdraw]);
 
   // Configuração do SettingsButton
   useEffect(() => {
@@ -649,6 +682,109 @@ const App: React.FC = () => {
     console.log('%c🔄 Reset disponível:', 'color: #ff00ff; font-weight: bold;', 'Digite resetAgentFlow() no console para resetar seus dados');
   }, [user?.id, gameState.meta.user, showToast]);
 
+  useEffect(() => {
+    const appWindow = window as any;
+
+    appWindow.render_game_to_text = () => {
+      const snapshot = gameStateRef.current;
+      const currentViewSnapshot = viewRef.current;
+      const automatedActions = snapshot.manualActions.filter(action => isActionAutomated(action.id, snapshot.inventory, snapshot.agents)).length;
+      const nextUnlock = [...snapshot.agents]
+        .sort((a, b) => a.desbloqueia_em_capital_total - b.desbloqueia_em_capital_total)
+        .find(agent => snapshot.meta.capital_total_gerado < agent.desbloqueia_em_capital_total);
+      const topUnlocked = snapshot.agents
+        .filter(agent => snapshot.meta.capital_total_gerado >= agent.desbloqueia_em_capital_total)
+        .slice(0, 3)
+        .map(agent => {
+          const owned = snapshot.inventory.find(item => item.id === agent.id)?.quantity || 0;
+          return {
+            id: agent.id,
+            name: agent.nome,
+            owned,
+            nextCost: calculateAgentCost(agent.custo_base, owned, snapshot.meta.prestige_level || 0)
+          };
+        });
+
+      return JSON.stringify({
+        coordinateSystem: 'UI grid. Origin top-left, x grows right, y grows down.',
+        mode: currentViewSnapshot,
+        introVisible: introRef.current,
+        resources: {
+          capital: Number(snapshot.resources.capital.toFixed(2)),
+          pps: Number(snapshot.resources.receita_passiva.toFixed(2)),
+          stress: Number(snapshot.resources.stress.toFixed(2))
+        },
+        progression: {
+          status: snapshot.meta.status,
+          valuation: Number(calculateValuation(snapshot).toFixed(2)),
+          totalCapital: Number(snapshot.meta.capital_total_gerado.toFixed(2)),
+          automationCoverage: snapshot.manualActions.length ? Number(((automatedActions / snapshot.manualActions.length) * 100).toFixed(1)) : 100
+        },
+        nextUnlock: nextUnlock ? {
+          id: nextUnlock.id,
+          name: nextUnlock.nome,
+          missingCapital: Math.max(0, nextUnlock.desbloqueia_em_capital_total - snapshot.meta.capital_total_gerado)
+        } : null,
+        topUnlocked,
+        modalState: modalRef.current
+      });
+    };
+
+    appWindow.advanceTime = (ms: number) => new Promise<void>((resolve) => {
+      const seconds = Math.max(1, Math.round(ms / 1000));
+
+      setGameState(prev => {
+        let nextState = prev;
+
+        for (let index = 0; index < seconds; index += 1) {
+          const pps = calculateTotalPPS(
+            nextState.agents,
+            nextState.inventory,
+            nextState.meta.prestige_level || 0,
+            nextState.meta.active_regime
+          );
+          const nextCapital = nextState.resources.capital + pps;
+          const nextTotalCapital = nextState.meta.capital_total_gerado + pps;
+          const statusMultiplier = (STATUS_MILESTONES.findIndex(m => m.label === nextState.meta.status) + 1) * 0.12;
+          const stressRelief = nextState.inventory.reduce((acc, item) => acc + (item.quantity * 0.1), 0.4 + statusMultiplier);
+          const nextStress = Math.max(0, nextState.resources.stress - stressRelief);
+
+          const nextSnapshot = {
+            ...nextState,
+            resources: {
+              ...nextState.resources,
+              capital: nextCapital,
+              receita_passiva: pps,
+              stress: nextStress
+            },
+            meta: {
+              ...nextState.meta,
+              capital_total_gerado: nextTotalCapital
+            }
+          };
+
+          nextState = {
+            ...nextSnapshot,
+            meta: {
+              ...nextSnapshot.meta,
+              status: updateStatus(calculateValuation(nextSnapshot))
+            },
+            lastTick: Date.now()
+          };
+        }
+
+        return nextState;
+      });
+
+      window.setTimeout(() => resolve(), 0);
+    });
+
+    return () => {
+      delete appWindow.render_game_to_text;
+      delete appWindow.advanceTime;
+    };
+  }, []);
+
   const isLowPerf = useMemo(() => telegram.isLowPerformanceDevice(), []);
 
   if (authLoading) {
@@ -790,6 +926,7 @@ const App: React.FC = () => {
         stress={gameState.resources.stress}
         soundEnabled={soundEnabled}
         onToggleSound={() => setSoundEnabled(!soundEnabled)}
+        totalPuGenerated={gameState.meta.capital_total_gerado}
       />
 
       <main className="flex-1 scrollable px-5 pt-6 pb-24">

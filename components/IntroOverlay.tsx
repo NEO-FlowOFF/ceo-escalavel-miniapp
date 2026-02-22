@@ -26,7 +26,7 @@ const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
   const [isExiting, setIsExiting] = useState(false);
   const [isFastForward, setIsFastForward] = useState(false);
   const [isInitialActive, setIsInitialActive] = useState(true);
-  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(true);
 
   // Remove o pulso inicial após 2 segundos de imersão
   useEffect(() => {
@@ -144,7 +144,7 @@ const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
           })}
         </div>
 
-        <div className={`mt-10 transition-all duration-1000 ${isFinished ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
+        <div className={`mt-10 transition-all duration-1000 ${isFinished ? 'opacity-100 translate-y-0' : 'opacity-90 translate-y-0'}`}>
           <div className="mb-6 flex items-start gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
             <input
               type="checkbox"
@@ -162,6 +162,7 @@ const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
             <div className={`absolute -inset-1 bg-magenta/40 rounded-[24px] blur-xl transition-all duration-500 ${termsAccepted ? 'group-hover:bg-magenta/60 animate-pulse' : 'bg-gray-800/40 opacity-0'}`} />
 
             <button
+              id="start-btn"
               onClick={(e) => { e.stopPropagation(); handleStart(); }}
               disabled={!termsAccepted}
               className={`w-full relative py-6 px-4 bg-black/40 backdrop-blur-xl border rounded-[22px] overflow-hidden transition-all active:scale-[0.97] group ${termsAccepted ? 'border-magenta/50' : 'border-white/10 opacity-50 grayscale'}`}
