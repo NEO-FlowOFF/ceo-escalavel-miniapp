@@ -51,3 +51,22 @@ push:
 	@echo "5. Pushing to Remote..."
 	git push origin main
 	@echo "Protocolo finalizado com sucesso."
+
+# --- TUNNEL OPERATIONS -------------------------------------------------------
+
+TUNNEL_DIR := /Users/nettomello/neomello/NEO-PROTOCOL/neo-tunnel
+
+tunnel-neo-agent: ## Start tunnel for neo-agent
+	@cd $(TUNNEL_DIR) && $(MAKE) client-neo-agent
+
+tunnel-flowpay: ## Start tunnel for flowpay
+	@cd $(TUNNEL_DIR) && $(MAKE) client-flowpay
+
+tunnel-nexus: ## Start tunnel for nexus
+	@cd $(TUNNEL_DIR) && $(MAKE) client-nexus
+
+tunnel-neobot: ## Start tunnel for neobot
+	@cd $(TUNNEL_DIR) && $(MAKE) client-neobot
+
+tunnel-status: ## Check tunnel server status
+	@cd $(TUNNEL_DIR) && $(MAKE) status
