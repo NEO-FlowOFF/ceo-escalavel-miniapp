@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD003 MD007 MD011 MD013 MD022 MD023 MD025 MD029 MD032 MD033 MD034 -->
+
 # NEØ FlowOFF Miniapp Console
 
 Miniapp de simulação de escala operacional para Telegram, com camadas de monetização via Telegram Stars e integração on-chain para mint de $NEOFLW.
@@ -73,3 +75,23 @@ npm run qa:navigation
 ## Contato
 - [neo@neoprotocol.space](mailto:neo@neoprotocol.space)
 - [Telegram](https://t.me/neomello)
+
+────────────────────────────────────────
+
+▓▓▓ NΞØ MELLØ
+────────────────────────────────────────
+Core Architect · NΞØ Protocol
+neo@neoprotocol.space
+
+"Code is law. Expand until
+silence becomes structure."
+────────────────────────────────────────
+```
+ █████ █         
+██╔═══██╗       
+██║ █ ██║  
+██ █  ██║      
+╚██████╔╝   
+█ ╚═══╝     
+
+```
