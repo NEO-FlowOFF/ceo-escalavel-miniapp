@@ -90,11 +90,7 @@ const Operation: React.FC<OperationProps> = ({ gameState, onAction, onWithdrawAt
   };
 
   const handleTelegramShare = () => {
-    const shareUrl = encodeURIComponent('https://t.me/AgenteFlow_Bot');
-    const shareText = encodeURIComponent(
-      'Estou estruturando uma operacao autonoma no Agent Flow. Entre no miniapp e compare seu valuation.'
-    );
-    telegram.openTelegramLink(`https://t.me/share/url?url=${shareUrl}&text=${shareText}`);
+    openCommercialChannel('open-referral');
   };
 
   const handleInteraction = (e: React.MouseEvent | React.TouchEvent, action: ManualAction) => {

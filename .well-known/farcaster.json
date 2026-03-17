@@ -1,0 +1,12 @@
+{
+    "miniapp": {
+        "version": "1",
+        "name": "AgentFlow",
+        "iconUrl": "https://agenteflow.vercel.app/public/assets/icon.png",
+        "homeUrl": "https://agenteflow.vercel.app",
+        "splashImageUrl": "https://agenteflow.vercel.app/public/assets/splash.png",
+        "splashBackgroundColor": "#0f53f0",
+        "heroImageUrl": "https://agenteflow.vercel.app/public/assets/hero.png",
+        "tagline": "O jogo é apenas o começo. Leve agentes para o seu negócio real."
+    }
+}

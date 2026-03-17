@@ -31,6 +31,7 @@ import PrestigeModal from './components/PrestigeModal';
 import { StoreModal } from './components/StoreModal';
 import { DailyTasksModal } from './components/DailyTasksModal';
 import { LeaderboardModal } from './components/LeaderboardModal';
+import { ReferralModal } from './components/ReferralModal';
 import NeoMintModal from './components/NeoMintModal';
 import { playAlert, playNotification } from './engine/soundEffects';
 import { useAuth } from './hooks/useAuth';
@@ -52,6 +53,7 @@ const App: React.FC = () => {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showNeoMint, setShowNeoMint] = useState(false);
   const [showPrestige, setShowPrestige] = useState(false);
+  const [showReferral, setShowReferral] = useState(false);
 
   const [dailyTasks, setDailyTasks] = useState<DailyTask[]>(DAILY_TASKS);
   const [streak, setStreak] = useState<DayStreak>({ current: 0, lastLoginDate: 0 });
@@ -78,7 +80,8 @@ const App: React.FC = () => {
     showLeaderboard,
     showWithdraw,
     showPrestige,
-    showSingularity
+    showSingularity,
+    showReferral
   });
 
   // Configuração do BackButton conforme a view
@@ -115,9 +118,10 @@ const App: React.FC = () => {
       showLeaderboard,
       showWithdraw,
       showPrestige,
-      showSingularity
+      showSingularity,
+      showReferral
     };
-  }, [showDailyTasks, showLeaderboard, showNeoMint, showPrestige, showSingularity, showStore, showWithdraw]);
+  }, [showDailyTasks, showLeaderboard, showNeoMint, showPrestige, showSingularity, showStore, showWithdraw, showReferral]);
 
   // Configuração do SettingsButton
   useEffect(() => {
@@ -145,15 +149,18 @@ const App: React.FC = () => {
     const handleOpenMint = () => setShowNeoMint(true);
     const handleOpenTasks = () => setShowDailyTasks(true);
     const handleOpenLeaderboard = () => setShowLeaderboard(true);
+    const handleOpenReferral = () => setShowReferral(true);
 
     window.addEventListener('open-mint', handleOpenMint);
     window.addEventListener('open-tasks', handleOpenTasks);
     window.addEventListener('open-leaderboard', handleOpenLeaderboard);
+    window.addEventListener('open-referral', handleOpenReferral);
 
     return () => {
       window.removeEventListener('open-mint', handleOpenMint);
       window.removeEventListener('open-tasks', handleOpenTasks);
       window.removeEventListener('open-leaderboard', handleOpenLeaderboard);
+      window.removeEventListener('open-referral', handleOpenReferral);
     };
   }, []);
 
@@ -247,8 +254,29 @@ const App: React.FC = () => {
   useEffect(() => {
     if (initialData) {
       setGameState(prev => ({ ...prev, ...initialData }));
+
+      // Referral Logic
+      const startParam = telegram.getStartParam();
+      const referralProcessed = localStorage.getItem('referral_processed');
+
+      if (startParam && !referralProcessed) {
+        setGameState(prev => ({
+          ...prev,
+          resources: {
+            ...prev.resources,
+            capital: prev.resources.capital + 1000
+          },
+          meta: {
+            ...prev.meta,
+            capital_total_gerado: prev.meta.capital_total_gerado + 1000
+          }
+        }));
+        localStorage.setItem('referral_processed', 'true');
+        showToast("CONVITE ACEITO: +$1.000 de capital seed! 🚀");
+        telegram.hapticFeedback.notification('success');
+      }
     }
-  }, [initialData]);
+  }, [initialData, showToast]);
 
   // Função de persistência Híbrida (Telegram Cloud + Local)
   const persistState = useCallback((state: GameState) => {
@@ -898,6 +926,12 @@ const App: React.FC = () => {
       {showNeoMint && (
         <NeoMintModal onClose={() => setShowNeoMint(false)} />
       )}
+
+      <ReferralModal
+        isOpen={showReferral}
+        onClose={() => setShowReferral(false)}
+        userId={user?.id}
+      />
 
       {selectedAgentId && currentView === 'agentes' && (
         (() => {
