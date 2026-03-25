@@ -25,3 +25,4 @@ dist-ssr
 *.sw?
 output/
 package-lock.json
+.vercel
