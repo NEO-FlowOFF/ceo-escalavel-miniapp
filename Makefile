@@ -18,16 +18,16 @@ help:
 	@echo "=========================================================="
 
 install:
-	npm install
+	pnpm install
 
 dev:
-	npm run dev
+	pnpm dev
 
 build:
-	npm run build
+	pnpm build
 
 preview:
-	npm run preview
+	pnpm preview
 
 clean:
 	rm -rf dist
@@ -37,9 +37,9 @@ clean:
 push:
 	@echo "Iniciando NΞØ Protocol: Secure Commit & Push..."
 	@echo "1. Security Audit..."
-	npm audit
+	pnpm audit
 	@echo "2. Building for Production..."
-	npm run build
+	pnpm build
 	@echo "3. Staging changes..."
 	git add .
 	@echo "4. Committing with Conventional Commits..."
